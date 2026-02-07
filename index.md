@@ -3,6 +3,7 @@ title: Index
 nav_order: 1
 layout: default
 ---
+
 # Index
 
 Welcome to my study notebook! This serves as an index to all topics and notes.
@@ -11,8 +12,10 @@ Welcome to my study notebook! This serves as an index to all topics and notes.
 ---
 
 ## Notes
-1. ### [JVM](Notes/Java/1_JVM.md)
 
+1. ### [JVM](Notes/Java/JVM.md)
+2. ### [History Of Java](Notes/Java/History.md)
+3. ### [Threading](Notes/Java/Threading.md)
 
 ## Contributing
 
