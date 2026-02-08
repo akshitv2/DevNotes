@@ -53,5 +53,24 @@
    - Makes modifications in these concerns simpler in future (only have to update one class)
    - Essentially run code before/after/around specific methods
    - Example:
-     - 
+     - Service:
+       - ```java
+         @Service
+         public class OrderService {
+             public void placeOrder() {
+                System.out.println("Placing order");
+             }
+         }
+         ```
+     - Aspect:
+       - ```java
+         @Aspect
+         @Component
+         public class LoggingAspect{
+            @Before("execution(* com.app.service.*.*(..))")
+            public void logMethodCall(){
+                System.out.println("LOGGING");
+            }  
+         }
+         ```
 4. 
