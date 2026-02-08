@@ -48,6 +48,7 @@
       - then `destroy()`
 3. ### Bean Scopes
    - Singleton (default), Prototype, Request, Session, and Application
+4. ### ApplicationContext
 4. ### Spring AOP (Aspect Oriented Programming)
    - Way to centralize cross-cutting concerns like logging, security checks etc
    - Modularize all repetitive code to one class
