@@ -64,7 +64,7 @@ window.MathJax = {
     color: rgb(33, 150, 243) !important;
     }
     .exampleMarker::before {
-    content: "example:" !important;
+    content: "Example:" !important;
     color: rgb(33, 150, 243) !important;
     }
 
@@ -104,7 +104,7 @@ window.MathJax = {
           li.classList.add("infoMarker");
         }
         else if (li.textContent.substr(0,8) === "Example:") {
-          li.textContent = li.textContent.replace('Example:','‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ');
+          li.textContent = li.textContent.replace('Example:','‎‎‎‎‎‎‎‎‎‎');
           li.classList.add("exampleMarker");
         }
 
