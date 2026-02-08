@@ -46,12 +46,24 @@
       - When container shuts down
       - Calls `@PreDestroy` first
       - then `destroy()`
-      
-3. ### Spring AOP (Aspect Oriented Programming)
+3. ### Bean Scopes
+   - Singleton (default), Prototype, Request, Session, and Application
+4. ### Spring AOP (Aspect Oriented Programming)
    - Way to centralize cross-cutting concerns like logging, security checks etc
    - Modularize all repetitive code to one class
+   - Important to not use for business logic (this type of hidden injection can become fatal trying to understand execution order)
    - Makes modifications in these concerns simpler in future (only have to update one class)
    - Essentially run code before/after/around specific methods
+   - Components:
+     1. Aspect: Modularized cross-cutting concern
+     2. Join Point: Point where you join your action like method invoked
+     3. Advice: Defines at what point aspect steps in
+        - Types:
+          1. Before
+          2. After
+          3. Around
+          4. After Returning
+          5. After Throwing
    - Example:
      - Service:
        - ```java
@@ -73,4 +85,12 @@
             }  
          }
          ```
-4. 
+     - Output:
+       - ```text
+         LOGGING
+         Placing order
+         ```
+   - Pattern Matching & Annotations:
+     - To avoid making lists on aspect end we can define a pattern `"execution(* com.app.service.*.*(..))"`
+     - We can also create custom annotation 
+5. 
