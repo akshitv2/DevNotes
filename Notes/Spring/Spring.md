@@ -1,3 +1,4 @@
+# Spring Basics
 1. ## IOC & DI
    1. ### Inversion of Control (IoC)
       - Traditionally programmer dictates flow calls libraries
@@ -49,7 +50,20 @@
 3. ### Bean Scopes
    - Singleton (default), Prototype, Request, Session, and Application
 4. ### ApplicationContext
-4. ### Spring AOP (Aspect Oriented Programming)
+   - Central interface that manages all components
+   - It is THE spring container
+   - Purpose:
+     - Creates Beans
+     - Dependency Injection
+     - Lifecycle Management
+     - Configuration Handling: Converting all properties files, XML, or Java annotations—into a uniform internal format called BeanDefinitions.
+       - BeanDefinitions contain all metadata of bean like scope, constructor args, properties
+     - Other misc services like event publishing and aop etc
+   - ### Bean Factory:
+     - Bare metal container
+     - Parent of ApplicationContext
+     - Only creates and manages beans
+5. ### Spring AOP (Aspect Oriented Programming)
    - Way to centralize cross-cutting concerns like logging, security checks etc
    - Modularize all repetitive code to one class
    - Important to not use for business logic (this type of hidden injection can become fatal trying to understand execution order)
@@ -94,4 +108,12 @@
    - Pattern Matching & Annotations:
      - To avoid making lists on aspect end we can define a pattern `"execution(* com.app.service.*.*(..))"`
      - We can also create custom annotation 
-5. 
+
+## Spring Boot Basics
+1. Spring vs Spring Boot:
+   - Spring Boot is an extension built on top of spring framework
+   - Spring contains all low level infra
+   - Spring boot's purpose is to make developement quick and easy to start
+   - Spring Boot comes with autoconfiguration, embedded server and prewritten boiler plate
+   - Spring boot generates FAT Jar that runs on JRE
+   - Spring generates war and requires Tomcat server to deploy
