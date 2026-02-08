@@ -53,5 +53,27 @@
         - Allows manual completion
     - Example:
         - ```java
-          CompletableFuture.supplyAsync(() -> "Data Ready").thenApply(data -> data + " - Processed").thenAccept(finalResult -> System.out.println(finalResult)).exceptionally(ex -> {System.out.println("Error: " + ex.getMessage());return null;});
+          CompletableFuture.supplyAsync(() -> "Data Ready")
+          .thenApply(data -> data + " - Processed")
+          .thenAccept(finalResult -> System.out.println(finalResult))
+          .exceptionally(ex -> {
+          System.out.println("Error: " + ex.getMessage());
+          return null;
+          });
+            System.out.println("Main thread is free to do other things!");
           ```
+9. Virtual Threads (Project Loon)
+   - java.lang.Thread are platform threads, essentially 1:1 mapped to hardware threads
+   - During IOs and waits, thread sits idle in blocked state
+   - Solution: Virtual Threads
+   - Lightweight, managed by JVM, mounted unmounted as needed
+   - On periods of wait, JVM unmounts real thread and mounts other process onto thread
+   - Works by minor change in the code:
+     - ```java
+       // Traditional way (Platform Threads)
+       ExecutorService fixedPool = Executors.newFixedThreadPool(100);
+
+       // The Loom way (Virtual Threads)
+       ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor();
+       ```
+   - `-Djdk.virtualThreadScheduler.parallelism=N`: Sets the number of platform threads available to carry virtual threads.

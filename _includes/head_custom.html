@@ -63,6 +63,10 @@ window.MathJax = {
     content: "𝐢" !important;
     color: rgb(33, 150, 243) !important;
     }
+    .exampleMarker::before {
+    content: "example:" !important;
+    color: rgb(33, 150, 243) !important;
+    }
 
 </style>
 
@@ -98,6 +102,10 @@ window.MathJax = {
         else if (li.textContent.substr(0,2) === "ℹ️") {
           li.textContent = li.textContent.replace('ℹ️','');
           li.classList.add("infoMarker");
+        }
+        else if (li.textContent.substr(0,8) === "Example:") {
+          li.textContent = li.textContent.replace('Example:','');
+          li.classList.add("exampleMarker");
         }
 
       });
