@@ -23,25 +23,35 @@
 6. ThreadPool and Executor:
     1. ThreadPool:
         - Managed collection of worker threads
-          - 🟢Reuses existing threads skipping creation and termination
-          - 🟢Prevents spawning too many threads and Out of memory issue
-          - 🟢Easier to manage
+            - 🟢Reuses existing threads skipping creation and termination
+            - 🟢Prevents spawning too many threads and Out of memory issue
+            - 🟢Easier to manage
         - Components:
-          - Threads
-          - Work Queue
-          - Rejection Policy: i.e. what happens if queue is full
+            - Threads
+            - Work Queue
+            - Rejection Policy: i.e. what happens if queue is full
     2. Executor:
         - part of `java.util.concurrent`
         - Functional Heirarchy:
-          - `Executor`: simple interface with execute(Runnable) method  
-          - `ExecutorService` manages pool, you just submit tasks
+            - `Executor`: simple interface with execute(Runnable) method
+            - `ExecutorService` manages pool, you just submit tasks
     3. How to Use these?
-       - Create a pool i.e. ExecutorService
-       - Pass Runnable or Callable
-       - ℹCallable provides a Future object back
-       - Shutdown executor (needed to exit JVM)
+        - Create a pool i.e. ExecutorService
+        - Pass Runnable or Callable
+        - ℹ️Callable provides a Future object back
+        - Shutdown executor (needed to exit JVM)
 7. `Callable` and `Future`:
-   - Runnable: Return type void, can't return a result
-   - To get a response use callable or future
+    - Runnable: Return type void, can't return a result
+    - To get a response use callable and future
 
-8. CompletableFuture
+8. `CompletableFuture`
+    - Using Future one can get result using `.get()`
+    - Next task must be designated by main thread and blocks it
+    - Solution:CompletableFuture
+        - Chains tasks together
+        - Non Blocking
+        - Allows manual completion
+    - Example:
+        - ```java
+          CompletableFuture.supplyAsync(() -> "Data Ready").thenApply(data -> data + " - Processed").thenAccept(finalResult -> System.out.println(finalResult)).exceptionally(ex -> {System.out.println("Error: " + ex.getMessage());return null;});
+          ```
