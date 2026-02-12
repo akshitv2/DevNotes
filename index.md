@@ -26,9 +26,14 @@ Welcome to my study notebook! This serves as an index to all topics and notes.
    2. ### [Netty](Notes/Software/Netty.md)
 5. ### Book Notes:
    1. ### [Designing Data Intensive Applications](Notes/Books/DesigningDataIntensiveApplications/BookNotes.md)
-5. ## Others:
+6. ## Others:
    1. ### [Lettuce vs Jedis](Temp/LettuceVsJedis.md)
+
 ## Contributing
 
 If you want to add more topics or notes, feel free to submit a pull request.
 [DevNotes](https://github.com/akshitv2/DevNotes)
+
+### Other Pages:
+1. ### [ML Learning](https://akshitv2.github.io/MLLearning/)
+2. ### [Recipe Book](https://akshitv2.github.io/RecipeBook/)
