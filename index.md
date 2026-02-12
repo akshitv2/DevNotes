@@ -19,11 +19,13 @@ Welcome to my study notebook! This serves as an index to all topics and notes.
    3. ### [Threading](Notes/Java/Threading.md)
 2. ## Spring/SpringBoot:
    1. ### [Spring Intro](Notes/Spring/Spring.md)
-3. Competitive Coding:
+3. ### Competitive Coding:
    1. ### [Tips & Tricks](Notes/CompetitiveCoding/CompetitiveCoding.md)
 4. ## Software:
    1. ### [Redis](Notes/Software/Redis.md)
    2. ### [Netty](Notes/Software/Netty.md)
+5. ### Book Notes:
+   1. ### [Designing Data Intensive Applications](Notes/Books/DesigningDataIntensiveApplications/BookNotes.md)
 5. ## Others:
    1. ### [Lettuce vs Jedis](Temp/LettuceVsJedis.md)
 ## Contributing
