@@ -100,3 +100,7 @@
                  MATCH (p:Person {name: 'Alice'})-[:FRIEND]->(friend)
                  RETURN friend.name
                  ```
+                 
+3. ### Storage And Retrieval
+   1. Log Structured Storage (LSM Trees)
+     -  

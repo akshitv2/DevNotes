@@ -21,7 +21,12 @@ Welcome to my study notebook! This serves as an index to all topics and notes.
    1. ### [Spring Intro](Notes/Spring/Spring.md)
 3. Competitive Coding:
    1. ### [Tips & Tricks](Notes/CompetitiveCoding/CompetitiveCoding.md)
+4. ## Software:
+   1. ### [Redis](Notes/Software/Redis.md)
+   2. ### [Netty](Notes/Software/Netty.md)
+5. ## Others:
+   1. ### [Lettuce vs Jedis](Temp/LettuceVsJedis.md)
 ## Contributing
 
 If you want to add more topics or notes, feel free to submit a pull request.
-[MLLearning](https://github.com/akshitv2/MLLearning)
+[DevNotes](https://github.com/akshitv2/DevNotes)
