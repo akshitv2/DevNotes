@@ -96,11 +96,67 @@
                   CREATE (alice)-[:FRIEND]->(bob)
                   ```
             - Pattern Matching:
-               - ```
-                 MATCH (p:Person {name: 'Alice'})-[:FRIEND]->(friend)
-                 RETURN friend.name
+                - ```
+              MATCH (p:Person {name: 'Alice'})-[:FRIEND]->(friend)
+              RETURN friend.name
                  ```
-                 
+
 3. ### Storage And Retrieval
-   1. Log Structured Storage (LSM Trees)
-     -  
+    1. Log Structured Storage (LSM Trees)
+        - Treat Databases as append only log, new data simply added at end of file
+        - SSTables (Sorted String Tables):
+            - Instead of random appending, append to each key
+        - LSM-Trees (Log Structured Merge Trees):
+            - ![img.png](Media/img.png)
+            - Not an actual tree, more like large array where parts are sorted by compaction in tree like manner
+            - High throughput in memory structure, dump to SSTables
+        - Compaction:
+            - Discards old values for the key only keeping new one
+
+    2. Page Oriented Storage:
+        - Traditional approach used by most RDBs
+        - B Trees break DB into fixed size pages (usually 4/8KB)
+        - Note: B Tree is a self-ba82/klancing tree data structure to efficiently store and retrieve large amounts of data,
+          usually
+        - In place updates: B Trees overwrite old data with new in place (unlike compaction which occurs routinely)
+    3. Transaction Logs & Crash Recovery:
+       - Since these structures overwrite data in place crashes can corrupt DB
+       - **Write Ahead Log (WAL):** Write every single transaction to an append only file before updating B tree
+       - Note: Since WAL stores all transactions it grows huge, and recovering state could take days replaying logs.
+         - Checkpointing: Store WAL log timestamp/linenumber and db state
+         - Modern implementations split WAL into segments (e.g. 64MB) and delete old segments after checkpointing is finish
+    4. Other Indexing Strategies:
+       1. Secondary Indexes: For searching using non-primary key
+       2. Multi Column Indexes: For filtering by multiple fields simultaneously
+       3. Full text Search: Allow searching for keywords within long strings of text
+          - How it works:
+            - Even before searching system processes the text, tokenizes, normalizes, stopword removed and lemmatize/stem.
+            - Builds inverted index of the words i.e Word | Documents containing it
+            - On search system uses your words and matches against inverted index using intersection
+       4. In memory DB: Keep entire dataset in RAM to avoid disk I/O Bottlenecks
+    5. OLTP vs OLAP
+       - Online Transaction Processing vs Online Analytical Processing
+       - OLTP: Handles day-to-day transactions
+         - Small number of records per query (by key)
+         - Users: End users (customers, clerks)
+         - Queries Simple, fast (INSERT, UPDATE}, DELETE)
+         - Very Fast Real time execution
+       - OLAP: Handle analytical data
+         - Large volumes of past data
+         - Users: Managers and analysts
+         - Queries: Are complex and heavy and time-consuming
+         - Slower but optimized for analysis, don't need to be instant
+   6. Row vs Column Oriented Storage
+      - Rows:
+        - Al columns for a single row are stored together contiguously
+        - Best For OLTP
+        - Faster for Transactions like INSERT, SELECT, DELETE
+        - 🟢Fast Single Record Look up, simple storage model
+        - 🔴Inefficient for analytics that scan only a few columns
+        - e.g. mySQL, PostgreSQL
+      - Columns:
+        - Each column is stored separately contiguously
+        - Reads only required columns thus speeds up when only few columns are needed
+        - Much faster for aggregations
+        - Row alignment is maintained by position
+        - e.g. Amazon Redshift, Snowflake
