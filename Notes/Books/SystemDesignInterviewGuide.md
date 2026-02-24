@@ -105,4 +105,96 @@
      - Run by 3rd Party: Charged for data transfer in and out of CDN, do not cache infrequent use items
      - Set appropriate cache expiry to reduce refetching, but still be fresh
      - Fallback: CDNs can fail, clients should have ability to connect to origin if they do
-   
+
+9. Stateful and Stateless Architecture:
+   - Stateless Architecture:
+     - Server does not retain any info about client's previous interaction
+     - Each request from client must contain all info for server to perform the operation
+     - Characteristics:
+       - Each request isolated
+       - Scalability: Highly scalable horizontally due to no requirement of same server
+       - Authentication: Done using JWTs
+       - Fault Tolerant: Can reroute quickly on failure
+   - Stateful Architecture:
+     - Server actively stores info about client's session and previous interactions
+     - Data maintained on the server's memory (JVM Heap in spring boot)
+     - Characteristics;
+       - Context Retention: Server retains context, user only needs to send in next operation
+       - Session Management: Relies on session IDs
+       - Scaling: Hard to impossible to scale horizontally (requires sticky session)
+   - Note: Session Externalization is a stateful hack that converts stateful apps to stateless while maintaining same arch
+
+10. Data Centers:
+    - DC
+11. ## Message Queue:
+    - ![img_4.png](img_4.png)
+    - Form of asynchronous service to service communication
+    - Decouple the Producer and Consumer
+    - Point to Point Communication: Allow for communication between one to another async
+      - Allow round-robin/least loaded algos to distribute
+      - Acknowledgements (ACKs): Ensure atleast once delivery, consumer sends ACK to publisher or else message is requeued
+      - Persistence: Messages are often stored on disk to ensure they aren't lost if a service crashes before processing them.
+    - Examples: RabbitMQ, IBMMq
+    - ### Message Brokers:
+      - More complex orchestration pattern
+      - Supports broadcasting i.e. more than point to point:
+        - Can have publisher subscriber where one publishes to multiple
+        - Can have brokers use routing logic to send to specific consumer based on some logic
+      - Can translate data between different messaging protocols
+    - ### Dead Letter Queues:
+      - In case of message failing to be consumed i.e. no ACK being received on multiple attempts can become poison message
+      - Eats up resources over and over again and blocks others
+      - Routed to Dead Letter Queue based on:
+        - Exceeding `MaxDeliveryAttemps`
+        - Queue length limit: Exceeds the max number of messages in queue
+        - Schema mismatch
+    - ### Modern vs Legacy:
+      - Legacy:
+        - Simple Point to point communication
+        - IBM MQ, RabbitMQ
+        - Publish, Consume model, with destructive consumption on ACK
+        - Logic is centred on broker
+      - Modern Alternative: Message Streams
+
+12. ## Message Streams:
+    - Modern systems such as Kafka, Redpanda
+    - Use immutable append only logs
+    - Message written to end of log and immutable, not deleted upon consumption
+    - Consumer Maintains state: i.e. Consumer contains it's own offset deciding where to read from
+    - Stores much longer periods of data allowing re-playability
+    - Pull based model (Backpressure): Consumers pull data when they have resources thus preventing consumer crashes
+    - Scalability: Much more horizontally scalable by partitioning messages
+13. Logging Metrics and Automation
+14. ## Database Scaling:
+    - ### Vertical Scaling:
+      - Increasing the capacity of single machine to meet demands
+      - In DBs, quite simple since single endpoint but we hit hardware wall eventually
+    - ### Horizontal Scaling:
+      - Involves adding more nodes and distributing load
+      - Done through:
+        - Sharding: Breaking DB into smaller chunks and distributing
+        - Read Replicas: Use primary node for write and multiple secondary for read
+      - Considerations:
+        - Sharding: 
+          - Sharding Key:
+            - Key allows you to route to the same node consistently
+            - If too many entries on same key (using {} hash) causes hot slot problem [see](../../Notes/Software/Redis.md#hot-slot)
+          - Join and Denormalization:
+            - Once data has been sharded joins become harder to perform since data is no longer on same node
+            - Possible solution is to denormalize data to begin with
+          
+# Chapter 2: Back of envelope estimations
+- Basics:
+  - Interviews can ask to estimate metrics of system design
+  - Important to have an idea of the back of the envelope estimation
+  - Latency numbers for reference (note could be outdated)
+    - ![img_5.png](img_5.png)
+  - Metrics:
+    - Latency
+    - Availability:
+      - Ability of system to be continuously operational for a long period of time
+      - Measured as %, 100% means 0 downtime, most common 99%-100%
+      - If drops below threshold can breach SLA (Service Level Agreement)
+  - todo: add back of envelope twitter example
+
+# Chapter 3: Framework for System Design Interviews

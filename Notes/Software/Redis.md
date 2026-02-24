@@ -58,7 +58,8 @@
                 - `user:{1001}:email`
             - Note: Only first {} is valid and empty {} is ignored
         - Issues:
-            - Hot Slot: Explained above
+            - ### Hot Slot:
+                - Explained above
                 - How to avoid?
                     - Avoid using too general hashtags
                         - user:{**1001**}:name ok
