@@ -30,6 +30,9 @@ Welcome to my study notebook! This serves as an index to all topics and notes.
 6. ## Others:
    1. ### [Lettuce vs Jedis](Temp/LettuceVsJedis.md)
 
+## Topics
+1. ### [Topics](Notes/Topics/Topics)
+
 ## Contributing
 
 If you want to add more topics or notes, feel free to submit a pull request.
