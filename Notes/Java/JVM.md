@@ -1,3 +1,9 @@
+---
+parent: Java
+nav_order: 1
+layout: default
+---
+
 # JVM (Java Virtual Machine)
 
 1. Basics

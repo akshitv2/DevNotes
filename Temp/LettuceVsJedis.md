@@ -1,3 +1,9 @@
+---
+parent: Scratch book
+nav_order: 4
+layout: default
+---
+
 # Lettuce vs Jedis
 
 | Feature                    | Lettuce                                                | Jedis                                                             |

@@ -1,3 +1,10 @@
+---
+title: System Design Interview Vol. 1
+nav_order: 2
+parent: Books
+layout: default
+---
+
 # System Design Interview
 
 ## Chapter 1: Scale from zero to millions of users

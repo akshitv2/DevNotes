@@ -1,3 +1,9 @@
+---
+parent: Scratch book
+nav_order: 5
+layout: default
+---
+
 # Dynamic Table Example
 
 This table is styled by Jekyll, but the content will be replaced by JavaScript on page load.

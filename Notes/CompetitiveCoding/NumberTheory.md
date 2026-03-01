@@ -1,3 +1,9 @@
+---
+nav_order: 2
+parent: Competitive Coding
+layout: default
+---
+
 # Number Theory
 
 - Binary Exponentiation:

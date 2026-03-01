@@ -1,3 +1,9 @@
+---
+parent: Java
+nav_order: 3
+layout: default
+---
+
 # Threading in Java
 
 1. Thread

@@ -1,3 +1,9 @@
+---
+nav_order: 1
+parent: Competitive Coding
+layout: default
+---
+
 # Competitive Coding Tips & Tricks
 
 1. Maps & Other Collections require Autoboxing

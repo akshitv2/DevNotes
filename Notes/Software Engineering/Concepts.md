@@ -1,3 +1,9 @@
+---
+parent: CS Basics
+nav_order: 2
+layout: default
+---
+
 # Concepts
 
 1. POM vs BOM

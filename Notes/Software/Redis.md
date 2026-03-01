@@ -1,3 +1,9 @@
+---
+parent: Software
+nav_order: 1
+layout: default
+---
+
 # Redis
 
 1. ## Basics

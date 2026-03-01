@@ -1,3 +1,11 @@
+---
+title: Designing Data Intensive Applications
+nav_order: 1
+parent: Books
+layout: default
+---
+
+
 # Designing Data Intensive Applications
 
 1. ## Chapter 1: Reliable, Scalable, and Maintainable Applications

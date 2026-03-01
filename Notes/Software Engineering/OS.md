@@ -1,3 +1,9 @@
+---
+parent: CS Basics
+nav_order: 1
+layout: default
+---
+
 # OS
 
 1. ## Port and Socket
