@@ -6,7 +6,7 @@ layout: default
 
 # Index
 
-Welcome to my study notebook! This serves as an index to all topics and notes.
+Welcome to my study notebook! This serves as an index to all topics and notes.<br>
 <img src="https://media1.tenor.com/m/hTE7x1-avYIAAAAC/bear-hello.gif">
 
 ---

@@ -1,5 +1,5 @@
 ---
-parent: CS Basics
+parent: Programming Core
 nav_order: 1
 layout: default
 ---
