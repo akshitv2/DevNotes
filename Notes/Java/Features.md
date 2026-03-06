@@ -6,6 +6,8 @@ layout: default
 
 # Java Features
 
+## New Features:
+
 1. Streams
     - Introduced in java 8, Functional framework
     - Used to process collections
@@ -130,13 +132,14 @@ layout: default
       not high level apps.
         - Strong encapsulation is like Sealed classes, fine-tuning and customizing access rather than 0 or 1 logic
     - Note: Java uses Module path not classpath:
-      - Classpath Approach:
-        - `java -cp "app.jar:connector.jar:driver-v1.jar:driver-v2.jar" com.example.Main`
-        -  Finding classes is done lazily so two of the same can exist or none and Java doesn't know until it needs at runtime
-      - Module Approach:
-        - JVM builds a graph of modules before starting
-        - looks for the needed class in module path
-        - if multiple or none exist throws exception and fails to start
+        - Classpath Approach:
+            - `java -cp "app.jar:connector.jar:driver-v1.jar:driver-v2.jar" com.example.Main`
+            - Finding classes is done lazily so two of the same can exist or none and Java doesn't know until it needs
+              at runtime
+        - Module Approach:
+            - JVM builds a graph of modules before starting
+            - looks for the needed class in module path
+            - if multiple or none exist throws exception and fails to start
     - How to use?
         - Define descriptor - `module-info.java`
             - Example:
@@ -155,8 +158,10 @@ layout: default
                     - Module Descriptor: `module-info.java`
                     - Package Directories: `com/mycompany/service/api/MyService.java`
         - Compile:
-          - `javac -d mods/com.mycompany.service --module-source-path src $(find src -name "*.java")`
+            - `javac -d mods/com.mycompany.service --module-source-path src $(find src -name "*.java")`
     - Note: Why isn't this popular?
-      - Modern devs rarely manage dependencies manually, so no rush to migrate following this expensive process
-5. Virtual Threads (Project Loon) [🔗](Threading.md#virtual-threads-project-loon) 
+        - Modern devs rarely manage dependencies manually, so no rush to migrate following this expensive process
+5. Virtual Threads (Project Loon) [🔗](Threading.md#virtual-threads-project-loon)
 6. Scoped Values
+7. Pattern Matching Switch
+8. Colle

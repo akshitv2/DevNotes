@@ -5,7 +5,6 @@ parent: Books
 layout: default
 ---
 
-
 # Designing Data Intensive Applications
 
 1. ## Chapter 1: Reliable, Scalable, and Maintainable Applications
@@ -124,47 +123,83 @@ layout: default
     2. Page Oriented Storage:
         - Traditional approach used by most RDBs
         - B Trees break DB into fixed size pages (usually 4/8KB)
-        - Note: B Tree is a self-ba82/klancing tree data structure to efficiently store and retrieve large amounts of data,
+        - Note: B Tree is a self-ba82/klancing tree data structure to efficiently store and retrieve large amounts of
+          data,
           usually
         - In place updates: B Trees overwrite old data with new in place (unlike compaction which occurs routinely)
     3. Transaction Logs & Crash Recovery:
-       - Since these structures overwrite data in place crashes can corrupt DB
-       - **Write Ahead Log (WAL):** Write every single transaction to an append only file before updating B tree
-       - Note: Since WAL stores all transactions it grows huge, and recovering state could take days replaying logs.
-         - Checkpointing: Store WAL log timestamp/linenumber and db state
-         - Modern implementations split WAL into segments (e.g. 64MB) and delete old segments after checkpointing is finish
+        - Since these structures overwrite data in place crashes can corrupt DB
+        - **Write Ahead Log (WAL):** Write every single transaction to an append only file before updating B tree
+        - Note: Since WAL stores all transactions it grows huge, and recovering state could take days replaying logs.
+            - Checkpointing: Store WAL log timestamp/linenumber and db state
+            - Modern implementations split WAL into segments (e.g. 64MB) and delete old segments after checkpointing is
+              finish
     4. Other Indexing Strategies:
-       1. Secondary Indexes: For searching using non-primary key
-       2. Multi Column Indexes: For filtering by multiple fields simultaneously
-       3. Full text Search: Allow searching for keywords within long strings of text
-          - How it works:
-            - Even before searching system processes the text, tokenizes, normalizes, stopword removed and lemmatize/stem.
-            - Builds inverted index of the words i.e Word | Documents containing it
-            - On search system uses your words and matches against inverted index using intersection
-       4. In memory DB: Keep entire dataset in RAM to avoid disk I/O Bottlenecks
+        1. Secondary Indexes: For searching using non-primary key
+        2. Multi Column Indexes: For filtering by multiple fields simultaneously
+        3. Full text Search: Allow searching for keywords within long strings of text
+            - How it works:
+                - Even before searching system processes the text, tokenizes, normalizes, stopword removed and
+                  lemmatize/stem.
+                - Builds inverted index of the words i.e Word | Documents containing it
+                - On search system uses your words and matches against inverted index using intersection
+        4. In memory DB: Keep entire dataset in RAM to avoid disk I/O Bottlenecks
     5. OLTP vs OLAP
-       - Online Transaction Processing vs Online Analytical Processing
-       - OLTP: Handles day-to-day transactions
-         - Small number of records per query (by key)
-         - Users: End users (customers, clerks)
-         - Queries Simple, fast (INSERT, UPDATE}, DELETE)
-         - Very Fast Real time execution
-       - OLAP: Handle analytical data
-         - Large volumes of past data
-         - Users: Managers and analysts
-         - Queries: Are complex and heavy and time-consuming
-         - Slower but optimized for analysis, don't need to be instant
-   6. Row vs Column Oriented Storage
-      - Rows:
-        - Al columns for a single row are stored together contiguously
-        - Best For OLTP
-        - Faster for Transactions like INSERT, SELECT, DELETE
-        - 🟢Fast Single Record Look up, simple storage model
-        - 🔴Inefficient for analytics that scan only a few columns
-        - e.g. mySQL, PostgreSQL
-      - Columns:
-        - Each column is stored separately contiguously
-        - Reads only required columns thus speeds up when only few columns are needed
-        - Much faster for aggregations
-        - Row alignment is maintained by position
-        - e.g. Amazon Redshift, Snowflake
+        - Online Transaction Processing vs Online Analytical Processing
+        - OLTP: Handles day-to-day transactions
+            - Small number of records per query (by key)
+            - Users: End users (customers, clerks)
+            - Queries Simple, fast (INSERT, UPDATE}, DELETE)
+            - Very Fast Real time execution
+        - OLAP: Handle analytical data
+            - Large volumes of past data
+            - Users: Managers and analysts
+            - Queries: Are complex and heavy and time-consuming
+            - Slower but optimized for analysis, don't need to be instant
+    6. Row vs Column Oriented Storage
+        - Rows:
+            - Al columns for a single row are stored together contiguously
+            - Best For OLTP
+            - Faster for Transactions like INSERT, SELECT, DELETE
+            - 🟢Fast Single Record Look up, simple storage model
+            - 🔴Inefficient for analytics that scan only a few columns
+            - e.g. mySQL, PostgreSQL
+        - Columns:
+            - Each column is stored separately contiguously
+            - Reads only required columns thus speeds up when only few columns are needed
+            - Much faster for aggregations
+            - Row alignment is maintained by position
+            - e.g. Amazon Redshift, Snowflake
+
+4. ### Encoding and Evolution
+    1. Formats:
+        - Applications usually use two different formats
+            - Data structure or object in memory
+            - binary encoded for transmission
+        - **Encoding**: Data structure → Binary Encoded process
+            - Built into most modern langauges:
+                - Java has serializable
+                - Python Pickle
+        - Language Independent Formats:
+            - JSON
+            - XML
+            - Binary Variants like BSON, MessagePack
+            - Thrift by Facebook
+            - Protocol Buffers by Google
+            - Avro:
+        - Note: Both Thrift and Protocol Buffers use schema i.e. they don't store field names with data, they are
+          backward and forward compatible where mapping ignore tags which don't exist on either
+        - Note: Avro uses different schemas at reader and writer resolved by library
+    2. Data Flow Modes:
+       - Through DBs: 
+         - One process writes to a DB, another reads it
+         - DB effectively acts as a message to the future
+         - Challenge faced:
+           - Data outliving code i.e. new apps built on new FWs must be able to read the same old data
+       - Through Services (REST and RPC):
+         - REST: Uses JSON over HTTP, using simple URLs and resources
+         - RPC (Remote Procedure Call): Make remote network request look like a local function call.
+           - Powerful but flawed since they might look like local functions their latency, data transfer of objects like requests which don't serialize well is unpredictable
+       - Message Passing DataFlow: Use of MQs like Apache Kafka, RabbitMQ where message sent to broker and consumer picks up from broker
+    3. Schema Merits:
+       - Use of schema decouples objects, make them more compact, provide more documentation in common schema store, enforce rules on compatibility both ways
