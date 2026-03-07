@@ -8,25 +8,35 @@ layout: default
 # Designing Data Intensive Applications
 
 1. ## Chapter 1: Reliable, Scalable, and Maintainable Applications
-    1. Fault vs Failure:
-        - Fault: One component deviating from its spec
-        - Failure: Whole system stops providing service
-        - Aim: Stop Fault → Failure
-        - Good way to test:
-            - Introduce fault and see if it causes failure
-            - example: chaos monkey
-        - Faults and How to fix?
-            - Hardware Faults:
-                - Disk crashes, Memory corruption
-                - RAID, Dual power supply
-            - Software:
-                - Bugs, Systematic Errors
-                - Harder to isolate, require thorough testing, rethinking assumptions
-            - Human Errors:
-                - Configuration error leading cause
-                - Create simple abstracted admin interfaces
-                - Sandbox to test all scenarios on lower env
-                - Provide easy rollback options
+    1. Reliablitiy:
+        - Continuing to work correctly even when things go wrong
+        - Also called resiliency and fault tolerance i.e. doesn't turn fault to failures
+        - Good way to test faults is to introduce them yourselves
+            - ChaosMonkey by Netflix does this
+
+        1. Fault vs Failure:
+            - Fault: One component deviating from its spec
+            - Failure: Whole system stops providing service
+            - Aim: Stop Fault → Failure
+            - Good way to test:
+                - Introduce fault and see if it causes failure
+                - example: chaos monkey
+            - Faults and How to fix?
+                - Hardware Faults:
+                    - Disk crashes, Memory corruption
+                    - RAID, Dual power supply
+                - Software:
+                    - Bugs, Systematic Errors
+                    - Harder to isolate, require thorough testing, rethinking assumptions
+                - Human Errors:
+                    - Configuration error leading cause
+                    - Create simple abstracted admin interfaces
+                    - Sandbox to test all scenarios on lower env
+                    - Provide easy rollback options
+        2. Ways To Prevent Error Escalation:
+            - Provide easy to use dashboards to Monitor (telemetry)
+            - Roll out new code gradually to limit impact
+            - Provide tools to roll back fast in failure
     2. Scalability
         - Ability to cope with increased load
         - Loads is expressed in:
@@ -37,9 +47,22 @@ layout: default
         - Describing Performance:
             - Throughput: i.e. rate at which data processed
             - For server response times
+            - For most response times we use percentiles over average, p95, p99, p999 being common describing % users
+              time taken avg
+            - Often defined clearly in SLAs (Service Level Agreements) and must be met by companies providing products
+        - Measuring:
+            - Important to measure response times on client side than time taken by server to process
+                - Why?
+                    - Request might sit waiting in queue (head of line blocking)
+                        - When testing load on server keep sending requests async (rather than waiting for response from
+                          server)
+                    - When multiple downstreams are called to serve a request a single slow call can slow down client
+                      experience
         - Approaches to cope with load:
             - Scale up: Vertical Scaling: Upgrade to a more powerful machine
             - Scale Out: Horizontal Scaling: Add more machines to distribute
+        - Elasticity:
+            - Automatically add computational resource when load increases
         - ℹ️Note: Latency vs Response Time:
             - Latency = delay inherent in system, the waiting time it took to travel from source to destination (and
               back in transit)
@@ -52,11 +75,22 @@ layout: default
             1. Operability:
                 - Make it easy for operations to keep system running
                 - Monitoring, documentation, automation
+                    - Operations are what make good software work long term. Key Principles:
+                        - Monitoring and telemetry
+                        - Updating and security patching on time
+                        - Capacity planning based on current metrics
+                        - Defining Processes for each operation
             2. Simplicity:
                 - Keep it simple for new engineers to continue work upon
-                - Through abstractions
+                - Through abstractions:
+                    - Complexity:
+                        - Aim should be avoid adding additional Complexity, KISS
+                        - Find and use useful abstractions instead
+
             3. Evolvability:
+                - Make it easy to add new features in the future
                 - Also called extensibility
+
     4. Conclusion:
         - No size fits all solution
         - Each solution is a trade-off
@@ -191,15 +225,23 @@ layout: default
           backward and forward compatible where mapping ignore tags which don't exist on either
         - Note: Avro uses different schemas at reader and writer resolved by library
     2. Data Flow Modes:
-       - Through DBs: 
-         - One process writes to a DB, another reads it
-         - DB effectively acts as a message to the future
-         - Challenge faced:
-           - Data outliving code i.e. new apps built on new FWs must be able to read the same old data
-       - Through Services (REST and RPC):
-         - REST: Uses JSON over HTTP, using simple URLs and resources
-         - RPC (Remote Procedure Call): Make remote network request look like a local function call.
-           - Powerful but flawed since they might look like local functions their latency, data transfer of objects like requests which don't serialize well is unpredictable
-       - Message Passing DataFlow: Use of MQs like Apache Kafka, RabbitMQ where message sent to broker and consumer picks up from broker
+        - Through DBs:
+            - One process writes to a DB, another reads it
+            - DB effectively acts as a message to the future
+            - Challenge faced:
+                - Data outliving code i.e. new apps built on new FWs must be able to read the same old data
+        - Through Services (REST and RPC):
+            - REST: Uses JSON over HTTP, using simple URLs and resources
+            - RPC (Remote Procedure Call): Make remote network request look like a local function call.
+                - Powerful but flawed since they might look like local functions their latency, data transfer of objects
+                  like requests which don't serialize well is unpredictable
+        - Message Passing DataFlow: Use of MQs like Apache Kafka, RabbitMQ where message sent to broker and consumer
+          picks up from broker
     3. Schema Merits:
-       - Use of schema decouples objects, make them more compact, provide more documentation in common schema store, enforce rules on compatibility both ways
+        - Use of schema decouples objects, make them more compact, provide more documentation in common schema store,
+          enforce rules on compatibility both ways
+
+1 Liners
+
+- Redis also used a MQ
+- Kafka provides data durability
