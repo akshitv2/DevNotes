@@ -30,6 +30,11 @@ layout: default
             - 🔴 Not usable across orgs due to Tight coupling and requires exposing internal functions i.e. only when
               both are in same high security env
             - 🔴 Are strictly typed thus requiring both ends to upgrade together
+            - 🔴 Tries to mimic local function call which are predictable while rpc can fail due to any number of network
+              issues
+            - 🔴 Local function calls can take pointers but if sending over rpc means sending large amounts of heap along
+              with
+            - Note; New RPC like grpc make it clear that its not a local function call, support streams
     2. ### SOAP:
         - Simple Object Access Protocol
         - Highly disciplined XML based protocol
@@ -42,7 +47,7 @@ layout: default
         - 🟢 Highly structured with message delivery guarantees
     3. ### REST
         - Representational State Transfer
-        - Built on top of REST
+        - Built on top of HTTP (Not a protocol but an architecture)
             - Note: HTTP ≠ REST: Rest is a paradigm with strict statelessness constraints. Http calls can be stateful.
               RPC and SOAP often run on http but don't look like it because they are meant for machine to machine
               communication

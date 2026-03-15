@@ -8,7 +8,7 @@ layout: default
 # Designing Data Intensive Applications
 
 1. ## Chapter 1: Reliable, Scalable, and Maintainable Applications
-    1. Reliablitiy:
+    1. Reliability:
         - Continuing to work correctly even when things go wrong
         - Also called resiliency and fault tolerance i.e. doesn't turn fault to failures
         - Good way to test faults is to introduce them yourselves
@@ -51,12 +51,13 @@ layout: default
               time taken avg
             - Often defined clearly in SLAs (Service Level Agreements) and must be met by companies providing products
         - Measuring:
-            - Important to measure response times on client side than time taken by server to process
+            - Important to measure response times on client-side than time taken by server to process
                 - Why?
                     - Request might sit waiting in queue (head of line blocking)
                         - When testing load on server keep sending requests async (rather than waiting for response from
                           server)
-                    - When multiple downstreams are called to serve a request a single slow call can slow down client
+                    - When multiple downstream services are called to serve a request a single slow call can slow down
+                      client
                       experience
         - Approaches to cope with load:
             - Scale up: Vertical Scaling: Upgrade to a more powerful machine
@@ -97,34 +98,39 @@ layout: default
 
 2. ## Chapter 2: Data Models and Query Languages
     1. Relational vs Document Model
-        1. Relational (SQL):
-            - Structure: Tables (relations), each table is unordered collection of rows
-            - Best for: Many-to-one and many-to-many relationships
-            - Strict schema and normalization to reduce redundancy
-            - Schema on write
-        2. Document Model (NoSQL)
-            - Structure: Data stored in self-contained documents (JSON/XML)
-            - Best for: One-to-many relationships where data usually accessed together
-            - Flexible schema
-            - For schema on read (dynamic type checking)
-        3. Convergence (i.e. supporting each other)
+        1. Definitions:
+            1. Relational (SQL):
+                - Structure: Tables (relations), each table is unordered collection of rows
+                - Best for: Many-to-one and many-to-many relationships
+                - Strict schema and normalization to reduce redundancy
+                - Schema on write
+            2. Document Model (NoSQL)
+                - Structure: Data stored in self-contained documents (JSON/XML)
+                - Best for: One-to-many relationships where data usually accessed together
+                - Flexible schema
+                - For schema on read (dynamic type checking)
+                - Require data locality for queries to be performant, update usually requires rewriting full document
+        2. Convergence (i.e. supporting each other)
             - RelationalDB added Json/XML support
             - Document DBs added better querying capabilities, joins and schema options
             - Hybrid options quite common
-        4. Impedance Mismatch
+        3. Impedance Mismatch
             - The difference between OOP representation and the way we store it
             - Relational Approach: Dividing classes into multiple tables (normalization)
             - Document Approach: Storing data as it exists on OOP, in one class
-        5. Use in Many-to-One and Many-to-Many Relationships
+        4. Use in Many-to-One and Many-to-Many Relationships
             - Relational: Handle these very well via joins and foreign keys
             - Document: Struggle with this, require often joining data in application data, slow and complex
-        6. Declarative vs Imperative Query Languages
-            - SQL (Declarative):
-                - Tell the DB what you want, let it decide the best path to find it
-            - IMS/CODASYL (Imperative):
-                - Provide the path as well
-                - Brittle as paths break on db structure changes
-    2. Graph Like Data Models:
+    2. Declarative vs Imperative Query Languages
+        - SQL (Declarative):
+            - Tell the DB what you want, let it decide the best path to find it
+            - Usually more concise
+            - Easier to parallelize as query handler can pick and choose how to run different parts in parallel
+            - Also used in CSS to automatically add to classes' style
+        - IMS/CODASYL (Imperative):
+            - Provide the path as well
+            - Brittle as paths break on db structure changes
+    3. Graph Like Data Models:
         - Useful when many-to-many relationships dominate
         - Components: Vertices (nodes) and Edges (relationships)
         - Use cases: Social graphs, semantic web
@@ -138,9 +144,12 @@ layout: default
                   ```
             - Pattern Matching:
                 - ```
-              MATCH (p:Person {name: 'Alice'})-[:FRIEND]->(friend)
-              RETURN friend.name
+                  MATCH (p:Person {name: 'Alice'})-[:FRIEND]->(friend)
+                  RETURN friend.name
                  ```
+    4. Map Reduce:
+        - Programming model for processing bulk data
+        - Described in Chapter 10
 
 3. ### Storage And Retrieval
     1. Log Structured Storage (LSM Trees)
@@ -206,30 +215,45 @@ layout: default
             - e.g. Amazon Redshift, Snowflake
 
 4. ### Encoding and Evolution
-    1. Formats:
+    1. Compatibility:
+        - Backward Compatibility is often easier to achieve as we can reference past
+        - Forward Compatibility significantly harder, needs foresight. Needs older code to ignore future changes
+    2. Formats:
+        - Note: Programs usually work with in memory i.e. RAM and pointers for variable location. These stop working as
+          soon as you store them and retrieve them next time since they are all reset.
         - Applications usually use two different formats
             - Data structure or object in memory
             - binary encoded for transmission
         - **Encoding**: Data structure → Binary Encoded process
-            - Built into most modern langauges:
+            - Built into most modern languages:
                 - Java has serializable
                 - Python Pickle
+                - Note:Using language specific encoding and transmitting in the same locks you into using same language at decoding
+                - Note: Also another security risk if hacker can get you to decrypt arbitrary code, needs to have a well-defined schema
+                - Often lack versioning and backward forward compatibility 
         - Language Independent Formats:
-            - JSON
+            - JSON:
+              - 🟢 Most popular by far due to standard of internet
+              - 🔴 Doesn't distinguish between integer, float or specify precision
+              - 🔴 No binary support (need to BASE64 Encode ballooning size by 33%)
             - XML
+              - 🔴 Doesn't distinguish number and string
+              - 🔴 No binary support (need to BASE64 Encode ballooning size by 33%)
             - Binary Variants like BSON, MessagePack
             - Thrift by Facebook
             - Protocol Buffers by Google
             - Avro:
-        - Note: Both Thrift and Protocol Buffers use schema i.e. they don't store field names with data, they are
+        - Note: Both Thrift and Protocol Buffers use schema i.e. they don't store field names with data instead using numbered field tags, they are
           backward and forward compatible where mapping ignore tags which don't exist on either
-        - Note: Avro uses different schemas at reader and writer resolved by library
-    2. Data Flow Modes:
+        - Note: Avro uses different schemas at reader and writer resolved by schema library i.e. very compact because it doesn't carry any schema definition with it
+        - Note: Avro writes schema at start of file when storing. But in transit uses no schema which is stored at schema registry i.e. the library
+    3. Data Flow Modes:
         - Through DBs:
             - One process writes to a DB, another reads it
             - DB effectively acts as a message to the future
             - Challenge faced:
                 - Data outliving code i.e. new apps built on new FWs must be able to read the same old data
+                - Need to make sure your older code is written in a way that if it reads new fields it writes them back intact 
         - Through Services (REST and RPC):
             - REST: Uses JSON over HTTP, using simple URLs and resources
             - RPC (Remote Procedure Call): Make remote network request look like a local function call.
@@ -237,7 +261,12 @@ layout: default
                   like requests which don't serialize well is unpredictable
         - Message Passing DataFlow: Use of MQs like Apache Kafka, RabbitMQ where message sent to broker and consumer
           picks up from broker
-    3. Schema Merits:
+    4. Distributed Actor Framework:
+       - Architecture that uses stateful actors which act often 1:1 for each user
+       - Don't need to talk to external DB as often or quick as can perform actor to actor communication (on crash uses append only log to recreate state)
+       - Useful for instant chat/trading apps, used in whatsapp
+       - Each actor is like a virtual thread with its own independent memory (state)
+    5. Schema Merits:
         - Use of schema decouples objects, make them more compact, provide more documentation in common schema store,
           enforce rules on compatibility both ways
 

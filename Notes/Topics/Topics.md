@@ -67,6 +67,9 @@ To Study:
 - RAID 
 - Architecture Astronauting
 - Lambda
+- AWS Dynamo db vs Cassandra and others
+- Redis
+  - Sorted Sets (ZSETs
 
 # SDE
 
