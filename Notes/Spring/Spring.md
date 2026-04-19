@@ -249,7 +249,7 @@ layout: default
             - Modifying the ModelAndView sent to the view.
             - Checking specific Controller annotations or permissions.
             - Performance monitoring of specific API endpoints.
-8.  ### Web/Rest Clients
+9. ### Web/Rest Clients
     - RestClient
         - Spring created RestClient recently (Spring 6) as a modern alternative to RestTemplate
         - RestClient is a synchronous, fluent API used to make HTTP requests.
