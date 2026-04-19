@@ -274,4 +274,9 @@ Isolation:
     - Guarantees:
       - Only reads data that has already been committed (no dirty reads)
       - Only overwrites data that has already been committed (no dirty writes)
-    - Dirty Read: TTrn
+    - Dirty Read: Transaction writes to db but not commited which is read by another
+    - Implemented using row level locks
+      - Ideally: For reads each user must obtain lock
+        - Bad in practice since write transaction can enforce multiple db spanning read locks
+      - In practice: DB holds last committed value and returns that on read while a transaction works on it concurrently
+  - Snapshot Isolation
