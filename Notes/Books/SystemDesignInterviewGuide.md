@@ -230,7 +230,7 @@ layout: default
         - Good idea to collaborate with interviewer at this point
         - Come up with blueprint, ask for feedback and treat as teammate and not adversary
         - Draw boxes and diagram on white board or paper if provided
-        - Back of envelope calcs along with blueprint
+        - Back of envelope calculations along with blueprint
         - Go through actual use cases too
     3. Step 3: Design Deep Dive
         - At this stage you should have agreement on goals and scope
@@ -247,5 +247,23 @@ layout: default
         2. Step 2: 10-15 mins
         3. Step 3: 10-25 mins
         4. Step 4: 3-5 mins
+- Dos and Don'ts
+  - Dos:
+    - Ask for clarifications instead of assuming
+    - Ask for requirements
+    - Understand that there is no one right answer
+    - Suggest multiple approaches if possible
+    - Bounce ideas off interviewer and see if they work with you
+    - Ask for feedback early and often
+  - Don'ts:
+    - Don't skip to solution right away
+    - Don't drill down too much on one component
+    - Don't think in silence
+    - Don't assume it's over once you've presented. Wait till interviewer says you're done
 
-- 
+# Chapter 4: Designing Rate Limiter
+- Prevent resource starvation by DOS attack
+- Reduce server costs by limited requests
+- Steps:
+  1. Understand problem
+     

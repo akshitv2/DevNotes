@@ -1,6 +1,7 @@
 ---
 nav_order: 3
 parent: DSA
+title: DSA
 layout: default
 ---
 
