@@ -2,107 +2,123 @@
         src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
 </script>
 <script>
-window.MathJax = {
-  tex: {
-    inlineMath: [['$', '$'], ['\\(', '\\)']],
-    displayMath: [['$$', '$$'], ['\\[', '\\]']]
-  }
-};
+    window.MathJax = {
+        tex: {
+            inlineMath: [['$', '$'], ['\\(', '\\)']],
+            displayMath: [['$$', '$$'], ['\\[', '\\]']]
+        }
+    };
 </script>
 <link href="https://db.onlinewebfonts.com/c/8ec4c9ee1facfe4bd7ac04d52af457ea?family=ITC+Century+Std+Book"
       rel="stylesheet">
 <style>
     h1, h2, h3, h4, h5, h6 {
-      font-family: "ITC Century Std Book", Times, serif;
-       font-weight: normal;
-      font-size: 1.3rem;
+        font-family: "ITC Century Std Book", Times, serif;
+        font-weight: normal;
+        font-size: 1.3rem;
     }
+
     p, li {
-      font-family: "Time new roman", Times, serif;
-      color:#5a5a5a;
-      font-size: 1.2rem;
+        font-family: "Time new roman", Times, serif;
+        color: #5a5a5a;
+        font-size: 1.2rem;
     }
+
     li:has(h3)::marker {
-    color: black;
+        color: black;
     }
+
     .consMarker::before {
-    content: "●" !important;
-    color: red !important;
-    font-weight: bold !important;
+        content: "●" !important;
+        color: red !important;
+        font-weight: bold !important;
     }
+
     .prosMarker::before {
-    content: "●" !important;
-    color: green !important;
-    font-weight: bold !important;
+        content: "●" !important;
+        color: green !important;
+        font-weight: bold !important;
     }
+
     .explainMarker::before {
-    content: "➞" !important;
-    color: blue !important;
-    font-weight: bold !important;
+        content: "➞" !important;
+        color: blue !important;
+        font-weight: bold !important;
     }
+
     .questionMarker::before {
-    content: "Ques." !important;
-    font-weight: bold !important;
-    margin-left: -2.7em !important;
+        content: "Ques." !important;
+        font-weight: bold !important;
+        margin-left: -2.7em !important;
     }
+
     .questionMarker {
-    font-weight: bold !important;
+        font-weight: bold !important;
     }
+
     .answerMarker::before {
-    content: "Ans." !important;
-    font-weight: bold !important;
-    margin-left: -2.3em !important;
+        content: "Ans." !important;
+        font-weight: bold !important;
+        margin-left: -2.3em !important;
     }
+
     .warningMarker::before {
-    content: "⚠️" !important;
+        content: "⚠️" !important;
     }
+
     .ideaMarker::before {
-    content: "💡" !important;
+        content: "💡" !important;
     }
+
     .infoMarker::before {
-    content: "𝐢" !important;
-    color: rgb(33, 150, 243) !important;
+        content: "𝐢" !important;
+        color: rgb(33, 150, 243) !important;
     }
-<!--    .exampleMarker::before {-->
-<!--    content: "Example:" !important;-->
-<!--    color: rgb(33, 150, 243) !important;-->
-<!--    }-->
 
 </style>
 
 <script>
     document.addEventListener("DOMContentLoaded", () => {
-      document.querySelectorAll("ul li").forEach(li => {
-        if (li.textContent.substr(0,2) === "🔴") {
-          li.textContent = li.textContent.replace('🔴','');
-          li.classList.add("consMarker");
-        }
-        else if (li.textContent.substr(0,2) === "🟢") {
-          li.textContent = li.textContent.replace('🟢','');
-          li.classList.add("prosMarker");
-        }
-        else if (li.textContent.substr(0,2) === "➡️") {
-          li.textContent = li.textContent.replace('➡️','');
-          li.classList.add("explainMarker");
-        }
-        else if (li.textContent.substr(0,1) === "❓") {
-          li.textContent = li.textContent.replace('❓','');
-          li.classList.add("questionMarker");
-        }
-        else if (li.textContent.substr(0,3) === "🅰️") {
-          li.textContent = li.textContent.replace('🅰️','');
-          li.classList.add("answerMarker");
-        }else if (li.textContent.substr(0,2) === "⚠️") {
-          li.textContent = li.textContent.replace('⚠️','');
-          li.classList.add("warningMarker");
-        }else if (li.textContent.substr(0,2) === "💡") {
-          li.textContent = li.textContent.replace('💡','');
-          li.classList.add("ideaMarker");
-        }
-        else if (li.textContent.substr(0,2) === "ℹ️") {
-          li.textContent = li.textContent.replace('ℹ️','');
-          li.classList.add("infoMarker");
-        }
-      });
+        document.querySelectorAll("ul li").forEach(li => {
+            if (li.textContent.substr(0, 2) === "🔴") {
+                li.textContent = li.textContent.replace('🔴', '');
+                li.classList.add("consMarker");
+            } else if (li.textContent.substr(0, 2) === "🟢") {
+                li.textContent = li.textContent.replace('🟢', '');
+                li.classList.add("prosMarker");
+            } else if (li.textContent.substr(0, 2) === "➡️") {
+                li.textContent = li.textContent.replace('➡️', '');
+                li.classList.add("explainMarker");
+            } else if (li.textContent.substr(0, 1) === "❓") {
+                li.textContent = li.textContent.replace('❓', '');
+                li.classList.add("questionMarker");
+            } else if (li.textContent.substr(0, 3) === "🅰️") {
+                li.textContent = li.textContent.replace('🅰️', '');
+                li.classList.add("answerMarker");
+            } else if (li.textContent.substr(0, 2) === "⚠️") {
+                li.textContent = li.textContent.replace('⚠️', '');
+                li.classList.add("warningMarker");
+            } else if (li.textContent.substr(0, 2) === "💡") {
+                li.textContent = li.textContent.replace('💡', '');
+                li.classList.add("ideaMarker");
+            } else if (li.textContent.substr(0, 2) === "ℹ️") {
+                li.textContent = li.textContent.replace('ℹ️', '');
+                li.classList.add("infoMarker");
+            }
+        });
+    });
+    document.addEventListener("DOMContentLoaded", () => {
+        const content = document.body.innerHTML;
+        const updatedContent = content.replace(/🟦(.*?)🟦/g, (match, p1) => {
+            return `<span style="background-color:blue; color:white; padding:1px 4px; border-radius:2px; font-size:0.5em; font-weight:bold;">${p1}</span>`;
+        });
+        const updatedContent2 = updatedContent.replace(/🟥(.*?)🟥/g, (match, p1) => {
+            return `<span style="background-color:red; color:white; padding:1px 4px; border-radius:2px; font-size:0.5em; font-weight:bold;">${p1}</span>`;
+        });
+        const updatedContent3 = updatedContent2.replace(/⬜(.*?)⬜/g, (match, p1) => {
+            return `<span style="background-color:gray; color:white; padding:1px 4px; border-radius:2px; font-size:0.5em; font-weight:bold;">${p1}</span>`;
+        });
+
+        document.body.innerHTML = updatedContent3;
     });
 </script>
