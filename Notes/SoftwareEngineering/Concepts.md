@@ -57,4 +57,3 @@ layout: default
         - Promotes code reusability
      4. Polymorphism
         - Ability of a single interface to represent different underlying forms
-        - 

@@ -7,6 +7,58 @@ layout: default
 
 # JTL
 
+| Category                         | Key Topics                                          | Progress                                                |
+|:---------------------------------|:----------------------------------------------------|:--------------------------------------------------------|
+| **Java Internals & Performance** | JVM Architecture (JIT, Classloaders)                | [🔗](../Java/JVM.md)                                    |
+|                                  | Garbage Collection tuning (G1GC, ZGC, Shenandoah)   | [🔗](../Java/JVM.md)                                    |
+|                                  | Memory Management (Heap vs. Non-Heap, Stack)        | [🔗](../Java/JVM.md)                                    |
+|                                  | Java Flight Recorder (JFR)                          | [🔗](../Java/JVM.md)                                    |
+| **Concurrency & Parallelism**    | Virtual Threads (Project Loom)                      | [🔗](../Java/Threading.md#virtual-threads-project-loom) |
+|                                  | Structured Concurrency                              |                                                         |
+|                                  | Memory Barriers                                     |                                                         |
+|                                  | Fork/Join Framework                                 |                                                         |
+|                                  | Atomic Variables                                    |                                                         |
+|                                  | Deadlock/Livelock mitigation                        |                                                         |
+| **Spring Ecosystem**             | Spring Boot 3.x                                     | Expert                                                  |
+|                                  | Spring Cloud (Gateway, Config)                      |                                                         |
+|                                  | Spring Security (OAuth2, OIDC, JWT)                 |                                                         |
+|                                  | AOP Patterns                                        |                                                         |
+|                                  | Reactive Programming (Project Reactor/WebFlux)      |                                                         |
+| **System Design & Architecture** | Microservices Patterns (Saga, CQRS, Event Sourcing) | Architect                                               |
+|                                  | API Gateway                                         |                                                         |
+|                                  | Service Mesh (Istio)                                |                                                         |
+|                                  | Scalability (Vertical vs. Horizontal)               |                                                         |
+|                                  | CAP Theorem                                         |                                                         |
+|                                  | High Availability                                   |                                                         |
+| **Cloud Native & DevOps**        | Kubernetes (Pods, Sidecars, Operators)              | Advanced                                                |
+|                                  | Docker/Containerization                             |                                                         |
+|                                  | CI/CD Pipelines (Jenkins, GitHub Actions)           |                                                         |
+|                                  | Infrastructure as Code (Terraform, Pulumi)          |                                                         |
+| **Data Persistence**             | Distributed Caching (Redis, Hazelcast)              | Advanced                                                |
+|                                  | Database Internals (Indexing, Partitioning)         |                                                         |
+|                                  | Consistency Models (Eventual vs. Strong)            |                                                         |
+|                                  | NoSQL vs. RDBMS trade-offs                          |                                                         |
+| **Observability & Reliability**  | Distributed Tracing (OpenTelemetry, Jaeger)         | Advanced                                                |
+|                                  | SRE Principles (SLIs/SLOs/SLAs)                     |                                                         |
+|                                  | Circuit Breakers (Resilience4j)                     |                                                         |
+|                                  | Log Aggregation (ELK/EFK Stack)                     |                                                         |
+| **Security & Compliance**        | OWASP Top 10                                        | Advanced                                                |
+|                                  | Data Encryption (In-transit & At-rest)              |                                                         |
+|                                  | Secrets Management (Vault)                          |                                                         |
+|                                  | Secure Coding Practices                             |                                                         |
+|                                  | Zero Trust Architecture                             |                                                         |
+| **Leadership & Strategy**        | Technical Debt Management                           | Expert                                                  |
+|                                  | Mentorship/Coaching                                 |                                                         |
+|                                  | Code Review Standards                               |                                                         |
+|                                  | ADRs (Architecture Decision Records)                |                                                         |
+|                                  | Stakeholder Management                              |                                                         |
+|                                  | Agile/Scrum                                         |                                                         |
+| **Testing & Quality**            | Test-Driven Development (TDD)                       | Expert                                                  |
+|                                  | Contract Testing (Pact)                             |                                                         |
+|                                  | Mutation Testing                                    |                                                         |
+|                                  | Performance/Load Testing (JMeter, Gatling)          |                                                         |
+|                                  | SonarQube integration                               |                                                         |
+
 <hr>
 
 | #   | Topic                          | Subtopic                     | #    | Subub topic                              | Status                                                               |
@@ -65,12 +117,12 @@ To Study:
 - Normalization Denormalization
 - Java Native Interface
 - Idempotency
-- RAID 
+- RAID
 - Architecture Astronauting
 - Lambda
 - AWS Dynamo db vs Cassandra and others
 - Redis
-  - Sorted Sets (ZSETs
+    - Sorted Sets (ZSETs
 
 # SDE
 
