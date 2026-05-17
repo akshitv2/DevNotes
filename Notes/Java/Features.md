@@ -164,4 +164,14 @@ layout: default
 5. Virtual Threads (Project Loom) [🔗](Threading.md#virtual-threads-project-loom)
 6. Scoped Values
 7. Pattern Matching Switch
-8. Colle
+8. Collections
+9. Java Memory Barriers:
+   - Memory Reordering:
+     - Memory reordering is an optimization designed to improve the speed of running code.
+     - Reorders instructions at either compiler or cpu, designed to optimize single threaded code
+     - Can cause problems if running multithreaded code (memory reordering doesn't know the surface architecture)
+     - Done using:
+       - Compiler Reordering:
+         - a series of compilation optimizations like registers for caching
+         - Compiler Barrier:
+           - 

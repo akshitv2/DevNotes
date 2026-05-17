@@ -86,6 +86,49 @@ layout: default
       threads.
 10. ### Structured Concurrency
     - Treats groups of related tasks running in different threads as a single unit of work.
+    - Structured concurrency is primarily a programming model / design principle with a single java library to cordinate it: `StructuredTaskScope`
+    - Aim: Concurrent tasks should follow the same lifetime structure as method calls.
+      - Why? Traditional thread pools lacked ownership and cancellation of task on parents failure
+    - Usage:
+      - `try (var scope = new StructuredTaskScope.ShutdownOnFailure())` creates a lifetime boundary
+    - Example:
+      - ```java
+        import java.util.concurrent.StructuredTaskScope;
+        
+        public class StructuredConcurrencyExample {
+        
+            static String fetchUser() throws InterruptedException {
+                Thread.sleep(1000);
+                return "Alice";
+            }
+        
+            static int fetchOrders() throws InterruptedException {
+                Thread.sleep(1500);
+                return 5;
+            }
+        
+            public static void main(String[] args) throws Exception {
+        
+                try (var scope = new StructuredTaskScope.ShutdownOnFailure()) {
+        
+                    var userTask = scope.fork(() -> fetchUser());
+                    var ordersTask = scope.fork(() -> fetchOrders());
+        
+                    // Wait for all tasks
+                    scope.join();
+        
+                    // Propagate exceptions if any task failed
+                    scope.throwIfFailed();
+        
+                    String user = userTask.get();
+                    int orders = ordersTask.get();
+        
+                    System.out.println("User: " + user);
+                    System.out.println("Orders: " + orders);
+                }
+            }
+        }        
+        ```
 11. ### Fork Join Pool:
     - specialized implementation of the ExecutorService introduced in Java 7.
     - designed for "divide-and-conquer" algorithms
@@ -191,13 +234,13 @@ layout: default
             3. Structured Concurrency (StructuredTaskScope)
                 - **Use case:** When one "parent" task needs to trigger multiple "child" tasks and wait for them.
                 - **Why:** It provides a clean "entry and exit" point. If one child task fails, the others are
-                  automatically cancelled. It turns the "spaghetti" of asynchronous programming into a readable,
+                  automatically canceled. It turns the "spaghetti" of asynchronous programming into a readable,
                   tree-like structure.
                 - **Avoid if:** You are on an older Java version (pre-Java 21) or doing simple, single-thread background
                   work.
 
             4. CompletableFuture
-                - **Use case:** Chaining complex, non-blocking pipelines (e.g., "Get User" -> "Get Orders" -> "Calculate
+                - **Use case:** Chaining complex, non-blocking pipelines (e.g., "Get User" → "Get Orders" → "Calculate
                   Discount").
                 - **Why:** It is excellent for "event-driven" logic where you want to define a path of execution (
                   `thenApply`, `thenCompose`) without blocking the main thread.

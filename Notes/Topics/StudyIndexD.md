@@ -14,7 +14,7 @@ layout: default
 |                                  | Memory Management (Heap vs. Non-Heap, Stack)        | [🔗](../Java/JVM.md)                                    |
 |                                  | Java Flight Recorder (JFR)                          | [🔗](../Java/JVM.md)                                    |
 | **Concurrency & Parallelism**    | Virtual Threads (Project Loom)                      | [🔗](../Java/Threading.md#virtual-threads-project-loom) |
-|                                  | Structured Concurrency                              |                                                         |
+|                                  | Structured Concurrency                              | [🔗](../Java/Threading.md#Structured-Concurrency)       |
 |                                  | Memory Barriers                                     |                                                         |
 |                                  | Fork/Join Framework                                 |                                                         |
 |                                  | Atomic Variables                                    |                                                         |
