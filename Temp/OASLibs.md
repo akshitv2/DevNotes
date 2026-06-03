@@ -243,8 +243,8 @@ re-compile a massive OpenAPI file, leading to sudden latency spikes (cache stamp
 ```java
 // Define a local, high-performance cache provider
 private final Cache<String, RequestValidator> validatorCache = Caffeine.newBuilder()
-    .maximumSize(500) // Adjust based on how many distinct APIs you manage
-    .build();
+                .maximumSize(500) // Adjust based on how many distinct APIs you manage
+                .build();
 
 public void filter(GatewayRequestContext context) {
     // 1. Generate the unique composite lookup key
@@ -253,18 +253,200 @@ public void filter(GatewayRequestContext context) {
     // 2. Fetch the pre-compiled validator (or compile it ONCE on a cache miss)
     RequestValidator validator = validatorCache.get(cacheKey, key -> {
         // WARNING: This block only executes the very first time an API is hit
-        String rawOasYaml = database.fetchOasYamlString(key); 
+        String rawOasYaml = database.fetchOasYamlString(key);
         OpenApi3 model = new OpenApi3Parser().parse(rawOasYaml, false);
-        
+
         // This object is the "Executor" containing the fully compiled regexes and schema trees
-        return new RequestValidator(model); 
+        return new RequestValidator(model);
     });
 
     // 3. Hot-path execution: Zero overhead, purely matching incoming bytes against the cached memory tree
     ValidationReport report = validator.validate(context.getIncomingRequest());
-    
+
     if (!report.isValid()) {
         context.reject(400, report.getMessages());
     }
 }
 ```
+
+## Examples
+
+The implementation below uses openapi4j (openapi4j-parser and openapi4j-operation-validator) to validate an incoming
+JSON payload against a specific schema path in your OpenAPI Specification.
+
+```xml
+
+<dependencies>
+    <dependency>
+        <groupId>org.openapi4j</groupId>
+        <artifactId>openapi4j-parser</artifactId>
+        <version>1.0.7</version>
+    </dependency>
+    <dependency>
+        <groupId>org.openapi4j</groupId>
+        <artifactId>openapi4j-operation-validator</artifactId>
+        <version>1.0.7</version>
+    </dependency>
+    <dependency>
+        <groupId>com.jayway.jsonpath</groupId>
+        <artifactId>json-path</artifactId>
+        <version>2.9.0</version>
+    </dependency>
+</dependencies>
+```
+
+```java
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jayway.jsonpath.JsonPath;
+import org.openapi4j.core.model.v3.OAI3;
+import org.openapi4j.core.validation.ValidationException;
+import org.openapi4j.parser.OpenApi3Parser;
+import org.openapi4j.parser.model.v3.OpenApi3;
+import org.openapi4j.parser.model.v3.Schema;
+import org.openapi4j.schema.validator.ValidationContext;
+import org.openapi4j.schema.validator.ValidationData;
+import org.openapi4j.schema.validator.v3.SchemaValidator;
+
+import java.io.File;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class OasGatewayValidator {
+
+    private final OpenApi3 openApi;
+    private final ObjectMapper mapper;
+    private static final String SENSITIVE_EXTENSION = "x-sensitivity";
+    private static final String SENSITIVE_VALUE = "SENSITIVE";
+
+    /**
+     * Initialize and compile the OpenAPI Spec file at startup
+     */
+    public OasGatewayValidator(URL specUrl) throws Exception {
+        this.openApi = new OpenApi3Parser().parse(specUrl, true);
+        this.mapper = new ObjectMapper();
+    }
+
+    public OasGatewayValidator(File specFile) throws Exception {
+        this.openApi = new OpenApi3Parser().parse(specFile, true);
+        this.mapper = new ObjectMapper();
+    }
+
+    /**
+     * Validates a JSON payload against a specific schema component defined in your components/schemas.
+     * Maps openapi4j pointers to Jayway-compatible JsonPaths on failure.
+     */
+    public List<String> validatePayload(String jsonPayload, String schemaName) {
+        List<String> jsonPathErrors = new ArrayList<>();
+        try {
+            JsonNode payloadNode = mapper.readTree(jsonPayload);
+            Schema schema = openApi.getComponents().getSchema(schemaName);
+
+            if (schema == null) {
+                throw new IllegalArgumentException("Schema " + schemaName + " not found in OAS");
+            }
+
+            // Convert openapi4j model to an active validator context
+            ValidationContext<OAI3> context = new ValidationContext<>(openApi.getContext());
+            SchemaValidator validator = new SchemaValidator(context, null, schema.toNode());
+            ValidationData<Void> validationData = new ValidationData<>();
+
+            validator.validate(payloadNode, validationData);
+
+            if (!validationData.isValid()) {
+                // Map the RFC 6901 JSON Pointers to Jayway JSON Paths
+                validationData.results().items().forEach(item -> {
+                    String jsonPointer = item.dataCrumbs(); // e.g., "user/password"
+                    String jaywayPath = convertPointerToJsonPath(jsonPointer);
+                    jsonPathErrors.add(jaywayPath + ": " + item.message());
+                });
+            }
+        } catch (Exception e) {
+            jsonPathErrors.add("Payload Parsing/Validation Critical Error: " + e.getMessage());
+        }
+        return jsonPathErrors;
+    }
+
+    /**
+     * Extracts values from the runtime payload if their schema definition contains x-sensitivity: SENSITIVE
+     * Performs a performance-optimized depth-first scan using the pre-compiled schema tree.
+     */
+    public Map<String, Object> extractSensitiveData(String jsonPayload, String schemaName) {
+        Map<String, Object> sensitiveFieldsMap = new HashMap<>();
+        try {
+            Schema schema = openApi.getComponents().getSchema(schemaName);
+            if (schema == null) return sensitiveFieldsMap;
+
+            Object document = JsonPath.parse(jsonPayload).read("$");
+            traverseAndExtract(schema, "$", document, sensitiveFieldsMap);
+        } catch (Exception e) {
+            // Handle parsing exceptions safely in operational gateway hot-paths
+        }
+        return sensitiveFieldsMap;
+    }
+
+    private void traverseAndExtract(Schema schema, String currentJsonPath, Object document, Map<String, Object> results) {
+        if (schema == null) return;
+
+        // Fast Extension Checking - Preparsed by openapi4j at startup
+        Object extValue = schema.getExtension(SENSITIVE_EXTENSION);
+        if (extValue != null && SENSITIVE_VALUE.equalsIgnoreCase(extValue.toString())) {
+            try {
+                Object val = JsonPath.read(document, currentJsonPath);
+                results.put(currentJsonPath, val);
+            } catch (Exception e) {
+                // Path didn't exist in this specific payload instance
+            }
+        }
+
+        // Object property traversal
+        if (schema.getProperties() != null) {
+            for (Map.Entry<String, Schema> entry : schema.getProperties().entrySet()) {
+                String propName = entry.getKey();
+                Schema subSchema = entry.getValue();
+                traverseAndExtract(subSchema, currentJsonPath + "." + propName, document, results);
+            }
+        }
+
+        // Array items traversal
+        if (schema.getItemsSchema() != null) {
+            try {
+                List<?> arrayItems = JsonPath.read(document, currentJsonPath);
+                for (int i = 0; i < arrayItems.size(); i++) {
+                    traverseAndExtract(schema.getItemsSchema(), currentJsonPath + "[" + i + "]", document, results);
+                }
+            } catch (Exception e) {
+                // Path didn't exist or wasn't an array in the runtime payload
+            }
+        }
+    }
+
+    /**
+     * Utility converter from openapi4j pointer output into Jayway notation
+     */
+    private String convertPointerToJsonPath(String jsonPointer) {
+        if (jsonPointer == null || jsonPointer.isEmpty() || jsonPointer.equals("/")) {
+            return "$";
+        }
+        // Replace slash notation to dot notation
+        String clean = jsonPointer.replace("/", ".");
+        if (!clean.startsWith(".")) {
+            clean = "." + clean;
+        }
+        return "$" + clean;
+    }
+}
+```
+
+Technical Highlights of this Implementation
+
+- Memory Efficiency: The OpenApi3 spec object is loaded once during gateway bootstrap. No file IO or costly structural
+  schema re-allocations happen during validatePayload or extractSensitiveData cycles.
+- Deterministic Data Extraction: The traverseAndExtract method loops natively over the openapi4j schemas. Instead of
+  evaluating costly strings or executing broad $..* wildcard regex searches over the payload, it targets properties
+  directly via known schema paths, reducing CPU cycles.
+- Jayway Bridge: The utility transforms standard internal error pointers directly into native $ paths (e.g., $
+  .user.password), allowing immediate drop-in matching with your external jayway-jsonpath workflows.
