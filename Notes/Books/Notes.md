@@ -1,18 +1,4 @@
-Scaling Up (vertical)- Shared Memory - Cost grows 2x compute/memory, low fault tolerance
-Scaling out (horizontal)- Share nothing - can distribute as you want
 
-Replication -> redundancy on other nodes
-Partitioning -> Dividing data across nodes (sharding)
-
-.5. Replication
-reduce latency by geography
-availibitliy
-throughput
-
-Copy -> Replica
-Leader based -> Master slave
-one leader writes, slave reads
-![img_6.png](img_6.png)
 Sync or Async replication?
 Sync -> Guarantees replication even if leader fails
 We don't sync all followers because of massive slowdown

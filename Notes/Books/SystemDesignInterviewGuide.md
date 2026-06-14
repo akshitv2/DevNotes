@@ -35,13 +35,12 @@ layout: default
     - Evenly distributes incoming traffic among webservers
     - Act as middle man proxies (not like dns servers which tell where to go)
     - For security load balancers use private IPs to communicate with servers
-      - 
-    - ### Process:
-        - Request Arrives
-        - Health checks servers
-        - Based on algo chooses best one
-        - Forwards to said server
-        - Once response received sends back to client
+      - ### Process:
+          - Request Arrives
+          - Health checks servers
+          - Based on algo chooses best one
+          - Forwards to said server
+          - Once response received sends back to client
     - ### Common Routing Algorithms:
         - Round Robin
         - Least Connections; i.e. Server with the least active sessions
@@ -100,7 +99,7 @@ layout: default
     - Cache static content like images videos css js
     - Dynamic Caching
     - Process:
-        - On first try the file doesn't exist on cdn, request goees to CDN but cdn requests Server
+        - On first try the file doesn't exist on cdn, request goes to CDN but cdn requests Server
         - Fetches from origin server first time then caches based on header
         - On second try by user request
     - ### Configuration:

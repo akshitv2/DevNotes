@@ -96,6 +96,38 @@ Include all non RDB
 | **LSM Trees** (Log-Structured Merge-tree) | MemTable (RAM) + SSTables (Disk) | Write-heavy NoSQL (Cassandra, RocksDB) | Appends writes to memory first, making writes extremely fast; background compaction resolves duplicates. |
 | **Inverted Index**                        | Map of words to document IDs     | Search engines (Elasticsearch)         | Enables full-text search capability.                                                                     |
 
+1. BTrees:
+    - ![img_1.png](img_1.png)
+    - Self-balancing search trees, each node can have multiple children
+    - Guarantees $O(\log n)$ time complexity for search, insertion, and deletion
+2. B+ Tree:
+    - ![img.png](img.png)
+    - A variation of the B-Tree. Internal nodes only store keys (for routing)
+    - Data pointers are stored in the leaf nodes
+    - Leaf nodes are linked together in a sequential chain.
+    - Most relational database management systems (RDBMS) like MySQL (InnoDB) and PostgreSQL use this
+    - Maximizes fan-out (more keys per node), reducing disk I/O.
+        - How?
+            - In standard b tree a node stores key,data and child nodes within a fixed size page (i.e. needs more i/o
+              while navigating)
+            - In B+ you only get data once you find right key, i.e. more keys fit inside same page size
+3. Log-Structured Merge-Tree (LSM-Tree)
+    - append data to a write-optimized structure rather than updating data in-place
+    - How it works: Writes are first directed to a fast, in-memory buffer (MemTable) (this sorts it by key to enable
+      working on same key first)
+    - When full, the data is flushed to disk as an immutable Sorted String Table (SSTable).
+    - Periodic background processes (compaction) merge these tables.
+    - 🟢Pros: Eliminates random disk writes, maximizing write throughput.
+    - 🔴Cons: Reads can be slower because multiple files on disk may need to be searched to find the latest version of a
+      key
+4. Bit-Mapped Indexing
+    - indexing technique that uses arrays of bits (0s and 1s) to represent the presence or absence of a value in a row
+    - For example marital status → 1 married 0 unmarried → [0 1 1 1 0]
+    - Used often in OLAP or column based indexing
+    - 🟢Blazing Fast Logical Queries: Ideal for complex ad-hoc queries combining multiple filtering criteria.
+    - 🔴The High-Cardinality Trap: If a column has millions of unique values (like SSN, Email, or User_ID), you would
+      have to create millions of bitmaps
+
 ### 7. Decision Matrix for System Design Interviews
 
 Use this mental checklist when selecting a database during an interview:
@@ -147,7 +179,7 @@ Use this mental checklist when selecting a database during an interview:
           compression ratios (often 5x to 10x better than standard RDBMS)
         - Exactly how Splunk and the ELK Stack (specifically Elasticsearch) work under the hood
 
-- ### Othert Modern DBs in age of AI
+- ### Other Modern DBs in age of AI
 
 | Database Category            | Core Focus                                                                                    | Prominent Examples                      |
 |------------------------------|-----------------------------------------------------------------------------------------------|-----------------------------------------|
@@ -189,6 +221,23 @@ Use this mental checklist when selecting a database during an interview:
 - Note: NoSQL Dbs don't have these guarantees in place, even operations like multi-put are often not atomic and may fail
   partially
 
+### 10. BASE:
+
+Developed as an alternative to the traditional ACID which is often too restrictive for massive, distributed systems
+
+1. Basically Available (BA)
+    - The system guarantees that it will remain operational and available to respond to requests, even if parts of the
+      network or hardware fail.
+    - Instead of shutting down or refusing connections to protect data consistency, the
+      database will return a response (even if that data is slightly stale).
+2. Soft State (S)
+    - The state of the data can change over time without explicit user interaction.
+    - It takes time for updates to propagate everywhere.
+3. Eventual Consistency (E)
+    - The system will eventually become consistent once it stops receiving updates.
+
+### 11. Idempotency
+
 ### 10. CAP Theorem
 
 A distributed data store can simultaneously provide at most two out of the following three guarantees:
@@ -227,3 +276,61 @@ is a law of physics.
     - Result: Your application stays online for everyone, but different users will see different versions of the
       data. The data diverges, and you will have to manually or automatically resolve the conflicts later once the
       network heals.
+
+### 11. Consistency
+
+In distributed systems, data consistency models define the rules for how and when changes made to a data store are
+visible to different users or nodes across a network.
+
+### Quorum Consistency
+
+Protocol used to guarantee data correctness across multiple server nodes without waiting for every single node to
+respond  
+Instead of requiring all nodes to agree on a read or write operation, a system defines a minimum number of successful
+votes required to complete the operation:
+
+- $N$: The total number of replicas (nodes storing copies of the data).
+- $W$: The write quorum (the number of nodes that must acknowledge a write before it is considered successful).
+- $R$: The read quorum (the number of nodes that must respond to a read request).
+
+- Note: the client application itself does not manually contact $R$ individual servers.Instead, the system relies on a
+  Coordinator Node.
+    - Whichever node client hits turns into coordinator fetching from others itself
+- Note: This can work across partition too where we only check partitions which are replica of same
+
+1. **Strong Consistency (Linearizability)**
+    - Guarantees that once a write operation completes, any subsequent read operation will return the value of that
+      write, or a later one regardless of which node in the distributed system is queried.
+    - **Monotonic Time and Order**: All systems read give same state in same order
+    - Systems typically use strict quorum configurations, R+W>N, ensuring read and write always overlap
+    - Coordination ensures data is made consistent sorted by timestamps
+    - It prioritizes Consistency (C) over Availability (A) **CP System**
+2. **Eventual Consistency**
+    - A specific form of weak consistency
+    - Guarantees that if no new updates are made to a given data item, all replicas will eventually converge and return
+      the same last-updated value.
+    - **Asynchronous Replication**: When a write occurs, the coordinator node updates its local state and immediately
+      returns a success status to the client. The update is then propagated to other replicas asynchronously.
+    - Sloppy Quorums ($R + W \le N$), A read might hit a replica that hasn't received the latest asynchronous update
+      yet, resulting in stale reads.
+    - Conflict Resolution: Need to use conflict mechanisms like Last Write Wins or CRDTs (Conflict-free Replicated Data
+      Types)
+    - Prioritizes Availability (A) and Partition Tolerance (P) (**AP system**) high scalability and low latency
+    - Note: The difference between eventual and weak consistency is driven heavily by background reconciliation
+      processes.
+3. **Weak Consistency**
+    - Provides the fewest guarantees.
+    - Unlike eventual consistency, weak consistency does not inherently guarantee that replicas will eventually match
+    - Used in Real-time data streams where speed is critical and losing individual packets or data points doesn't break
+      the system e.g. video stream
+
+**Raft and Paxos**
+Are consensus algorithms designed to avoid problem of split brain  
+Split Brain: If nodes become disconnected the two partitions can both end up electing a leader and accept updates
+individually  
+Prevent this by dictating that updates or leadership elections can only occur if a strict majority (a quorum) of the
+total cluster nodes agree.
+
+**CRDT (Conflict-Free Replicated Data Types)**
+CRDTs are mathematically designed so that different operations can be applied in any order across different servers, and
+they will always merge into the exact same correct state.

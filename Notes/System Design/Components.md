@@ -30,7 +30,7 @@ title: Components
 
 1. ### Load Balancer:
     - Acts as a reverse proxy to distribute incoming network or application traffic across a cluster of servers
-    - to optimize resource utilization, maximize throughput, reduce latency, and ensure fault tolerance by preventing
+    - To optimize resource utilization, maximize throughput, reduce latency, and ensure fault tolerance by preventing
       any single server from becoming a bottleneck.
     - Act as middle man proxies (not like dns servers which tell where to go)
     - For security load balancers use private IPs to communicate with servers, i.e. user never talks to server directly
@@ -152,3 +152,31 @@ Note: Proxy vs reverse proxy:
     - Solutions:
     - Sticky session
     - Shared Redis Cache
+
+### 6. Performance Metrics
+
+Describing Performance:
+
+1. Latency
+    - Latency is the time it takes for a single request to travel from the source to the destination and return a
+      response.
+    - If you click a button on a website, and it takes $200\text{ ms}$ for the page to load, the latency
+      is $200\text{ ms}$.
+    - Goal: Lower is better (low latency means a faster response).
+    - For most response times we use percentiles over average, p95, p99, p999 being common describing % users
+      time taken avg
+    - Often defined clearly in SLAs (Service Level Agreements) and must be met by companies providing products
+    - Note:
+        - Important to measure response times on client-side than time taken by server to process
+        - Request might sit waiting in queue (head of line blocking)
+2. Throughput (Capacity)
+    - Throughput is the number of actions, requests, or data units a system can process within a specific timeframe.
+    - It measures volume or capacity.
+    - Unit of measurement: Requests per second ($RPS$), queries per second ($QPS$), or bits per second ($bps$).
+
+### 7. Cap Theorem
+
+[Read Here](../DBMS/Basics.md#10-cap-theorem)
+
+### 8. Consistency
+[Read Here](../DBMS/Basics.md#11-consistency)

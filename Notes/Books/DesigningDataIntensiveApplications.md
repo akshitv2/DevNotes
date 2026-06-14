@@ -228,32 +228,38 @@ layout: default
             - Built into most modern languages:
                 - Java has serializable
                 - Python Pickle
-                - Note:Using language specific encoding and transmitting in the same locks you into using same language at decoding
-                - Note: Also another security risk if hacker can get you to decrypt arbitrary code, needs to have a well-defined schema
-                - Often lack versioning and backward forward compatibility 
+                - Note:Using language specific encoding and transmitting in the same locks you into using same language
+                  at decoding
+                - Note: Also another security risk if hacker can get you to decrypt arbitrary code, needs to have a
+                  well-defined schema
+                - Often lack versioning and backward forward compatibility
         - Language Independent Formats:
             - JSON:
-              - 🟢 Most popular by far due to standard of internet
-              - 🔴 Doesn't distinguish between integer, float or specify precision
-              - 🔴 No binary support (need to BASE64 Encode ballooning size by 33%)
+                - 🟢 Most popular by far due to standard of internet
+                - 🔴 Doesn't distinguish between integer, float or specify precision
+                - 🔴 No binary support (need to BASE64 Encode ballooning size by 33%)
             - XML
-              - 🔴 Doesn't distinguish number and string
-              - 🔴 No binary support (need to BASE64 Encode ballooning size by 33%)
+                - 🔴 Doesn't distinguish number and string
+                - 🔴 No binary support (need to BASE64 Encode ballooning size by 33%)
             - Binary Variants like BSON, MessagePack
             - Thrift by Facebook
             - Protocol Buffers by Google
             - Avro:
-        - Note: Both Thrift and Protocol Buffers use schema i.e. they don't store field names with data instead using numbered field tags, they are
+        - Note: Both Thrift and Protocol Buffers use schema i.e. they don't store field names with data instead using
+          numbered field tags, they are
           backward and forward compatible where mapping ignore tags which don't exist on either
-        - Note: Avro uses different schemas at reader and writer resolved by schema library i.e. very compact because it doesn't carry any schema definition with it
-        - Note: Avro writes schema at start of file when storing. But in transit uses no schema which is stored at schema registry i.e. the library
+        - Note: Avro uses different schemas at reader and writer resolved by schema library i.e. very compact because it
+          doesn't carry any schema definition with it
+        - Note: Avro writes schema at start of file when storing. But in transit uses no schema which is stored at
+          schema registry i.e. the library
     3. Data Flow Modes:
         - Through DBs:
             - One process writes to a DB, another reads it
             - DB effectively acts as a message to the future
             - Challenge faced:
                 - Data outliving code i.e. new apps built on new FWs must be able to read the same old data
-                - Need to make sure your older code is written in a way that if it reads new fields it writes them back intact 
+                - Need to make sure your older code is written in a way that if it reads new fields it writes them back
+                  intact
         - Through Services (REST and RPC):
             - REST: Uses JSON over HTTP, using simple URLs and resources
             - RPC (Remote Procedure Call): Make remote network request look like a local function call.
@@ -262,15 +268,23 @@ layout: default
         - Message Passing DataFlow: Use of MQs like Apache Kafka, RabbitMQ where message sent to broker and consumer
           picks up from broker
     4. Distributed Actor Framework:
-       - Architecture that uses stateful actors which act often 1:1 for each user
-       - Don't need to talk to external DB as often or quick as can perform actor to actor communication (on crash uses append only log to recreate state)
-       - Useful for instant chat/trading apps, used in whatsapp
-       - Each actor is like a virtual thread with its own independent memory (state)
+        - Architecture that uses stateful actors which act often 1:1 for each user
+        - Don't need to talk to external DB as often or quick as can perform actor to actor communication (on crash uses
+          append only log to recreate state)
+        - Useful for instant chat/trading apps, used in whatsapp
+        - Each actor is like a virtual thread with its own independent memory (state)
     5. Schema Merits:
         - Use of schema decouples objects, make them more compact, provide more documentation in common schema store,
           enforce rules on compatibility both ways
 
-1 Liners
-
-- Redis also used a MQ
-- Kafka provides data durability
+5. Replication
+    - Benefits:
+        1. reduce latency by geography
+        2. availability
+        3. Throughput
+    - Replication → redundancy on other nodes
+    - Partitioning → Dividing data across nodes (sharding)
+    - Replica Keeps Copy of Data, Leader is source of truth as leader supports write and replicas only support read (
+      also called master slave)
+      ![img_6.png](img_6.png)
+    - 
