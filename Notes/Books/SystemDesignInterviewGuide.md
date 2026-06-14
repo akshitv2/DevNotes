@@ -20,6 +20,8 @@ layout: default
 2. ## Single Server With DB:
     - self-explanatory
     - Can use RDB or NoSQL DB
+    - Choosing DB:
+    - 
 3. ## Vertical vs Horizontal scaling:
     - ### Vertical or Scale Up:
         - Upgrade to more powerful machines with more compute/RAM
