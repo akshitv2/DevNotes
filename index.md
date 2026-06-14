@@ -27,8 +27,6 @@ Welcome to my study notebook! This serves as an index to all topics and notes.<b
 5. ### Book Notes:
    1. ### [Designing Data Intensive Applications](Notes/Books/DesigningDataIntensiveApplications.md)
    2. ### [System Design Interview Guide](Notes/Books/SystemDesignInterviewGuide.md)
-6. ## Others:
-   1. ### [Lettuce vs Jedis](Temp/LettuceVsJedis.md)
 
 ## Topics
 1. ### [Topics](Notes/Topics/Topics)
