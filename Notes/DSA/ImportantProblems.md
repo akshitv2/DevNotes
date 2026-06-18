@@ -12,8 +12,8 @@ layout: default
 |    |                                                            | The Rule: When a mismatch occurs, use precomputed table to find the longest matching prefix that is also a suffix of the pattern analyzed so far. |
 |    |                                                            | The Action: Shift the pattern rightward to align that prefix with the suffix in the text, allowing the text pointer to never move backward.       |
 | 🟢 | Stock with 1 transaction [7, 10, 1, 3, 6, 9, 2]            | Go right to left, see highest in future compared to current price = 9-1                                                                           |
-| 🟢 | Stock with Multiple transaction                            | Go right to left, see highest in future compared to current price = 9-1                                                                           |
-|    | [100, 180, 260, 310, 40, 535, 695]                         |                                                                                                                                                   |
+| 🟢 | Stock with Multiple transaction                            | You're essentially buying and selling at every price change except when it goes down                                                              |
+|    | [100, 180, 260, 310, 40, 535, 695]                         | Since this is theoretical you can you terminate at high point, rather than holding loss                                                           |
 | 🟢 | First non repeating char in string                         | Map of all chars with -2 default state, loop over array and add indexes to each, -1 if repeat. Return lowest non negative index char              |
 | 🟢 | Majority element i.e. appears more than n/2 times in array | Maintain count map and check for each                                                                                                             |
 | 🟠 | Majority element i.e. appears more than n/2 times in array | Moore voting algo, maintain a cursor and counter, +1 on same as cursor -1 on different. Check finally if cursor appears more than n/2             |

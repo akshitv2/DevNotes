@@ -277,6 +277,71 @@ is a law of physics.
       data. The data diverges, and you will have to manually or automatically resolve the conflicts later once the
       network heals.
 
+## 12. Database Replication:
+
+- ![img_1.png](../Books/img_1.png)
+- Usually done with a master slave relationship (often called Primary Replica or Leader Follower)
+- Write operations are only supported by Master node
+- Slave get copies of master DB and only supports read (when enabled)
+- Most applications are read heavy so having limited master works
+- 🟢Most applications are read heavy so higher availability from slave nodes
+- 🟢More Reliable since loss of one db server doesn't mean loss of data
+
+### Synchronous Replication
+
+Transaction is not committed until it has been successfully propagated to all replicas. Returns success only to client
+after that
+
+- 🟢Guarantees all followers have up-to-date data
+- 🔴Terrible for performance as leader has to wait for all nodes (the total transaction time = time for slowest node)
+    - Often in reality we use semi synchronous i.e. change is propagated to at least one node
+- 🔴If replica becomes unreachable entire write stalls or fails
+
+### Asynchronous Replication
+
+Primary node commits locally and returns a success immediately, then broadcasts update to replicas
+
+- 🟢Makes writes extremely low latency, decoupling network lag from write acknowledgement
+- 🔴Creates replication delay (also called data lag)
+- 🔴If primary node fails changes can be lost
+
+### Process of adding new replica:
+
+- Take snapshot of current leader
+- Copy onto follower
+- Get changelog of changes since creation of snapshot
+- replay those changes
+
+### In case of Failover:
+
+- **Replica Failover**:
+    - Just ask leader what has happened since it's last timestamp
+- **Leader Failover**:
+    - Usually marked as failed using a timeout on heartbeat
+    - New leader: elected: usually most up-to-date node
+    - Route requests to new leader
+    - Old leader when it comes back up becomes a follower (replica)
+    - Note: if two nodes both think they are leader, called split brain.
+        - Dangerous since both go out of sync, some systems have auto shutdown in this case
+
+### Replication Methods:
+
+- Statement based:
+    - Copy each statement to followers like INSERT etc
+    - Failure: Anytime non-deterministic operation is performed like rand()/now()
+- Write Ahead Log (WAL)
+    - Append only sequence of the physical effect of query
+    - Logs whatever was written, copies it to followers
+    - Done using byte level WAL, so not storage engine agnostic (problem in migration)
+- Logical Log:
+    - Append only sequence but contains logical effect (i.e. engine agnostic)
+    - For:
+        - insert: New values of all columns
+        - delete: info to identify row to delte
+        - update: similar to insert
+- Trigger based:
+    - user defined application code to replicate
+
 ### 11. Consistency
 
 In distributed systems, data consistency models define the rules for how and when changes made to a data store are
@@ -334,3 +399,48 @@ total cluster nodes agree.
 **CRDT (Conflict-Free Replicated Data Types)**
 CRDTs are mathematically designed so that different operations can be applied in any order across different servers, and
 they will always merge into the exact same correct state.
+
+### 13. Consistency Problems
+
+### Reading after write consistency or Reading Own Writes (should be able to read your own writes)
+
+![img_7.png](../Books/img_7.png)
+
+- Solved by:
+    - Read from the same node you write on i.e. sticky nodes
+    - Read only from leader if recent modification is true
+    - Remember a timestamp on client and only serve from nodes which are more recent than that timestamp
+    - Locally cache result on device and show output until the infra loads up
+- Cross Device Read-after-write consistency:
+    - Breaks:
+        - Reading from same node
+        - Timestamp logic
+        - Local caching
+
+### Monotonic Reads:
+
+- If user makes reads from multiple replicas depending on replication lag and order user can appear to go back in time
+- Thus need a guarantee reads happen in the same right order i.e. **monotonically**
+- ![img_8.png](../Books/img_8.png)
+- Solution:
+    - Sticky Replica: i.e. user makes reads from same replica always
+    - Timestamp based: Refuse to read from older or do not replace newer data when encountering older data
+
+### Consistent Prefix Reads:
+
+- If user reads using independent readers on dbs cause and effect can appear in incorrect order
+- We need a guarantee that reads happen in same order of writes
+- ![img_9.png](../Books/img_9.png)
+- Solution:
+    - Entries which have a causal dependency should be written to same node
+    - Use complex algorithms which track this before that
+
+### 14. Skew:
+
+- Ideally data is evenly distributed
+- In reality data could be heavily skewed towards one partition or several
+- partition with disproportionately high load is called a hot spot
+- Reason?
+    - For ideal distribution we distribute randomly, this has downside of not knowing where each data should go
+    - Using a key assignment model we can deterministicly route to same node
+    - If too many keys route to same we get skew

@@ -4,7 +4,7 @@ layout: default
 title: Designs & Arch
 ---
 
-### 1. ## Vertical vs Horizontal scaling:
+## 1. ## Vertical vs Horizontal scaling:
 
 - ### Vertical or Scale Up:
     - Upgrade to more powerful machines with more compute/RAM
@@ -20,7 +20,7 @@ title: Designs & Arch
     - 🟢Virtually Unlimited Growth
     - 🟢More cost-efficient to buy cheaper smaller servers than one giant one and add incrementally
 
-### 2. Database Replication:
+## 2. Database Replication:
 
 - ![img_1.png](../Books/img_1.png)
 - Usually done with a master slave relationship (often called Primary Replica or Leader Follower)
@@ -32,7 +32,7 @@ title: Designs & Arch
 
 TBC
 
-### 3. Availability Patterns
+## 3. Availability Patterns
 
 Availability Patterns are architectural strategies designed to maximize system uptime and guarantee that services remain
 accessible, even during infrastructure, network, or hardware degradation.  
@@ -66,3 +66,4 @@ healthy component to mitigate operational disruption.
     - Removes the failed node from the routing pool.
 - 🟢 Provides seamless fault masking and near-zero recovery time
 - 🔴 Exponentially increases architectural complexity, demanding distributed concurrency controls
+
