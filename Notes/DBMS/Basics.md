@@ -435,6 +435,61 @@ they will always merge into the exact same correct state.
     - Entries which have a causal dependency should be written to same node
     - Use complex algorithms which track this before that
 
+### 14. Federation
+
+- Integrates multiple DBs into one common interface
+- To user entire system looks like one single DB
+- Each DB maintains it's rules and autonomy, can be heterogeneous (sql + redis ) or homogeneous
+- 🟢Allows organizations to connect old, disjointed systems without expensive and risky data migration projects.
+- 🔴Performance Bottlenecks: Queries are only as fast as the slowest database
+- 🔴Query Optimization: Creating an efficient execution plan for structurally different databases is difficult
+
+### 15. Partitioning/Sharding:
+
+- Horizontal data partitioning strategy, single DB is divided into multiple physical nodes called shareds
+- Each node contains common schema but each piece of data belongs to exactly one partition
+- Trade Offs:
+    - 🟢Allows scaling DBs proportional to demand horizontally
+    - 🟢Allows higher throughput, lower bottlenecks and higher availability
+    - 🔴Cross-Shard Joins: Executing joins across different shards is highly inefficient, often needed to be done at app
+    - 🔴ACID: Requires 2Phase Commit (very slow)
+- **Shard Key**: The specific column or set of columns used to determine the placement of a given row.
+- Partitioning Methods:
+    - By Key Range:
+        - Assign a continuous range of keys to each partition
+        - 🔴Even if keyspace is evenly distributed data might not be (for e.g. more name begins with certain letters of
+          alphabet)
+        - 🔴Hotspots can occur temporarily which block concurrency for e.g. if key is date then all writes will go to
+          same node each day
+        - 🟢Can perform key range queries since data is on same node
+    - Hash of Key:
+        - 🟢Randomizes better than key range by taking a key and distributing it randomly
+        - It is random but deterministic
+        - Can use cryptographically weak algo as long as distribution is random
+        - 🔴Loses benefit of key range i.e. aggregating and range operations since data is not on same node
+- Dynamic Partitioning:
+    - Partition based on dynamic requirements for e.g. if data on nodes becomes too large, split
+    - Advantage of using less resources if not required
+    - Rebalancing can be costly depending on partitioning size
+- Rebalancing Nodes:
+    - Machines can go down or more machines can be needed for parallelizing
+    - Keyspace thus needs to be rebalanced between new nodes
+    - Strategies:
+        - hash mod N
+            - 🔴Never do this
+            - %N will split between N easily but whenever there is a single change in nodes a lot of keys will need
+              moving
+              since hash mod N will change for all
+        - Fixed Number of partitions:
+            - Create far more partitions than nodes giving more than 1 to each
+            - Whenever there's a new node give it some from node with most
+            - Whenever there's a node going down hand it to one with least
+    - Automatic vs Manual:
+        - Automatic Rebalancing can be convenient tool to rebalance data without needing admin supervision
+            - 🔴 Can Massively slow down the network if done without just cause
+        - Manual:
+            - 🟢 Often better when done with right intentions and checks on human part
+
 ### 14. Skew:
 
 - Ideally data is evenly distributed

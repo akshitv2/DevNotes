@@ -186,7 +186,7 @@ Rebalancing Nodes:
 - Strategies:
     - hash mod N
         - 🔴Never do this
-        - %N will split between N easiley but whenever there is a single change in nodes a lot of keys will need moving
+        - %N will split between N easily but whenever there is a single change in nodes a lot of keys will need moving
           since hash mod N will change for all
     - Fixed Number of partitions:
         - Create far more partitions than nodes giving more than 1 to each

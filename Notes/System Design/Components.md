@@ -117,6 +117,17 @@ title: Components
 
 - Defines how data is physically transmitted through the network media (wires, fiber optics, or radio waves).
 
+### TCP vs UDP
+
+| Feature         | TCP (Transmission Control Protocol)              | UDP (User Datagram Protocol)               |
+|-----------------|--------------------------------------------------|--------------------------------------------|
+| Connection Type | Connection-oriented (requires a handshake).      | Connectionless (just sends data).          |
+| Reliability     | Guaranteed delivery. Resends lost data.          | Best-effort delivery. Lost data is gone.   |
+| Data Order      | Guarantees data arrives in the correct sequence. | Data can arrive out of order.              |
+| Speed           | Slower (due to tracking and error checking).     | Extremely fast (no overhead).              |
+| Data Unit       | Segments                                         | Datagrams                                  |
+| Use Cases       | Web browsing (HTTP), Email, File Transfers.      | Video streaming, Online gaming, DNS, VoIP. |
+
 ## Core Architectural Components
 
 1. ### DNS
@@ -180,32 +191,45 @@ title: Components
             - Load balancing can also be done at dns level by routing users to different servers
             - The user connects directly to the server's IP address.
 
-Note: Proxy vs reverse proxy:
-
-1. Forward Proxy:
-    - sits in front of the clients, requests to any website goes through proxy first
-    - Handles outbound requests for either anonymity by masking traffic or block access to certain sites especially
-      in companies
-2. Reverse Proxy:
-    - Sits in front of multiple servers
-    - When user requests a website request goes to reverse proxy which routes to appropriate backend server
-    - Provides anonymity:  Clients do not know which specific backend server handled their request; they only interact
-      with
-      the reverse proxy.
-    - Also used for load balancing, authentication and caching
+- Note: Proxy vs reverse proxy:
+    1. Forward Proxy:
+        - sits in front of the clients, requests to any website goes through proxy first
+        - Handles outbound requests for either anonymity by masking traffic or block access to certain sites especially
+          in companies
+    2. Reverse Proxy:
+        - Sits in front of multiple servers
+        - When user requests a website request goes to reverse proxy which routes to appropriate backend server
+        - Provides anonymity:  Clients do not know which specific backend server handled their request; they only
+          interact
+          with
+          the reverse proxy.
+        - Also used for load balancing, authentication and caching
 
 ### 2. API Gateway:
 
-- Acts as entry point for defined set of microservices
+- Acts as single entry point for defined set of microservices
 - Acts as reverse proxy to applications
+- Operates primarily at layer 7 of OSI model
+- Handles north south traffic i.e. client to service
 - Core Technical Functions:
     - Request Routing:
         - Matches and sends to specific services
+        - Maintains a routing table (often integrated with a **Service Registry** like Consul or Eureka).
+        - Parses uri of incoming requests and proxies to relevant service
     - Protocol Translation:
+        - External protocol could be internet safe, internal could be performance oriented
         - for example: Convert REST to gRPC
     - Security & Auth:
         - Validate keys and JWTs at a common gateway before reaching services
     - Rate limiter
+        - Commonly using algorithms like the Token Bucket or Leaky Bucket
+            - Token Bucket Algo:
+                - R tokens added to bucket every second
+                - When packet of size n arrives processed by removing n tokens, else queued or dropped
+                - Allows bursts
+            - Leaky Bucket Algo:
+                - Empties tokens at rate r
+                - Only allows packets within a certain size i.e. blocks bursts
     - Load balancing
     - Circuit Breaker:
         - If a service is failing can stop calls to it to prevent further overwhelming
@@ -227,6 +251,38 @@ Note: Proxy vs reverse proxy:
         - Doesn't intercept calls but lets data plane implement the rules it injects
 
 ### 4. CDN
+
+- Geographically dispersed servers used to deliver static content
+- Cache static content like images videos css js
+- critical for reducing latency, offloading traffic from origin servers, and mitigating DDoS attacks.
+- **Architecture**:
+    - Origin Server: original serving server
+    - Edge Servers: Strategically located data centers, cache content close to users.
+    - Reverse Proxy Servers: edge servers can act as reverse proxy, intercept call before it reaches origin
+- **Routing**:
+    - Anycast Routing: Multiple servers share some IP, when user makes request routes to closest node based on BGP
+    - Latency-Based DNS Routing: The CDN’s DNS server resolves to server with lowest latency to user's ISP
+- **Push Vs Pull CDN**
+    - Push: Origin server pushes content to CDN explicitly, does not expire on max age
+    - Pull: Lazy operation, caches when user requests file based on headers
+        - Pull Cdn is dynamic caching and uses the cache control headers. (Push doesn't)
+- **Dynamic Caching**
+    - Process:
+        - On first try the file doesn't exist on cdn, request goes to CDN but cdn requests Server
+        - Fetches from origin server first time then caches based on header
+        - On second try by user request
+- ### Configuration:
+    - Controlled using cache-control headers
+        - `Cache-Control`:
+        - `max-age`: This one is for browsers to cache file for how many seconds
+        - `s-maxage`: (s:shared) tells CDN to keep file for max X seconds
+        - `public` vs `private`: Private i.e. only for user's browser, public for all
+        - `no-cache`: don't cache it
+    - ETag Validation: If file hasn't changed on server just compare hash before discarding from CDN
+- ### Considerations:
+    - Run by 3rd Party: Charged for data transfer in and out of CDN, do not cache infrequent use items
+    - Set appropriate cache expiry to reduce refetching, but still be fresh
+    - Fallback: CDNs can fail, clients should have ability to connect to origin if they do
 
 ### 5. Rate Limiter:
 
@@ -295,3 +351,5 @@ Describing Performance:
 ### 8. Consistency
 
 [Read Here](../DBMS/Basics.md#11-consistency)
+
+### 9. Caching
