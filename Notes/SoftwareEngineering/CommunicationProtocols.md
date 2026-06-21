@@ -181,3 +181,67 @@ layout: default
                 - Publish, Consume model, with destructive consumption on ACK
                 - Logic is centred on broker
             - Modern Alternative: Message Streams
+    6. ## Publisher Subscriber (Pub Sub)
+        - One-to-many relationship
+        - Publisher sends message to a "topic"
+        - The topic is a channel managed by the broker
+        - Multiple subscribers can register to that topic. When message arrives, broadcasted to all active subscribers.
+        - Message Delivery Semantics
+            1. At-Most-Once Delivery
+                - broker fires the message across the network to the subscriber and immediately increments its offset or
+                  deletes the message from its buffer
+                - Does not wait for acknowledgement
+                - 🟢High Throughput Low Latency
+                - 🔴No reliability, Data loss
+            2. At-Least-Once Delivery
+                - Broker sends message and holds onto it waiting for acknowledgement ACK
+                - If Failure occurs or no ACK received in time broker resends it
+                - Requires subscriber to be **idempotent**
+            3. Exactly-Once Delivery
+                - Ideal Delivery
+                - Same as at least once but perfect idempotency using uuid to filter out duplicates
+        - Note: The broker is a standalone instance separate from pub or sub or consumer in MQ
+    7. ### WebSocket
+        - Communication protocol that provides full-duplex, bidirectional, and persistent communication over a single
+          TCP connection.
+        - Process:
+            - Handshake:
+                - The connection begins as a standard HTTP/1.1 request
+                - Client sends a specific HTTP request containing an Upgrade: websocket with a key
+            - Protocol Switch: If the server supports the protocol, it responds with an `HTTP 101` Switching Protocols
+              status code
+            - Persistent TCP Tunnel: Once this handshake succeeds, the HTTP layer is peeled away, leaving tcp connection
+              open
+        - Note: Websocket has to be initiated by client since servers have exposed ports not clients
+    8. ### Server-Sent Events (SSE)
+        - Browser receives automatic, asynchronous updates from a server over a single, long-lived HTTP connection
+        - Strictly unidirectional
+        - Process:
+            - Client establishes a standard HTTP connection using the HTML5 EventSource API.
+            - Client expects the server to respond with a specific Content-Type: text/event-stream. connection is kept
+              alive using standard HTTP keep-alive mechanisms.
+            - Server leaves the response stream open indefinitely. Whenever new data is available, it writes it to the
+              HTTP response body
+            - SSE operates natively over HTTP/1.1 or HTTP/2, meaning it effortlessly passes through firewalls and
+              proxies without configuration.
+    9. ### Long Polling
+        - traditional web development emulation technique (often grouped under the "Comet" umbrella) used to mimic
+          real-time data push over standard, short-lived HTTP/1.1 connections.
+        - Process:
+            - The Request: The client sends a standard HTTP request to the server requesting data.
+            - If the server does not have new data, instead of returning an empty response immediately, it intentionally
+              holds the request open (suspending the response thread) until an update occurs or a timeout threshold is
+              reached.
+            - The Response & Recycle: As soon as data becomes available, the server fulfills the HTTP request and sends
+              the response.
+            - The moment the client receives the data, it instantly closes that specific connection and issues a
+              brand-new HTTP request to the server, restarting the cycle.
+    10. ### Web Hook
+        - enables server-to-server, event-driven communication via user-defined HTTP callbacks
+        - Webhooks are designed to push data between backend servers.
+        - Process:
+          - The Registration (Subscription): Server A (the consumer) registers a specific URL and type of events with Server B (the provider/source)
+          - The Event Trigger: An asynchronous event occurs on Server B
+          - HTTP POST Payload: Instead of waiting for Server A to ask for updates, Server B immediately instantiates an outgoing HTTP POST request directed at Server A's registered URL.
+          - Acknowledgment: Server A processes the payload synchronously or pushes it to a queue, and immediately returns a 2xx HTTP status code to Server B to acknowledge receipt.
+            - If reponse 5xx Server B retries

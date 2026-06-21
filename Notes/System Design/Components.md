@@ -352,4 +352,79 @@ Describing Performance:
 
 [Read Here](../DBMS/Basics.md#11-consistency)
 
-### 9. Caching
+### 9. In-memory data store (Caching):
+
+- DBMS that relies primarily on main memory (RAM) for data storage
+    - Opposed to traditional mediums which store in HDD/SSD
+
+## 1. Technologies: Redis vs. Memcached
+
+While both are premier in-memory engines, their underlying architectures and capabilities differ significantly:
+
+- ### Redis (Remote Dictionary Server)
+    - Data Structures: Supports more than simple key-value pairs including Strings, Hashes, Lists, Sets, Sorted Sets etc
+    - Persistence: Offers durability through **RDB** (Redis Database - point-in-time snapshots) and **AOF** (Append Only
+      File - log of every write operation).
+    - High Availability: Built-in replication, Redis Sentinel (automatic failover), and Redis Cluster (horizontal
+      sharding).
+
+- ### Memcached
+    - Data Structures: Strictly a pure key-value store, no complex datatypes
+    - Memory Allocation: Utilizes a **Slab Allocator** to combat memory fragmentation. It allocates large chunks of
+      memory (Slabs) pre-carved into smaller slots (Slab Classes) of fixed sizes, reducing the overhead of continuous
+      dynamic memory allocation (`malloc`/`free`).
+    - Persistence & Topology: Restarting process wipes the dataset. Does not natively support replication or clustering
+
+---
+
+## 2. Caching Strategies
+
+- ### Cache-Aside (Lazy Loading)
+
+    - Process:
+        1. The application queries the cache.
+        2. **Cache Hit:** Data is returned directly to the client.
+        3. **Cache Miss:**App queries DB, writes returned data to cache for future requests, and returns to client.
+
+      -🟢 Resilient to cache failures; optimal memory usage (only requested data is cached).
+      -🔴 Cache miss penalty on the first request;
+      -🔴 Risk of stale data if db updated in background
+
+        - **Cache Stampede (Thundering Herd Problem):** A systemic failure that occurs when a highly popular cache key
+          expires,
+          causing massive numbers of concurrent application threads to simultaneously hit the backing database.
+
+- ### Write-Through
+
+    - The cache acts as the primary data interface.
+    - When updated, app writes to cache which writes synchronously to DB
+
+      -🟢 Data consistency between cache and database guaranteed
+      -🔴 High write latency: every write requires a synchronous dual-write to memory and disk.
+
+- ### Write-Back (Write-Behind)
+
+    - App writes data only to cache which acknowledges
+    - Cache asynchronously flushes these updates to the database in batches or after a delay.
+    - 🟢 Extremely low write latency and high write throughput, shielding the database from write spikes.
+    - 🔴 Risk of data loss. If in-memory layer crashes flush completes, updates are permanently lost.
+
+---
+
+- ## 3. Cache Eviction Policies
+    - When RAM reaches its capacity limit, the engine must evict existing keys to accommodate incoming data
+    - Policies:
+    - ### LRU (Least Recently Used)
+        - Tracks the *age* of access. Evicts keys not used for longest time
+            - Note: Implementation: Often done in Redis by sampling a small pool of keys and evicting from them instead
+              of heavy
+              global list of keys
+
+    - ### LFU (Least Frequently Used)
+        - Tracks *frequency* of access.
+            - Evicts keys with the lowest counter of hits, regardless of how recently they were touched.
+            - **Implementation:** Redis implements this using a logarithmic counter per key alongside a decay time
+              interval.
+                - Counter decays automatically if key isn't requested, evicting old, historically popular keys
+
+### 14. 
