@@ -67,3 +67,46 @@ healthy component to mitigate operational disruption.
 - 🟢 Provides seamless fault masking and near-zero recovery time
 - 🔴 Exponentially increases architectural complexity, demanding distributed concurrency controls
 
+### 2. Consistent Hashing
+
+- hashing technique used to distribute data across a cluster of servers minimizing rehashing when number of server
+  changes
+- maps both the servers and the keys to a conceptual circular ring
+- Hash Ring: hash function maps its output to a fixed range (e.g., $0$ to $2^{32}-1$), which is visualized as a closed
+  circle.
+- Server Placement: Servers are hashed based on their IP address or name and placed around ring
+- Key Assignment: To find which server stores a key, the key is hashed to find its position on the ring
+    - moves clockwise from that position until it encounters a server
+- If a server leaves/fails: Keys are moved in that server to next one clockwise
+- If a server is added: It only takes a fraction of the keys from its immediate counter-clockwise neighbor.
+  **Virtual Nodes:**
+    - To prevent imbalance each server is hashed multiple times around the circle
+    - i.e. you encounter ServerA-Hash1, ServerB-Hash1, ServerA-Hash2
+- Used in:
+    - Distributed Caching: In Memcached, Distributed NoSQL Databases
+    - Load Balancing: HAProxy and NGINX utilize consistent hashing for HTTP load balancing for stickiness
+
+### 3. Rate Limiting Algorithms
+
+- **Token Bucket Algo**:
+    - A bucket has a maximum capacity of $B$ tokens.
+    - R tokens added to bucket every second
+    - When packet of size n arrives processed by removing n tokens, else queued or dropped
+    - Allows bursts of Traffic
+- **Leaky Bucket Algo**:
+    - Bucket leaks from bottom i.e. processes first arriving first
+    - holds a maximum queue size. If the queue is full, new requests overflow (are dropped).
+    - Processed at a continuous, fixed rate, regardless of when they enter.
+    - 🟢Guarantees a stable, consistent output rate, preventing traffic spikes
+    - 🔴Burst of traffic can fill the bucket quickly, causing subsequent valid requests to be delayed or dropped
+- **Fixed Window Counter**
+    - divides time into static windows and tracks request counts within each window
+    - Each window has a counter. Every incoming request increments the counter for the current window.
+    - If the counter exceeds the threshold, requests are rejected until the next window starts and the counter resets.
+    - 🔴"Boundary Problem." A burst of traffic can arrive at the end of one window and the beginning of the next doubling
+      requests
+- Sliding Window Counter
+    - This algorithm resolves the boundary problem of the Fixed Window approach by combining a current window count with
+      a percentage of the previous window's count.
+    - Mitigates the boundary burst problem while remaining relatively memory-efficient
+    - assumes traffic in the previous window was evenly distributed

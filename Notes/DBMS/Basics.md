@@ -484,6 +484,7 @@ they will always merge into the exact same correct state.
             - Create far more partitions than nodes giving more than 1 to each
             - Whenever there's a new node give it some from node with most
             - Whenever there's a node going down hand it to one with least
+            - Used in Redis
     - Automatic vs Manual:
         - Automatic Rebalancing can be convenient tool to rebalance data without needing admin supervision
             - 🔴 Can Massively slow down the network if done without just cause

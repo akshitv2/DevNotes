@@ -8,3 +8,4 @@ layout: default
 -  Circuit breaker
 - Server-to-Server Real-Time: gRPC vs. Webhooks vs. Message Queues
 - Advanced Event-Driven Concepts: Event Sourcing & CQRS
+- Distributed IDs: Generating unique, time-sorted IDs at scale (e.g., Twitter Snowflake algorithm)
