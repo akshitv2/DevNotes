@@ -4,244 +4,265 @@ nav_order: 2
 layout: default
 ---
 
-# Communication Protocols:
+# Communication Protocols
 
-1. ### Foundational Protocols:
-    - These are responsible for the actual transfer of data packets between devices:
-        1. TCP (Transmission Control Protocol):
-            - Communication oriented protocol that guarantees reliability and order
-            - Use three-way handshake, performs error checks and retransmission of lost packets
-            - Used in all things, files, emails, websites
-        2. UDP (User Datagram Protocol)
-            - Focuses on speed of data transfer over reliability
-            - Doesn't establish connection or check for errors, focuses on minimal latency
-            - Used in live video, online gaming anywhere where packet loss has no/low consequences
-2. ### Communication Paradigms:
-    1. ### RPC
-        - Remote Procedure Call
-        - Allows one program to execute a procedure in a different computer's address space as if it's a local function
-          call
-        - Uses stubs which serialize the parameters into a message sent through tcp to server
-        - Modern implementations like gRPC use Protocol Buffers for efficiency and bidirectional streaming
-        - Can work synchronously, asynchronously, streaming unidirectionally or bidirectionally
-        - Pro Cons:
-            - 🟢 Efficient, low latency, no requirements to create interfaces (looks like native code)
-            - 🔴 Tight coupling, brittle to changes
-            - 🔴 Not usable across orgs due to Tight coupling and requires exposing internal functions i.e. only when
-              both are in same high security env
-            - 🔴 Are strictly typed thus requiring both ends to upgrade together
-            - 🔴 Tries to mimic local function call which are predictable while rpc can fail due to any number of network
-              issues
-            - 🔴 Local function calls can take pointers but if sending over rpc means sending large amounts of heap along
-              with
-            - Note; New RPC like grpc make it clear that its not a local function call, support streams
-    2. ### SOAP:
-        - Simple Object Access Protocol
-        - Highly disciplined XML based protocol
-        - Independent of transport protocol (HTTP,SMTP,TCP), uses WSDL (Web Services Description Language) to define
-          contracts
-        - Each soap message has Header (for metadata) and Body (payload)
-        - 🔴 Uses XML which makes messages large and verbose, slower to parse
-        - 🔴 Requires stricter WSDL Ecosystem
-        - 🔴 Lack of human readability
-        - 🟢 Highly structured with message delivery guarantees
-    3. ### REST
-        - Representational State Transfer
-        - Built on top of HTTP (Not a protocol but an architecture)
-            - Note: HTTP ≠ REST: Rest is a paradigm with strict statelessness constraints. Http calls can be stateful.
-              RPC and SOAP often run on http but don't look like it because they are meant for machine to machine
-              communication
-            - It is actually an architectural standard not a protocol
-        - Utilizes standard HTTP methods: `GET` (Retrieve), `POST` (Create), `PUT` (Update/Replace), `PATCH` (Partial
-          Update), and `DELETE`
-        - Data usually in JSON Format
-        - Constraints to be RESTful:
-            1. Statelessness: Each request from client to server must contain all information necessary to complete the
-               request without the server using stored context i.e. session
-            2. Cacheability: Responses must implicitly or explicitly state themselves as cacheable or non cacheable
-            3. Uniform interface: using Uri for resource id, resource i.e. json body, header contains its own
-               description in how to process i.e. Content-Type
-        - 🟢 Easy to understand and implement
-        - 🟢 Uses user understandable language and methods
-        - 🟢 Statelessness makes it instantly scalable
-        - 🔴 Causes division into multiple requests for related resources which can be done in less in rpc or GraphQL
-    4. ### GraphQL
-        - Strongly typed Query language for APIs with a runtime for fulfilling these queries
-        - Powerful in terms of controlling exactly how much data you need, no over or under fetching like REST APIs
-        - Provides a single endpoint unlike REST
-        - Uses SDL(Schema Definition Language) which is a strongly typed schema
-        - Schema:
-            - The schema defines data types and their relationship as well as queries and mutations allowed
-            - Example:
-                - ```graphql
-                  # 1. The Schema (SDL)
-                  type User{
-                    id: ID!
-                    username: String!
-                    email: String
-                  }
-                  type Query{
-                    user(id: ID!): User
-                  }
-                  type Mutation {
-                    createUser(name: String!, email: String!): User!
-                  }
-              ```
-            - Note: ! → Non-nullable, [Type] → List of Type, ID → Unique identifier scalar
-        - Queries:
-            - Client sends a POST request containing exactly what they want
-                - Example:
-                    - ```graphql
-                      query {
-                        users {
-                          id
-                          name
-                          }
-                      }
-                  ```
-                - Response:
-                    - ```graphql
-                      query {
-                        user(id: "1") {
-                          name
-                          posts {
-                            title
-                          }
-                        }
-                      }
-                    ```
-        - Mutations (Write Data/Modify)
-            - ```graphql
-                mutation {
-                  createUser(name: "Charlie", email: "charlie@email.com") {
-                    id
-                    name
-                  }
-                }
-              ```
-        - Resolvers:
-            - Connect schema fields to actual data sources, essentially glue code connecting the query to actual DBs
-            - example:
-                - ```javascript
-                     const resolvers = {
-                         Query: {
-                             users: () => db.users,
-                             user: (_, {
-                                 id
-                             }) => db.users.find(u => u.id === id)
-                         },
-                         Mutation: {
-                             createUser: (_, {
-                                 name,
-                                 email
-                             }) => {
-                                 const newUser = {
-                                     id: Date.now().toString(),
-                                     name,
-                                     email
-                                 };
-                                 db.users.push(newUser);
-                                 return newUser;
-                             }
-                         },
-                         User: {
-                             posts: (user) => db.posts.filter(p => p.authorId === user.id)
-                         }
-                     };
-                  ```
-    5. ## Message Queue:
-        - Form of asynchronous service to service communication
-        - Decouple the Producer and Consumer
-        - Point to Point Communication: Allow for communication between one to another async
-            - Allow round-robin/least loaded algos to distribute
-            - Acknowledgements (ACKs): Ensure least once delivery, consumer sends ACK to publisher or else message is
-              requeued
-            - Persistence: Messages are often stored on disk to ensure they aren't lost if a service crashes before
-              processing them.
-        - Examples: RabbitMQ, IBM Mq
-        - ### Message Brokers:
-            - More complex orchestration pattern
-            - Supports broadcasting i.e. more than point to point:
-                - Can have publisher subscriber where one publishes to multiple
-                - Can have brokers use routing logic to send to specific consumer based on some logic
-            - Can translate data between different messaging protocols
-        - ### Dead Letter Queues:
-            - In case of message failing to be consumed i.e. no ACK being received on multiple attempts can become
-              poison
-              message
-            - Eats up resources over and over again and blocks others
-            - Routed to Dead Letter Queue based on:
-                - Exceeding `MaxDeliveryAttemps`
-                - Queue length limit: Exceeds the max number of messages in queue
-                - Schema mismatch
-        - ### Modern vs Legacy:
-            - Legacy:
-                - Simple Point to point communication
-                - IBM MQ, RabbitMQ
-                - Publish, Consume model, with destructive consumption on ACK
-                - Logic is centred on broker
-            - Modern Alternative: Message Streams
-    6. ## Publisher Subscriber (Pub Sub)
-        - One-to-many relationship
-        - Publisher sends message to a "topic"
-        - The topic is a channel managed by the broker
-        - Multiple subscribers can register to that topic. When message arrives, broadcasted to all active subscribers.
-        - Message Delivery Semantics
-            1. At-Most-Once Delivery
-                - broker fires the message across the network to the subscriber and immediately increments its offset or
-                  deletes the message from its buffer
-                - Does not wait for acknowledgement
-                - 🟢High Throughput Low Latency
-                - 🔴No reliability, Data loss
-            2. At-Least-Once Delivery
-                - Broker sends message and holds onto it waiting for acknowledgement ACK
-                - If Failure occurs or no ACK received in time broker resends it
-                - Requires subscriber to be **idempotent**
-            3. Exactly-Once Delivery
-                - Ideal Delivery
-                - Same as at least once but perfect idempotency using uuid to filter out duplicates
-        - Note: The broker is a standalone instance separate from pub or sub or consumer in MQ
-    7. ### WebSocket
-        - Communication protocol that provides full-duplex, bidirectional, and persistent communication over a single
-          TCP connection.
-        - Process:
-            - Handshake:
-                - The connection begins as a standard HTTP/1.1 request
-                - Client sends a specific HTTP request containing an Upgrade: websocket with a key
-            - Protocol Switch: If the server supports the protocol, it responds with an `HTTP 101` Switching Protocols
-              status code
-            - Persistent TCP Tunnel: Once this handshake succeeds, the HTTP layer is peeled away, leaving tcp connection
-              open
-        - Note: Websocket has to be initiated by client since servers have exposed ports not clients
-    8. ### Server-Sent Events (SSE)
-        - Browser receives automatic, asynchronous updates from a server over a single, long-lived HTTP connection
-        - Strictly unidirectional
-        - Process:
-            - Client establishes a standard HTTP connection using the HTML5 EventSource API.
-            - Client expects the server to respond with a specific Content-Type: text/event-stream. connection is kept
-              alive using standard HTTP keep-alive mechanisms.
-            - Server leaves the response stream open indefinitely. Whenever new data is available, it writes it to the
-              HTTP response body
-            - SSE operates natively over HTTP/1.1 or HTTP/2, meaning it effortlessly passes through firewalls and
-              proxies without configuration.
-    9. ### Long Polling
-        - traditional web development emulation technique (often grouped under the "Comet" umbrella) used to mimic
-          real-time data push over standard, short-lived HTTP/1.1 connections.
-        - Process:
-            - The Request: The client sends a standard HTTP request to the server requesting data.
-            - If the server does not have new data, instead of returning an empty response immediately, it intentionally
-              holds the request open (suspending the response thread) until an update occurs or a timeout threshold is
-              reached.
-            - The Response & Recycle: As soon as data becomes available, the server fulfills the HTTP request and sends
-              the response.
-            - The moment the client receives the data, it instantly closes that specific connection and issues a
-              brand-new HTTP request to the server, restarting the cycle.
-    10. ### Web Hook
-        - enables server-to-server, event-driven communication via user-defined HTTP callbacks
-        - Webhooks are designed to push data between backend servers.
-        - Process:
-          - The Registration (Subscription): Server A (the consumer) registers a specific URL and type of events with Server B (the provider/source)
-          - The Event Trigger: An asynchronous event occurs on Server B
-          - HTTP POST Payload: Instead of waiting for Server A to ask for updates, Server B immediately instantiates an outgoing HTTP POST request directed at Server A's registered URL.
-          - Acknowledgment: Server A processes the payload synchronously or pushes it to a queue, and immediately returns a 2xx HTTP status code to Server B to acknowledge receipt.
-            - If reponse 5xx Server B retries
+---
+
+## 1. Foundational Protocols
+
+These protocols are responsible for the actual transfer of data packets between physical or virtual devices across a
+network.
+
+### TCP (Transmission Control Protocol)
+
+* **Mechanism:** Connection-oriented protocol that guarantees reliable, ordered delivery of data.
+* **Features:** Utilizes a three-way handshake to establish a connection, performs error checking, and handles
+  retransmission of lost packets.
+* **Use Cases:** File transfers, emails, and standard web browsing (HTTP/HTTPS).
+
+### UDP (User Datagram Protocol)
+
+* **Mechanism:** Connectionless protocol that prioritizes transmission speed over reliability.
+* **Features:** Does not establish a formal connection, track packet state, or check for errors, resulting in minimal
+  latency.
+* **Use Cases:** Live video streaming, VoIP, and online gaming where minor packet loss has low consequences.
+
+---
+
+## 2. API & Remote Procedure Paradigms
+
+Architectures and frameworks used for structured machine-to-machine communication and data fetching.
+
+### RPC (Remote Procedure Call)
+
+* **Concept:** Allows a program to execute a procedure or function in a remote computer's address space as if it were a
+  local function call.
+* **Mechanism:** Uses client/server "stubs" to serialize and deserialize parameters into messages sent over a transport
+  layer (typically TCP).
+* **Modern Implementations:** Frameworks like gRPC utilize Protocol Buffers (Protobuf) for high-efficiency binary
+  serialization and support synchronous, asynchronous, or bidirectional streaming.
+* **Characteristics:**
+    * 🟢 Highly efficient, low latency, and highly readable since it behaves like native code without the overhead of
+      building custom interface routing.
+    * 🔴 Tight coupling makes services brittle to changes; require both client and server to upgrade simultaneously.
+    * 🔴 Unsuitable for cross-organization APIs because it requires exposing internal function signatures
+    * 🔴 Tries to mimic local function call which are predictable while rpc can fail due to any number of network issues
+    * 🔴 Passing memory pointers locally is trivial, but doing so over RPC requires serializing and sending large amounts
+      of heap data over the wire.
+    * *Note: Modern frameworks like gRPC explicitly design away from the "hidden network call" illusion by making
+      streams and network states clear.*
+
+### SOAP (Simple Object Access Protocol)
+
+* **Concept:** A highly disciplined, XML-based protocol strictly bound to formal contracts.
+* **Mechanism:** Transport-independent (can run over HTTP, SMTP, TCP, etc.) and relies on WSDL (Web Services Description
+  Language) to define strict interface contracts.
+* **Structure:** Each message contains an explicit `Header` (for metadata/security context) and a `Body` (the data
+  payload).
+* **Characteristics:**
+    * 🟢 Highly structured with built-in message delivery guarantees and formal security standards.
+    * 🔴 Uses XML, making payloads large, verbose, and computationally expensive to parse.
+    * 🔴 Requires managing a complex, strict WSDL tooling ecosystem.
+    * 🔴 Extremely poor human readability compared to JSON.
+
+### REST (Representational State Transfer)
+
+* **Concept:** An architectural style (not a protocol) designed around network resources, typically built on top of
+  HTTP.
+    * *Note: HTTP $\neq$ REST. REST is a paradigm with strict architectural constraints. Raw HTTP calls can be stateful,
+      and protocols like SOAP or RPC frequently run over HTTP without adhering to REST principles.*
+* **Mechanism:** Utilizes standard HTTP methods for CRUD operations: `GET` (Retrieve), `POST` (Create), `PUT` (
+  Update/Replace), `PATCH` (Partial Update), and `DELETE`.
+* **Data Format:** Typically standardizes on JSON payloads.
+* **Core Architectural Constraints:**
+    1. **Statelessness:** Each request from a client must contain all the data necessary to understand and complete the
+       request. The server cannot retain any session context.
+    2. **Cacheability:** Responses must explicitly define themselves as cacheable or non-cacheable to optimize network
+       efficiency.
+    3. **Uniform Interface:** Resources are uniquely identified using URIs, representation is decoupled (e.g., JSON
+       bodies), and messages are self-describing via HTTP headers (e.g., `Content-Type`).
+* **Characteristics:**
+    * 🟢 Intuitive, widely adopted, and easy to implement.
+    * 🟢 Relies on human-readable formats and semantic HTTP verbs.
+    * 🟢 Strict statelessness allows for instant horizontal scaling.
+    * 🔴 Can lead to "over-fetching" or "under-fetching," forcing clients to make multiple sequential HTTP requests for
+      related resources that could be fetched in a single call via RPC or GraphQL.
+
+### GraphQL
+
+* **Concept:** A strongly typed query language for APIs paired with a server-side runtime engine for executing queries.
+* **Mechanism:** Exposes a single endpoint (typically via an HTTP `POST` request) and allows the client to request
+  exactly the data fields required, preventing over-fetching or under-fetching.
+* **Schema Definition Language (SDL):** A strictly typed schema defining data structures, object relationships,
+  operations, and data mutations.
+    * *Syntax Key: `!` indicates non-nullable, `[Type]` indicates a list of that type, and `ID` represents a unique
+      scalar identifier.*
+* **Example Schema:**
+    ```graphql
+    type User {
+      id: ID!
+      username: String!
+      email: String
+      posts: [Post]
+    }
+
+    type Post {
+      id: ID!
+      title: String!
+    }
+
+    type Query {
+      user(id: ID!): User
+    }
+
+    type Mutation {
+      createUser(username: String!, email: String!): User!
+    }
+    ```
+* **Example Query & Response:**
+    * **Client Query:**
+        ```graphql
+        query {
+          user(id: "1") {
+            username
+            posts {
+              title
+            }
+          }
+        }
+        ```
+    * **Server JSON Response:**
+        ```json
+        {
+          "data": {
+            "user": {
+              "username": "Alice",
+              "posts": [
+                { "title": "Introduction to Protocols" }
+              ]
+            }
+          }
+        }
+        ```
+* **Example Mutation:**
+    ```graphql
+    mutation {
+      createUser(username: "Charlie", email: "charlie@email.com") {
+        id
+        username
+      }
+    }
+    ```
+* **Resolvers:** The underlying server-side glue code that maps individual schema fields to backend databases,
+  microservices, or third-party APIs.
+    ```javascript
+    const resolvers = {
+        Query: {
+            user: (_, { id }) => db.users.find(u => u.id === id)
+        },
+        Mutation: {
+            createUser: (_, { username, email }) => {
+                const newUser = { id: Date.now().toString(), username, email };
+                db.users.push(newUser);
+                return newUser;
+            }
+        },
+        User: {
+            posts: (user) => db.posts.filter(p => p.authorId === user.id)
+        }
+    };
+    ```
+
+---
+
+## 3. Event-Driven & Messaging Paradigms
+
+Asynchronous architecture models used to pass data between isolated backend systems.
+
+### Message Queues
+
+* **Concept:** Form of asynchronous service-to-service communication used to decouple producers from consumers.
+* **Point-to-Point Communication:** Designed for direct routing from one sender to a target receiver. If multiple
+  consumers exist, messages are distributed using load-balancing algorithms (e.g., round-robin).
+* **Acknowledgements (ACKs):** To guarantee at-least-once delivery, consumers must explicitly send an ACK back to the
+  queue upon successful processing; otherwise, the message is requeued.
+* **Persistence:** Messages are written to disk to ensure no data loss occurs if a broker service crashes mid-flight.
+* **Dead Letter Queues (DLQ):** Unprocessable messages (poison messages) that continuously fail delivery are redirected
+  to a DLQ to avoid blocking the main pipeline. Triggers include:
+    * Exceeding a defined `MaxDeliveryAttempts`.
+    * Breaching queue length bounds or timeouts.
+    * Data schema mismatch payloads.
+* **Legacy vs. Modern Architecture:**
+    * *Legacy (Traditional Message Brokers):* Centered on the broker logic (e.g., IBM MQ, RabbitMQ). They rely on a
+      destructive consumption model—once an ACK is received, the message is permanently deleted from the queue.
+    * *Modern (Event Streams):* Log-centric streaming systems (e.g., Apache Kafka, Apache Pulsar) where messages are
+      persistent, immutable append-only logs, allowing multiple consumers to replay historical streams independently.
+
+### Publisher-Subscriber (Pub/Sub)
+
+* **Concept:** An asynchronous, one-to-many broadcasting architecture pattern.
+* **Mechanism:** Producers write messages to an isolated channel called a **Topic** managed by a standalone broker
+  instance. Any number of isolated consumer systems can register as subscribers to that topic to receive identical
+  broadcasted payloads.
+* **Message Delivery Semantics:**
+    1. **At-Most-Once:** The broker fires the message and immediately forgets it. High throughput and minimal latency,
+       but susceptible to silent data loss.
+    2. **At-Least-Once:** The broker holds messages in a buffer until a receipt ACK is returned. Requires the downstream
+       subscriber to be completely **idempotent** to safely handle re-deliveries.
+    3. **Exactly-Once:** Achieved by combining at-least-once mechanics with unique message UUID de-duplication layers to
+       ensure data is processed perfectly exactly once.
+
+### Webhooks
+
+* **Concept:** Event-driven, server-to-server communication utilizing automated, user-defined HTTP callbacks.
+* **Mechanism:**
+    1. **Subscription:** Consumer Server A registers a target URL callback with Provider Server B.
+    2. **Trigger:** An event occurs natively on Server B.
+    3. **Payload:** Server B initiates an outgoing HTTP `POST` request directly delivering the event data payload to
+       Server A's registered URL.
+    4. **ACK:** Server A processes the payload and returns an immediate HTTP `2xx` success status. If a `5xx` error is
+       received, Server B falls back to a retry strategy.
+
+---
+
+## 4. Real-Time Web Communication Paradigms
+
+Mechanisms utilized to establish low-latency, real-time channels between clients (e.g., web browsers) and backend
+servers.
+
+### WebSockets
+
+* **Concept:** A communication protocol providing full-duplex, bidirectional, persistent communication channels over a
+  single TCP connection.
+* **The Handshake Process:**
+    1. **Initiation:** The client initiates a standard HTTP/1.1 request containing an explicit `Upgrade: websocket`
+       header along with a unique security key.
+    2. **Switching:** If supported, the server returns an `HTTP 101 Switching Protocols` status code response.
+    3. **Tunnel Established:** The HTTP abstraction layer is dropped, leaving a raw, long-lived bidirectional TCP tunnel
+       open for streaming low-overhead frames.
+* *Note: Because server ports are public and client ports are secure/hidden, WebSockets must always be initialized by
+  the client.*
+
+### Server-Sent Events (SSE)
+
+* **Concept:** A highly efficient, strictly unidirectional data streaming architecture from server to client over a
+  persistent HTTP connection.
+* **The Process:**
+    1. The client initializes a connection natively via the HTML5 `EventSource` API.
+    2. The client expects an HTTP response with a `Content-Type: text/event-stream` header.
+    3. The server keeps the HTTP transport channel open indefinitely via standard HTTP keep-alive mechanisms, pushing
+       down text data payloads as events occur.
+* **Advantage:** Runs natively over HTTP/1.1 or HTTP/2, passing through corporate firewalls and reverse proxies
+  seamlessly without complex configuration.
+
+### Long Polling
+
+* **Concept:** A legacy real-time emulation technique (historically grouped under "Comet" solutions) designed to mimic
+  instant server push over short-lived HTTP connections.
+* **The Process:**
+    1. The client issues a standard HTTP request to the server requesting data updates.
+    2. If no data is available, the server intentionally blocks/suspends the open response thread, holding the
+       connection open until an update occurs or a timeout threshold is met.
+    3. As soon as data is available, the server fulfills the pending HTTP request and sends the payload.
+    4. The moment the client parses the response, it terminates the connection and immediately spins up a brand-new HTTP
+       request, restarting the cycle.
