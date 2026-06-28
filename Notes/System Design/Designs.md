@@ -105,8 +105,13 @@ healthy component to mitigate operational disruption.
     - If the counter exceeds the threshold, requests are rejected until the next window starts and the counter resets.
     - 🔴"Boundary Problem." A burst of traffic can arrive at the end of one window and the beginning of the next doubling
       requests
-- Sliding Window Counter
+- **Sliding Window Counter**
     - This algorithm resolves the boundary problem of the Fixed Window approach by combining a current window count with
       a percentage of the previous window's count.
     - Mitigates the boundary burst problem while remaining relatively memory-efficient
     - assumes traffic in the previous window was evenly distributed
+
+- **Exponential Backoff with Jitter**
+    - Problem: If a service goes down, hundreds of thousands of client apps will instantly retry. If they all retry at
+      exactly 1s, 2s, and 4s, they will repeatedly crash the recovering server.
+    - Solution: Clients wait exponentially longer between retries, plus they add a random delay (Jitter).

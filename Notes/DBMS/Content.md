@@ -2,19 +2,19 @@
 parent: DBMS
 nav_order: 1
 layout: default
-title: Basics
+title: DBMS
 ---
+# Module 1: Foundations of Data Storage
 
-# Basics
-
-### 1. Database vs Datastore
+## 1. Database vs Datastore
 
 - Data Store: A broad, generic term for any repository where data is kept persistently. It is an umbrella category that
   includes files, folders, hard drives, and cloud storage, as well as databases.
 - Database: A specific, highly structured type of data store that includes a Database Management System (DBMS). It
   provides advanced capabilities for querying, data integrity, security, and transaction management.
 
-### 2. OLAP vs OLTP Database
+## 2. Workload Classification
+### OLAP vs OLTP Database
 
 OLTP (Online Transaction Processing) is optimized for executing operational tasks
 OLAP (Online Analytical Processing) is optimized for complex data analysis and querying large volumes of historical data
@@ -36,6 +36,8 @@ OLAP (Online Analytical Processing) is optimized for complex data analysis and q
 - Note: OLTP includes more than just transactions, likes on an instagram post which go for eventual consistency and BASE
   are also OLTP
 - Third Type: OLAP DBs (not included in the two since the first two are used for OLTP)
+
+## 1.2 NoSQL Deep Dive (Non-Relational Models)
 
 ### 4. Relational Databases
 
@@ -89,20 +91,6 @@ Include all non RDB
     - Best Use Case: Social networks, fraud detection networks, recommendation engines.
 
 ### 6. DB Indexing Schemes
-
-- Indexes are critical structures used to speed up data retrieval.
-- Without an index, the database engine must perform a full table scan, checking every single row.
-- ### Clustered Index:
-  - determines the physical order of data storage within a table
-  - When you create a clustered index on a column db sorts actual table rows based on those keys
-- ### Non-Clustered Index
-  - index is a completely separate structure from the actual table data
-  - contains a sorted list of the indexed columns along with a pointer back to the original row
-
-### Composite Index
-- Index that is built on two or more columns of a table
-- concatenates multiple keys together to create a unique sort order.
-- 
 
 | Index Type                                | Underlying Structure             | Primary Use Case                       | Key Characteristic                                                                                       |
 |-------------------------------------------|----------------------------------|----------------------------------------|----------------------------------------------------------------------------------------------------------|

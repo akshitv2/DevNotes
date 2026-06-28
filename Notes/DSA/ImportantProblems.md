@@ -7,6 +7,7 @@ layout: default
 
 | x  | Problem                                                    | Solution                                                                                                                                          |
 |----|------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------|
+| 🟢 | Generate all subarrays of an array [1,2] -> [1][2][1,2]    | Double loop, creating every in order array starting from that outer index printed at every step                                                   |
 | 🟢 | Check Substring of Other                                   | Loop String B over A, check if B in A at every position                                                                                           |
 | 🟠 | Check Substring of Other                                   | KMP Algo                                                                                                                                          |
 |    |                                                            | The Rule: When a mismatch occurs, use precomputed table to find the longest matching prefix that is also a suffix of the pattern analyzed so far. |
@@ -27,12 +28,13 @@ layout: default
 | 🟢 | Maximum Subarray Sum [2, 3, -8, **7, -1, 2, 3**] -> 11     | Max can only be formed by positive sequence, if a negative is too negative to bridge the gap start over                                           |
 |    |                                                            | Maintain a runningsum which resets on going -ve                                                                                                   |
 | 🟠 | Sum Of All Subarrays                                       | Counting Technique                                                                                                                                |
-|    |                                                            | For each containing index i arrays can start from (i+1) places and end at (n-i) places so solution at each index = (i+1)*(n-i)                    |
+|    | [1, 2, 3, 4] -> 50                                         | For each containing index i arrays can start from (i+1) places and end at (n-i) places so solution at each index = (i+1)*(n-i)                    |
 | 🟠 | Maximum Product of Subarray sequence                       | Maintain largest and smallest number possible till i (since i can flip it if i is negative)                                                       |
 |    | [-2, **6, -3, -10**, 0, 2] -> 180                          | Finally return largest overall                                                                                                                    |
 | 🟢 | Sum of Diagonals of 2D array                               | Just know diagonals rule are i == j  and i+j == n-1                                                                                               |
-|    |                                                            |                                                                                                                                                   |
-|    |                                                            |                                                                                                                                                   |
+| 🟠 | Max Sum of Circular Subarray                               | Kadane's, circular array is a loop, we need to find either the max subarray or minsubarray and subtract from total                                |
+|    |                                                            | Kadane: maintain cursum and maxsum, if cursum + arr[i] < arr[i] -> cursum = arr[i] i.e. we restart                                                |
+| 🟠 | Next Smallest Palindrome                                   |                                                                                                                                                   |
 |    |                                                            |                                                                                                                                                   |
 |    |                                                            |                                                                                                                                                   |
 |    |                                                            |                                                                                                                                                   |
