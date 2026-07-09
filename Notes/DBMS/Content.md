@@ -124,7 +124,8 @@ DBs.
 - Your data is unstructured, or you have no relational data.
 - You only need to serialize/deserialize data (JSON, XML, YAML, etc.).
 - You need to store a massive amount of data.
-- Note: NoSQL is faster that RDB due to the lack of costly joins and B-trees take more time as they grow very large compared to O(1) usually in no sql
+- Note: NoSQL is faster that RDB due to the lack of costly joins and B-trees take more time as they grow very large
+  compared to O(1) usually in no sql
 
 ### 1.8 NoSQL Deep Dive (Non-Relational Models)
 
