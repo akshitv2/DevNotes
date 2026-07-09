@@ -2,22 +2,82 @@
 parent: DBMS
 nav_order: 1
 layout: default
-title: DBMS
+title: DBMS Notes
 ---
-# Module 1: Foundations of Data Storage
 
-## 1. Database vs Datastore
+# DBMS Notes
 
-- Data Store: A broad, generic term for any repository where data is kept persistently. It is an umbrella category that
-  includes files, folders, hard drives, and cloud storage, as well as databases.
-- Database: A specific, highly structured type of data store that includes a Database Management System (DBMS). It
-  provides advanced capabilities for querying, data integrity, security, and transaction management.
+> Organized into 11 modules, roughly building from fundamentals → design → SQL → storage internals →
+> transactions/concurrency → distributed systems → an interview quick-reference appendix at the end.
+> Sections marked **🆕 Added** were not in either of your original note sets — either something was referenced but never
+> explained, or a topic was missing entirely. A list of further topics you may still want to add is at the very end.
 
-## 2. Workload Classification
-### OLAP vs OLTP Database
+---
 
-OLTP (Online Transaction Processing) is optimized for executing operational tasks
-OLAP (Online Analytical Processing) is optimized for complex data analysis and querying large volumes of historical data
+## Module 1: Foundations of Data Storage
+
+### 1.1 What Is a DBMS?
+
+A DBMS (Database Management System) is software that stores, retrieves, and manages data efficiently, providing
+concurrent access, security, and data integrity — as opposed to a plain file system, which lacks these guarantees.
+
+| File System                     | DBMS                                        |
+|---------------------------------|---------------------------------------------|
+| Data redundancy is common       | Redundancy minimized via normalization      |
+| No built-in concurrency control | Handles concurrent access safely            |
+| No standard query mechanism     | SQL for querying                            |
+| Manual backup/recovery          | Built-in crash recovery                     |
+| No data integrity constraints   | Enforces constraints (PK, FK, unique, etc.) |
+
+### 1.2 Database vs. Data Store
+
+- **Data Store**: A broad, generic term for any repository where data is kept persistently. It is an umbrella category
+  that includes files, folders, hard drives, and cloud storage, as well as databases.
+- **Database**: A specific, highly structured type of data store that includes a DBMS, providing advanced capabilities
+  for querying, data integrity, security, and transaction management.
+
+### 1.3 RDBMS vs. DBMS
+
+An RDBMS (Relational DBMS) stores data in tables (relations) with rows and columns, enforces relationships via keys, and
+supports ACID transactions and normalization. A plain DBMS doesn't necessarily use tables (e.g. hierarchical or network
+models) or enforce relational constraints.
+
+- MySQL, PostgreSQL, Oracle → RDBMS.
+- MongoDB is **not** an RDBMS — it's NoSQL/document-based.
+
+### 1.4 Three-Schema Architecture (Data Abstraction)
+
+1. **Physical/Internal level** — how data is actually stored on disk (files, indexes, blocks).
+2. **Logical/Conceptual level** — what data is stored and the relationships between pieces (tables, schemas).
+3. **View/External level** — how end users/applications see the data (custom views per user group).
+
+**Data Independence:**
+
+- *Physical data independence*: changing physical storage without changing the conceptual schema.
+- *Logical data independence*: changing the conceptual schema without changing external views/applications (harder to
+  achieve).
+
+### 1.5 Keys
+
+| Key           | Meaning                                                             |
+|---------------|---------------------------------------------------------------------|
+| Super Key     | Any set of attributes that uniquely identifies a row                |
+| Candidate Key | Minimal super key (no redundant attribute)                          |
+| Primary Key   | Chosen candidate key; can't be NULL, must be unique                 |
+| Alternate Key | A candidate key not chosen as the primary key                       |
+| Composite Key | A key made of 2+ attributes                                         |
+| Foreign Key   | An attribute referencing the primary key of another table           |
+| Surrogate Key | An artificial key (e.g. auto-increment ID) with no business meaning |
+
+**Interview trap:** a table can have multiple candidate keys but only **one** primary key. Foreign keys **can** be
+NULL (unlike primary keys), unless explicitly constrained otherwise.
+
+### 1.6 OLTP vs. OLAP
+
+- **OLTP** (Online Transaction Processing) is optimized for executing operational tasks — fast, frequent, small
+  read/write transactions (e.g. banking apps).
+- **OLAP** (Online Analytical Processing) is optimized for complex data analysis and querying large volumes of
+  historical data (e.g. BI dashboards, data warehouses).
 
 | Feature        | OLTP (Transaction)                                          | OLAP (Analysis)                                                    |
 |----------------|-------------------------------------------------------------|--------------------------------------------------------------------|
@@ -28,594 +88,957 @@ OLAP (Online Analytical Processing) is optimized for complex data analysis and q
 | Data Volume    | Gigabytes to Terabytes (frequently archived).               | Terabytes to Petabytes (historical data).                          |
 | Storage Style  | Typically row-oriented.                                     | Typically column-oriented.                                         |
 
-### 3. Types of DataBases
+> Note: OLTP includes more than just transactions — e.g. likes on an Instagram post, which go for eventual consistency
+> and BASE, are also OLTP.
 
-- Broadly Two Types:
-    - Relational Databases (RDBMS)
-    - NoSQL Databases
-- Note: OLTP includes more than just transactions, likes on an instagram post which go for eventual consistency and BASE
-  are also OLTP
-- Third Type: OLAP DBs (not included in the two since the first two are used for OLTP)
+**Star Schema** (common OLAP design): a central fact table (measurable events, e.g. Sales) connected to multiple
+denormalized dimension tables (e.g. Time, Product, Customer) — used in data warehousing for fast aggregate queries.
 
-## 1.2 NoSQL Deep Dive (Non-Relational Models)
+### 1.7 RDBMS vs. NoSQL vs. Modern Hybrid Engines
 
-### 4. Relational Databases
+Broadly two types of database exist — Relational (RDBMS) and NoSQL — plus a third type not used for OLTP at all: OLAP
+DBs.
 
-* Data Model: Rows and columns in structured tables. Uses strict schemas.
-* Properties: High ACID (Atomicity, Consistency, Isolation, Durability) compliance.
-* Scaling: Primarily vertical (buying a bigger machine).
-    * Horizontal scaling via sharding or replication is complex.
-        * Why? Hard to commit to ACID
-        * locking rows or tables to ensure a transaction succeeds completely or fails completely is straightforward on
-          Single machine
-        * For multiple machines need to use 2 Phase commit which adds significant latency
-* For Financial systems, order management, or any application where data integrity and complex joins are non-negotiable.
-* Historically RDB are the goto solution due to being a good default support
-* Reasons for using NoSQL DBs:
-    * Your application requires super-low latency.
-    * Your data are unstructured, or you do not have any relational data.
-    * You only need to serialize and deserialize data (JSON, XML, YAML,
-      etc.).
-    * You need to store a massive amount of data.
+|             | SQL (RDBMS)                                   | NoSQL                                                                         |
+|-------------|-----------------------------------------------|-------------------------------------------------------------------------------|
+| Schema      | Fixed, predefined                             | Flexible/dynamic                                                              |
+| Scaling     | Vertical (mostly)                             | Horizontal (sharding-friendly)                                                |
+| Consistency | Strong (ACID)                                 | Often eventual (BASE), though some support tunable consistency                |
+| Use case    | Complex relationships, transactions (banking) | High-volume, flexible schema (social feeds, logs, catalogs)                   |
+| Examples    | MySQL, PostgreSQL, Oracle                     | MongoDB (document), Redis (key-value), Cassandra (wide-column), Neo4j (graph) |
 
-### 5. NoSQL Databases
+**Relational Databases**
 
-Include all non RDB
+- **Data Model**: rows and columns in structured tables, strict schemas.
+- **Properties**: high ACID compliance.
+- **Scaling**: primarily vertical (buying a bigger machine).
+    - Horizontal scaling via sharding/replication is complex — hard to commit to ACID, since locking rows/tables on a
+      single machine is easy, but across multiple machines you need a 2-Phase Commit, which adds significant latency (
+      see [§10.5](#105-two-phase-commit-2pc-for-distributed-transactions-)).
+- Best for: financial systems, order management, or any application where data integrity and complex joins are
+  non-negotiable.
 
-- Key-Value Stores:
-    - Concept: Highly performant hash tables.
-    - Examples: Redis, Memcached.
-    - Best Use Case: Caching, session management, leaderboards.
-- Document Databases:
-    - Concept: Stores data as JSON, BSON, or XML documents.
-    - Examples: MongoDB, DynamoDB.
-    - Best Use Case: Product catalogs, user profiles, content management.
-- Wide-Column Stores:
-    - Concept: Stores data in column families instead of rows
-        - Essentially:
-            - $$\text{Map}<\text{RowKey}, \text{Map}<\text{ColumnName}, \text{Value}>>$$
-            - Where each row can have different columns unlike RDB
-            - Rows can be infinitely wide and sparse, the database cannot store a row as a contiguous block of data on
-              disk.
-            - Instead, every single column value (or "cell") is treated as an independent key-value pair.
-    - Highly optimized for massive write throughput and distributed setups.
-    - Examples: Cassandra, ScyllaDB.
-    - Best Use Case: IoT telemetry, time-series logging, high-volume analytics.
-    - popularized by Google's Bigtable paper
-    - Reason for high throughput?
-        - Use of LSM Trees and lazy insertion using a WAL
-        - In cases of conflicts, happen at read (since LSM Trees do not have single key consistency) last write wins
-- Graph Databases:
-    - Concept: Uses nodes (entities) and edges (relationships) to represent data.
+**Reasons to use NoSQL instead:**
+
+- Your application requires super-low latency.
+- Your data is unstructured, or you have no relational data.
+- You only need to serialize/deserialize data (JSON, XML, YAML, etc.).
+- You need to store a massive amount of data.
+- Note: NoSQL is faster that RDB due to the lack of costly joins and B-trees take more time as they grow very large compared to O(1) usually in no sql
+
+### 1.8 NoSQL Deep Dive (Non-Relational Models)
+
+- **Key-Value Stores**
+    - Concept: highly performant hash tables.
+    - Examples: Redis, DynamoDB, Memcached.
+    - Best use case: caching, session management, leaderboards (simplest, fastest for lookups by key).
+
+- **Document Databases**
+    - Concept: stores data as JSON, BSON, or XML documents; flexible schema.
+    - Examples: MongoDB, CouchDB, DynamoDB.
+    - Best use case: product catalogs, user profiles, content management.
+
+- **Wide-Column / Column-Family Stores**
+    - Concept: stores data in column families instead of rows.
+        - Essentially: $$\text{Map}<\text{RowKey}, \text{Map}<\text{ColumnName}, \text{Value}>>$$
+        - Each row can have different columns, unlike RDB.
+        - Rows can be infinitely wide and sparse — every column value ("cell") is treated as an independent key-value
+          pair, so the DB can't store a row as one contiguous block on disk.
+    - Highly optimized for writes and column-based reads over huge datasets; distributed by design.
+    - Examples: Cassandra, HBase, ScyllaDB.
+    - Best use case: IoT telemetry, time-series logging, high-volume analytics.
+    - Popularized by Google's Bigtable paper.
+    - Reason for high throughput: LSM Trees + lazy insertion via a Write-Ahead Log (WAL). Conflicts (since LSM Trees
+      lack single-key consistency) are resolved at read time — last write wins.
+
+- **Graph Databases**
+    - Concept: uses nodes (entities) and edges (relationships) to represent data — great for relationship-heavy queries.
     - Examples: Neo4j, Amazon Neptune.
-    - Best Use Case: Social networks, fraud detection networks, recommendation engines.
+    - Best use case: social networks, fraud detection networks, recommendation engines.
 
-### 6. DB Indexing Schemes
+### 1.9 Other Database Paradigms
+
+**Multi-Model Databases**
+
+Most modern databases no longer limit themselves to a single category.
+
+- **Redis**: originated as a key-value cache; now natively handles JSON documents, time-series data, graph
+  relationships, and vector search.
+- **MongoDB**: primarily a document store; now includes graph lookups, time-series collections, and vector embeddings.
+- **PostgreSQL / MySQL**: PostgreSQL handles relational tables, structured JSON documents (JSONB), and vector data (
+  pgvector).
+
+**OLAP DBs**
+
+- Require databases optimized for complex, large-scale aggregation queries.
+- Use columnar storage, since large-scale analytics only need a few columns at a time.
+- Often the storage solution of choice for logs, thanks to:
+    - **Columnar storage**
+    - **Append-only** writes, which OLAP engines are optimized for.
+    - **High compression ratios**: column-by-column storage puts similar values (e.g. repeating strings like `INFO`/
+      `ERROR`) next to each other on disk, giving 5–10x better compression than standard RDBMS.
+    - This is exactly how Splunk and the ELK stack (specifically Elasticsearch) work under the hood.
+
+**Other Modern DBs in the Age of AI**
+
+| Database Category            | Core Focus                                                                                       | Prominent Examples                      |
+|------------------------------|--------------------------------------------------------------------------------------------------|-----------------------------------------|
+| **Vector Databases**         | Optimizing high-dimensional embeddings for GenAI and LLM semantic search.                        | Pinecone, Milvus, Qdrant                |
+| **Time-Series Databases**    | Ingesting and querying massive streams of time-stamped IoT, metrics, and log data.               | InfluxDB, TimescaleDB                   |
+| **NewSQL / Distributed SQL** | Combines the horizontal scalability of NoSQL with the strict ACID compliance of traditional SQL. | CockroachDB, Google Spanner, YugabyteDB |
+
+- NewSQL avoids the traditional, expensive 2PC by issuing copies to each node and using a consensus mechanism instead (
+  see [§8.3](#83-consensus-raft--paxos)).
+
+### 1.10 Decision Matrix for System Design Interviews
+
+1. **Read/Write ratio?**
+    - Heavy writes → LSM-Tree based NoSQL (Cassandra) or append-only logs.
+    - Heavy reads → RDBMS with read replicas, or key-value caches (Redis) in front.
+2. **Complex relationships/joins?**
+    - Yes → RDBMS or Graph DB. No → Document or key-value store.
+3. **Consistency requirements?**
+    - Strict ACID → RDBMS. Eventual consistency acceptable → NoSQL / AP systems.
+4. **Data volume & growth?**
+    - Fits on a single terabyte-scale machine → stick to RDBMS.
+    - Petabyte scale requiring horizontal scaling → NoSQL or natively distributed SQL (CockroachDB, Spanner).
+
+---
+
+## Module 2: ER Model & Relational Design
+
+### 2.1 ER Model (Entity-Relationship Model)
+
+- **Entity**: a real-world object (e.g. Employee, Student). Represented as a rectangle.
+- **Attribute**: property of an entity (ellipse). Types: simple, composite, derived, multi-valued.
+- **Relationship**: association between entities (diamond).
+- **Cardinality**: one-to-one, one-to-many, many-to-many.
+- **Participation constraint**: total (double line — every entity must participate) vs. partial.
+- **Weak entity**: doesn't have a primary key of its own; depends on a strong (owner) entity via a foreign key + partial
+  key (discriminator). Represented with a double rectangle.
+- ![img_3.png](img_3.png)
+- ![img_2.png](img_2.png)
+
+### 2.2 Generalization, Specialization & Aggregation
+
+- **Specialization**: top-down — splitting a general entity into sub-entities (e.g. Employee → Manager, Engineer).
+- **Generalization**: bottom-up — combining common attributes of entities into a general entity.
+- **Aggregation**: treating a relationship set as an entity, to allow relationships between relationships.
+
+### 2.3 Converting ER to a Relational Schema
+
+A common interview ask:
+
+- Each strong entity → a table with its attributes; key attribute → primary key.
+- Weak entity → table includes owner's primary key as a foreign key, combined with the partial key to form the composite
+  primary key.
+- 1:1 relationship → merge into either table, or add an FK on either side (with a unique constraint).
+- 1:N relationship → FK goes on the "many" side.
+- M:N relationship → separate junction/bridge table with FKs to both entities, forming a composite primary key.
+- Multi-valued attribute → separate table with an FK back to the owning entity.
+
+### 2.4 Relational Model & Relational Algebra
+
+A **relation** = table. **Tuple** = row. **Attribute** = column. **Degree** = number of attributes. **Cardinality** =
+number of tuples.
+
+**Relational Algebra Operators** (commonly asked to write expressions for):
+
+- **σ (Selection)** — filters rows: `σ(salary > 50000)(Employee)`
+- **π (Projection)** — selects columns: `π(name, salary)(Employee)`
+- **⋈ (Join)** — combines relations based on a condition
+- **∪ (Union)**, **∩ (Intersection)**, **− (Set Difference)** — require union-compatible relations (same attributes)
+- **× (Cartesian Product)** — combines every tuple of R with every tuple of S
+- **ρ (Rename)**
+
+**Join types in relational algebra:**
+
+- **Theta join**: join with any condition (θ).
+- **Equi-join**: theta join where the condition is equality.
+- **Natural join (⋈)**: equi-join on common attribute names, with the duplicate column removed automatically.
+
+---
+
+## Module 3: Normalization
+
+**Goal:** eliminate redundancy and avoid update/insert/delete anomalies.
+
+### 3.1 Functional Dependency (FD)
+
+`A → B` means the value of A determines the value of B (A functionally determines B).
+
+### 3.2 Normal Forms
+
+| Normal Form    | Rule                                                                                                                                                                                                         |
+|----------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **1NF**        | Every attribute holds atomic (indivisible) values; no repeating groups/arrays in a cell.                                                                                                                     |
+| **2NF**        | Must be in 1NF + no *partial dependency* — a non-key attribute must depend on the whole composite primary key, not just part of it. Only relevant when the PK is composite.                                  |
+| **3NF**        | Must be in 2NF + no *transitive dependency* — a non-key attribute must not depend on another non-key attribute; every non-key attribute depends directly on the key, the whole key, and nothing but the key. |
+| **BCNF**       | Stricter version of 3NF: for every FD `A → B`, A must be a super key. Handles edge cases 3NF misses, when there are multiple overlapping candidate keys.                                                     |
+| **4NF**        | No multi-valued dependencies — an attribute shouldn't have multiple independent multi-valued facts in the same table (e.g. a Student table shouldn't mix multi-valued Hobbies and Languages independently).  |
+| **5NF (PJNF)** | No join dependency — a table can be decomposed into smaller tables and reconstructed without loss of information (rarely asked in depth).                                                                    |
+
+**Classic example asked in interviews:**
+
+```
+Table: StudentCourse(StudentID, CourseID, StudentName, CourseName, Instructor)
+```
+
+- `StudentName` depends only on `StudentID` (partial dependency, if the PK is `StudentID + CourseID`) → violates 2NF.
+- `Instructor` likely depends on `CourseID` → `CourseName` → transitive-like issue.
+- Fix: decompose into `Student(StudentID, StudentName)`, `Course(CourseID, CourseName, Instructor)`,
+  `Enrollment(StudentID, CourseID)`.
+
+### 3.3 Denormalization
+
+Intentionally introducing redundancy (merging tables, adding duplicate columns) to improve read performance in
+read-heavy systems, at the cost of write complexity/anomalies. Common in data warehousing/OLAP and NoSQL-influenced
+designs — see [§1.6](#16-oltp-vs-olap).
+
+---
+
+## Module 4: SQL Fundamentals
+
+### 4.1 DDL, DML, DCL, TCL
+
+- **DDL** (Data Definition): `CREATE`, `ALTER`, `DROP`, `TRUNCATE`
+- **DML** (Data Manipulation): `SELECT`, `INSERT`, `UPDATE`, `DELETE`
+- **DCL** (Data Control): `GRANT`, `REVOKE`
+- **TCL** (Transaction Control): `COMMIT`, `ROLLBACK`, `SAVEPOINT`
+
+**DROP vs. TRUNCATE vs. DELETE**
+
+|                | DROP                   | TRUNCATE                  | DELETE                     |
+|----------------|------------------------|---------------------------|----------------------------|
+| Removes        | Table structure + data | All rows, keeps structure | Rows (with WHERE optional) |
+| Rollback       | No (DDL, auto-commit)  | No (DDL in most DBs)      | Yes (DML, logged)          |
+| WHERE clause   | No                     | No                        | Yes                        |
+| Speed          | Fast                   | Fast (no row logging)     | Slower (row-by-row logged) |
+| Triggers fired | No                     | No                        | Yes                        |
+
+### 4.2 Order of SQL Execution
+
+Logical execution order (not written order — a very common question):
+
+```
+FROM → JOIN → WHERE → GROUP BY → HAVING → SELECT → DISTINCT → ORDER BY → LIMIT/OFFSET
+```
+
+Written order: `SELECT ... FROM ... WHERE ... GROUP BY ... HAVING ... ORDER BY ... LIMIT`
+
+Why this matters: you can't use a `SELECT` column alias in `WHERE` (WHERE runs before SELECT), but you *can* use it in
+`ORDER BY` (runs after SELECT). Similarly, `HAVING` filters on aggregates because it runs after `GROUP BY`; `WHERE`
+cannot filter on aggregate functions.
+
+### 4.3 WHERE vs. HAVING
+
+- `WHERE` filters rows before grouping; can't use aggregate functions.
+- `HAVING` filters groups after `GROUP BY`; used with aggregate functions like `COUNT`, `SUM`.
+
+### 4.4 Joins
+
+- **INNER JOIN** — only matching rows in both tables.
+- **LEFT (OUTER) JOIN** — all rows from left table + matched rows from right (NULLs if no match).
+- **RIGHT (OUTER) JOIN** — all rows from right + matched from left.
+- **FULL OUTER JOIN** — all rows from both, NULLs where no match (MySQL doesn't support this natively — emulate with a
+  `UNION` of LEFT and RIGHT joins).
+- **CROSS JOIN** — Cartesian product, no ON condition.
+- **SELF JOIN** — a table joined with itself (e.g. finding employees who earn more than their manager, using aliases).
+- **NATURAL JOIN** — auto-joins on same-named columns (risky — implicit, avoid in production code).
+
+**Classic self-join question:** employees earning more than their manager.
+
+```sql
+SELECT e.name
+FROM Employee e
+         JOIN Employee m ON e.manager_id = m.id
+WHERE e.salary > m.salary;
+```
+
+### 4.5 Aggregate Functions & GROUP BY
+
+- `COUNT()`, `SUM()`, `AVG()`, `MIN()`, `MAX()` — all ignore NULLs except `COUNT(*)`.
+- **GROUP BY gotcha**: every non-aggregated column in `SELECT` must appear in `GROUP BY` (strict SQL mode). MySQL
+  historically allowed exceptions, but it's non-standard and unreliable.
+
+### 4.6 Subqueries vs. Joins
+
+- **Subquery**: a query nested inside another (in `WHERE`, `FROM`, or `SELECT`).
+- **Correlated subquery**: references the outer query, re-evaluated per outer row — can be slow, and often rewritable as
+  a JOIN for better performance.
+- Joins are usually more efficient than correlated subqueries, since the optimizer can plan a single execution — though
+  modern optimizers often rewrite correlated subqueries into joins anyway.
+
+**Classic "Nth highest salary" question:**
+
+```sql
+-- Using LIMIT/OFFSET (MySQL/Postgres)
+SELECT DISTINCT salary
+FROM Employee
+ORDER BY salary DESC LIMIT 1
+OFFSET (N-1);
+
+-- Using DENSE_RANK (handles ties correctly, works everywhere)
+SELECT salary
+FROM (SELECT salary, DENSE_RANK() OVER (ORDER BY salary DESC) AS rnk
+      FROM Employee) t
+WHERE rnk = N;
+```
+
+Use `DENSE_RANK` over `ROW_NUMBER` when duplicate salaries should count as one rank; use `RANK` if you want gaps after
+ties (e.g. ties at rank 2 push the next value to rank 4).
+
+**2nd highest salary without `LIMIT` (portable across DBs):**
+
+```sql
+SELECT MAX(salary)
+FROM Employee
+WHERE salary < (SELECT MAX(salary) FROM Employee);
+```
+
+### 4.7 Window Functions
+
+- `ROW_NUMBER()` — unique sequential number, no ties.
+- `RANK()` — same rank for ties, gaps after.
+- `DENSE_RANK()` — same rank for ties, no gaps.
+- `LEAD()` / `LAG()` — access the next/previous row's value without a self-join.
+- `NTILE(n)` — buckets rows into n groups.
+- Syntax: `FUNC() OVER (PARTITION BY col ORDER BY col)`
+
+**2nd highest salary per department:**
+
+```sql
+SELECT *
+FROM (SELECT *, DENSE_RANK() OVER (PARTITION BY dept_id ORDER BY salary DESC) AS rnk
+      FROM Employee) t
+WHERE rnk = 2;
+```
+
+**Running total (cumulative sum):**
+
+```sql
+SELECT date, amount, SUM (amount) OVER (ORDER BY date) AS running_total
+FROM Transactions;
+```
+
+### 4.8 NULL Handling
+
+- `NULL` means "unknown" — `NULL = NULL` evaluates to `NULL`, not `TRUE`. Use `IS NULL` / `IS NOT NULL`.
+- `COALESCE(a, b, c)` returns the first non-null value.
+- Aggregate functions skip NULLs; `COUNT(column)` skips NULLs but `COUNT(*)` counts all rows.
+
+### 4.9 Constraints
+
+`NOT NULL`, `UNIQUE`, `PRIMARY KEY`, `FOREIGN KEY`, `CHECK`, `DEFAULT`.
+
+**`ON DELETE` / `ON UPDATE` actions for FK**: `CASCADE` (propagate), `SET NULL`, `RESTRICT`/`NO ACTION` (block),
+`SET DEFAULT`.
+
+### 4.10 Views
+
+A virtual table based on a query result — doesn't store data itself (usually), just the query definition.
+
+- Uses: security (expose limited columns), simplify complex queries, logical data independence.
+- **Materialized view**: physically stores the result, needs periodic refresh — trades storage for query speed.
+
+### 4.11 Stored Procedures, Functions & Triggers
+
+- **Stored procedure**: can have side effects, doesn't have to return a value, can't be used directly in a `SELECT`.
+- **Function**: must return a value, generally no side effects, can be used inline in a `SELECT`.
+- **Trigger**: a stored procedure that automatically executes in response to an event (`INSERT`/`UPDATE`/`DELETE`) on a
+  table. Used for auditing, enforcing complex constraints, maintaining derived data.
+
+---
+
+## Module 5: Database Indexing
+
+### 5.1 Index Types Overview
+
+An index is an auxiliary data structure that speeds up data retrieval at the cost of extra storage and slower writes (
+every `INSERT`/`UPDATE`/`DELETE` must also update the index).
 
 | Index Type                                | Underlying Structure             | Primary Use Case                       | Key Characteristic                                                                                       |
 |-------------------------------------------|----------------------------------|----------------------------------------|----------------------------------------------------------------------------------------------------------|
 | **B-Trees / B+ Trees**                    | Self-balancing search trees      | RDBMS read optimization                | Optimized for disk I/O and range queries; keeps data sorted.                                             |
+| **Hash Index**                            | Hash table                       | Equality lookups                       | O(1) average lookup for `=`, but useless for ranges or sorting.                                          |
 | **LSM Trees** (Log-Structured Merge-tree) | MemTable (RAM) + SSTables (Disk) | Write-heavy NoSQL (Cassandra, RocksDB) | Appends writes to memory first, making writes extremely fast; background compaction resolves duplicates. |
 | **Inverted Index**                        | Map of words to document IDs     | Search engines (Elasticsearch)         | Enables full-text search capability.                                                                     |
-
-1. BTrees:
-    - ![img_1.png](img_1.png)
-    - Self-balancing search trees, each node can have multiple children
-    - Guarantees $O(\log n)$ time complexity for search, insertion, and deletion
-2. B+ Tree:
-    - ![img.png](img.png)
-    - A variation of the B-Tree. Internal nodes only store keys (for routing)
-    - Data pointers are stored in the leaf nodes
-    - Leaf nodes are linked together in a sequential chain.
-    - Most relational database management systems (RDBMS) like MySQL (InnoDB) and PostgreSQL use this
-    - Maximizes fan-out (more keys per node), reducing disk I/O.
-        - How?
-            - In standard b tree a node stores key,data and child nodes within a fixed size page (i.e. needs more i/o
-              while navigating)
-            - In B+ you only get data once you find right key, i.e. more keys fit inside same page size
-3. Log-Structured Merge-Tree (LSM-Tree)
-    - append data to a write-optimized structure rather than updating data in-place
-    - How it works: Writes are first directed to a fast, in-memory buffer (MemTable) (this sorts it by key to enable
-      working on same key first)
-    - When full, the data is flushed to disk as an immutable Sorted String Table (SSTable).
-    - Periodic background processes (compaction) merge these tables.
-    - 🟢Pros: Eliminates random disk writes, maximizing write throughput.
-    - 🔴Cons: Reads can be slower because multiple files on disk may need to be searched to find the latest version of a
-      key
-4. Bit-Mapped Indexing
-    - indexing technique that uses arrays of bits (0s and 1s) to represent the presence or absence of a value in a row
-    - For example marital status → 1 married 0 unmarried → [0 1 1 1 0]
-    - Used often in OLAP or column based indexing
-    - 🟢Blazing Fast Logical Queries: Ideal for complex ad-hoc queries combining multiple filtering criteria.
-    - 🔴The High-Cardinality Trap: If a column has millions of unique values (like SSN, Email, or User_ID), you would
-      have to create millions of bitmaps
-
-### 7. Decision Matrix for System Design Interviews
-
-Use this mental checklist when selecting a database during an interview:
-
-1. **What is the Read/Write ratio?**
-    * Heavy Writes $\rightarrow$ LSM-Tree based NoSQL (Cassandra) or append-only logs.
-    * Heavy Reads $\rightarrow$ RDBMS with Read Replicas, or Key-Value caches (Redis) in front.
-
-2. **Does the data require complex relationships/joins?**
-
-    * Yes $\rightarrow$ RDBMS or Graph DB.
-    * No $\rightarrow$ Document or Key-Value store.
-
-3. **What are the consistency requirements?**
-
-    * Strict ACID required $\rightarrow$ RDBMS.
-    * Eventual consistency acceptable $\rightarrow$ NoSQL / AP systems.
-
-4. **Data Volume & Growth?**
-
-    * Fits on a single terabyte-scale machine $\rightarrow$ Stick to RDBMS.
-    * Petabyte scale requiring horizontal scaling $\rightarrow$ NoSQL or natively distributed SQL (e.g., CockroachDB,
-      Google
-      Spanner).
-
-### 7. Other DB Paradigms
-
-- ### Multi-Model Databases
-    - Most modern databases no longer limit themselves to a single category.
-    - Redis: Originated as a key-value cache; now natively handles JSON documents, time-series data, graph
-      relationships,
-      and
-      vector search.
-    - MongoDB: Primarily a document store; now includes graph lookups, time-series collections, and vector
-      embeddings.Relational Databases
-    - (PostgreSQL/MySQL): PostgreSQL handles relational tables, structured JSON documents (
-      JSONB), and vector data (pgvector)
-
-- ### OLAP DBs
-
-    - OLAP (Online Analytical Processing) systems require databases optimized for complex, large-scale aggregation
-      queries
-    - Use columnar storage since large scale Analytics only need a few columns of data at a time
-    - Note: OLAP is often the most used storage solution for Logs:
-        - Columnar Storage
-        - Append Only: OLAP databases are optimized for this append-only behavior
-        - High Compression Ratios: data is stored column-by-column, identical or similar data types sit next to each
-          other on disk (e.g., repeating strings like INFO or ERROR). OLAP databases leverage this to achieve massive
-          compression ratios (often 5x to 10x better than standard RDBMS)
-        - Exactly how Splunk and the ELK Stack (specifically Elasticsearch) work under the hood
-
-- ### Other Modern DBs in age of AI
-
-| Database Category            | Core Focus                                                                                    | Prominent Examples                      |
-|------------------------------|-----------------------------------------------------------------------------------------------|-----------------------------------------|
-| **Vector Databases**         | Optimizing high-dimensional embeddings for GenAI and LLM semantic search.                     | Pinecone, Milvus, Qdrant                |
-| **Time-Series Databases**    | Ingesting and querying massive streams of time-stamped IoT, metrics, and log data.            | InfluxDB, TimescaleDB                   |
-| **NewSQL / Distributed SQL** | Combining the horizontal scalability of NoSQL with strict ACID compliance of traditional SQL. | CockroachDB, Google Spanner, YugabyteDB |
-|                              | Instead of traditional expensive 2 phase, issue copies to each and use consensus mechanism    |                                         |
-
-### 8. Transactions
-
-- Sequence of one or more operations (such as reading or writing data) executed as a single, logical unit of work.
-- Every transaction must adhere to the four [ACID](#9-acid) properties to ensure data consistency and validity.
-
-  ## Core Operations
-    - Transactions rely primarily on two control statements:
-        * `COMMIT`: Saves all modifications made during the transaction permanently.
-        * `ROLLBACK`: Undoes all modifications made during the transaction, restoring the database to the last committed
-          state.
-
-### 9. ACID:
-
-- **Atomicity**:
-    - Smallest unit i.e. must occur fully or not at all (no partial running)
-    - If some of the writes in a transaction fail even the successful ones are rolled back
-    - With this retrying doesn't do the operation twice
-- **Consistency**:
-    - Actually a property of application
-    - To verify that the operations don't violate the constraints of the system (i.e. balance should add up to credit -
-      debit in accounting)
-    - Doesn't actually belong in ACID
-- **Isolation**:
-    - Concurrent execution is isolated from each other
-    - Ideally each transaction should occur as if they occur one by one
-    - Gold standard is Serializable isolation where operations have to wait in line (but terrible for performance so
-      hardly ever used)
-- **Durability**:
-    - Transactions data is not lost i.e. it is written to non-volatile storage
-    - In some modern db it also means that it has been replicated
-- Note: NoSQL Dbs don't have these guarantees in place, even operations like multi-put are often not atomic and may fail
-  partially
-
-### 10. BASE:
-
-Developed as an alternative to the traditional ACID which is often too restrictive for massive, distributed systems
-
-1. Basically Available (BA)
-    - The system guarantees that it will remain operational and available to respond to requests, even if parts of the
-      network or hardware fail.
-    - Instead of shutting down or refusing connections to protect data consistency, the
-      database will return a response (even if that data is slightly stale).
-2. Soft State (S)
-    - The state of the data can change over time without explicit user interaction.
-    - It takes time for updates to propagate everywhere.
-3. Eventual Consistency (E)
-    - The system will eventually become consistent once it stops receiving updates.
-
-### 11. Idempotency
-
-### 10. CAP Theorem
-
-A distributed data store can simultaneously provide at most two out of the following three guarantees:
-
-1. **Consistency**
-    - Once a write operation is successfully completed on any node in the system, all subsequent read
-      operations—regardless of which node they land on—must return that new value, or an even newer one.
-    - i.e. All nodes will return same value for the data
-2. **Availability**
-    - Each read or write request for a data item will either be processed successfully or will receive a message that
-      the operation cannot be completed.
-    - If a node is alive and healthy, it must accept reads and writes.
-    - It is not allowed to say, "I am disconnected from the rest of the cluster, so I cannot answer you."
-3. **Partition Tolerance**
-    - A network partition is a communication failure between nodes. Messages are dropped, delayed, or split entirely,
-      dividing one cluster into isolated groups that cannot talk to each other.
-    - The system must continue to operate as a whole, despite arbitrary message loss or delays between nodes.
-      Because networks are inherently imperfect, a distributed system must be designed to survive partitions. i.e.
-      Partitioning is an inherent unavoidable issue
-
-You cannot choose "CA" (Consistency + Availability) because Partition Tolerance (P) is not a configuration setting; it
-is a law of physics.
-
-## The Two Choices During a Partition
-
-1. Choose Consistency (Cancel Availability)
-    - You decide that serving old, incorrect data is worse than serving no data at all.
-    - What happens: If a node is cut off from the rest of the cluster, it refuses to accept writes or answer reads. It
-      returns an error or times out.
-    - Result: Your data remains perfectly correct across the system, but your application appears "down" or broken to
-      some users.
-
-2. Choose Availability (Cancel Consistency)
-    - You decide that keeping the application up and running is more important than perfect data accuracy.
-    - What happens: The isolated node continues to accept writes and answer reads using whatever stale data it has.
-    - Result: Your application stays online for everyone, but different users will see different versions of the
-      data. The data diverges, and you will have to manually or automatically resolve the conflicts later once the
-      network heals.
-
-## 12. Database Replication:
-
-- ![img_1.png](../Books/img_1.png)
-- Usually done with a master slave relationship (often called Primary Replica or Leader Follower)
-- Write operations are only supported by Master node
-- Slave get copies of master DB and only supports read (when enabled)
-- Most applications are read heavy so having limited master works
-- 🟢Most applications are read heavy so higher availability from slave nodes
-- 🟢More Reliable since loss of one db server doesn't mean loss of data
-
-### Synchronous Replication
-
-Transaction is not committed until it has been successfully propagated to all replicas. Returns success only to client
-after that
-
-- 🟢Guarantees all followers have up-to-date data
-- 🔴Terrible for performance as leader has to wait for all nodes (the total transaction time = time for slowest node)
-    - Often in reality we use semi synchronous i.e. change is propagated to at least one node
-- 🔴If replica becomes unreachable entire write stalls or fails
-
-### Asynchronous Replication
-
-Primary node commits locally and returns a success immediately, then broadcasts update to replicas
-
-- 🟢Makes writes extremely low latency, decoupling network lag from write acknowledgement
-- 🔴Creates replication delay (also called data lag)
-- 🔴If primary node fails changes can be lost
-
-### Process of adding new replica:
-
-- Take snapshot of current leader
-- Copy onto follower
-- Get changelog of changes since creation of snapshot
-- replay those changes
-
-### In case of Failover:
-
-- **Replica Failover**:
-    - Just ask leader what has happened since it's last timestamp
-- **Leader Failover**:
-    - Usually marked as failed using a timeout on heartbeat
-    - New leader: elected: usually most up-to-date node
-    - Route requests to new leader
-    - Old leader when it comes back up becomes a follower (replica)
-    - Note: if two nodes both think they are leader, called split brain.
-        - Dangerous since both go out of sync, some systems have auto shutdown in this case
-
-### Replication Methods:
-
-- Statement based:
-    - Copy each statement to followers like INSERT etc
-    - Failure: Anytime non-deterministic operation is performed like rand()/now()
-- Write Ahead Log (WAL)
-    - Append only sequence of the physical effect of query
-    - Logs whatever was written, copies it to followers
-    - Done using byte level WAL, so not storage engine agnostic (problem in migration)
-- Logical Log:
-    - Append only sequence but contains logical effect (i.e. engine agnostic)
-    - For:
-        - insert: New values of all columns
-        - delete: info to identify row to delte
-        - update: similar to insert
-- Trigger based:
-    - user defined application code to replicate
-
-### 11. Consistency
-
-In distributed systems, data consistency models define the rules for how and when changes made to a data store are
-visible to different users or nodes across a network.
-
-### Quorum Consistency
-
-Protocol used to guarantee data correctness across multiple server nodes without waiting for every single node to
-respond  
-Instead of requiring all nodes to agree on a read or write operation, a system defines a minimum number of successful
-votes required to complete the operation:
-
-- $N$: The total number of replicas (nodes storing copies of the data).
-- $W$: The write quorum (the number of nodes that must acknowledge a write before it is considered successful).
-- $R$: The read quorum (the number of nodes that must respond to a read request).
-
-- Note: the client application itself does not manually contact $R$ individual servers.Instead, the system relies on a
-  Coordinator Node.
-    - Whichever node client hits turns into coordinator fetching from others itself
-- Note: This can work across partition too where we only check partitions which are replica of same
-
-1. **Strong Consistency (Linearizability)**
-    - Guarantees that once a write operation completes, any subsequent read operation will return the value of that
-      write, or a later one regardless of which node in the distributed system is queried.
-    - **Monotonic Time and Order**: All systems read give same state in same order
-    - Systems typically use strict quorum configurations, R+W>N, ensuring read and write always overlap
-    - Coordination ensures data is made consistent sorted by timestamps
-    - It prioritizes Consistency (C) over Availability (A) **CP System**
-2. **Eventual Consistency**
-    - A specific form of weak consistency
-    - Guarantees that if no new updates are made to a given data item, all replicas will eventually converge and return
-      the same last-updated value.
-    - **Asynchronous Replication**: When a write occurs, the coordinator node updates its local state and immediately
-      returns a success status to the client. The update is then propagated to other replicas asynchronously.
-    - Sloppy Quorums ($R + W \le N$), A read might hit a replica that hasn't received the latest asynchronous update
-      yet, resulting in stale reads.
-    - Conflict Resolution: Need to use conflict mechanisms like Last Write Wins or CRDTs (Conflict-free Replicated Data
-      Types)
-    - Prioritizes Availability (A) and Partition Tolerance (P) (**AP system**) high scalability and low latency
-    - Note: The difference between eventual and weak consistency is driven heavily by background reconciliation
-      processes.
-3. **Weak Consistency**
-    - Provides the fewest guarantees.
-    - Unlike eventual consistency, weak consistency does not inherently guarantee that replicas will eventually match
-    - Used in Real-time data streams where speed is critical and losing individual packets or data points doesn't break
-      the system e.g. video stream
-
-**Raft and Paxos**
-Are consensus algorithms designed to avoid problem of split brain  
-Split Brain: If nodes become disconnected the two partitions can both end up electing a leader and accept updates
-individually  
-Prevent this by dictating that updates or leadership elections can only occur if a strict majority (a quorum) of the
-total cluster nodes agree.
-
-**CRDT (Conflict-Free Replicated Data Types)**
-CRDTs are mathematically designed so that different operations can be applied in any order across different servers, and
-they will always merge into the exact same correct state.
-
-### 13. Consistency Problems
-
-### Reading after write consistency or Reading Own Writes (should be able to read your own writes)
-
-![img_7.png](../Books/img_7.png)
-
-- Solved by:
-    - Read from the same node you write on i.e. sticky nodes
-    - Read only from leader if recent modification is true
-    - Remember a timestamp on client and only serve from nodes which are more recent than that timestamp
-    - Locally cache result on device and show output until the infra loads up
-- Cross Device Read-after-write consistency:
-    - Breaks:
-        - Reading from same node
-        - Timestamp logic
-        - Local caching
-
-### Monotonic Reads:
-
-- If user makes reads from multiple replicas depending on replication lag and order user can appear to go back in time
-- Thus need a guarantee reads happen in the same right order i.e. **monotonically**
-- ![img_8.png](../Books/img_8.png)
-- Solution:
-    - Sticky Replica: i.e. user makes reads from same replica always
-    - Timestamp based: Refuse to read from older or do not replace newer data when encountering older data
-
-### Consistent Prefix Reads:
-
-- If user reads using independent readers on dbs cause and effect can appear in incorrect order
-- We need a guarantee that reads happen in same order of writes
-- ![img_9.png](../Books/img_9.png)
-- Solution:
-    - Entries which have a causal dependency should be written to same node
-    - Use complex algorithms which track this before that
-
-### 14. Federation
-
-- Integrates multiple DBs into one common interface
-- To user entire system looks like one single DB
-- Each DB maintains it's rules and autonomy, can be heterogeneous (sql + redis ) or homogeneous
-- 🟢Allows organizations to connect old, disjointed systems without expensive and risky data migration projects.
-- 🔴Performance Bottlenecks: Queries are only as fast as the slowest database
-- 🔴Query Optimization: Creating an efficient execution plan for structurally different databases is difficult
-
-### 15. Partitioning/Sharding:
-
-- Horizontal data partitioning strategy, single DB is divided into multiple physical nodes called shareds
-- Each node contains common schema but each piece of data belongs to exactly one partition
-- Trade Offs:
-    - 🟢Allows scaling DBs proportional to demand horizontally
-    - 🟢Allows higher throughput, lower bottlenecks and higher availability
-    - 🔴Cross-Shard Joins: Executing joins across different shards is highly inefficient, often needed to be done at app
-    - 🔴ACID: Requires 2Phase Commit (very slow)
-- **Shard Key**: The specific column or set of columns used to determine the placement of a given row.
-- Partitioning Methods:
-    - By Key Range:
-        - Assign a continuous range of keys to each partition
-        - 🔴Even if keyspace is evenly distributed data might not be (for e.g. more name begins with certain letters of
-          alphabet)
-        - 🔴Hotspots can occur temporarily which block concurrency for e.g. if key is date then all writes will go to
-          same node each day
-        - 🟢Can perform key range queries since data is on same node
-    - Hash of Key:
-        - 🟢Randomizes better than key range by taking a key and distributing it randomly
-        - It is random but deterministic
-        - Can use cryptographically weak algo as long as distribution is random
-        - 🔴Loses benefit of key range i.e. aggregating and range operations since data is not on same node
-- Dynamic Partitioning:
-    - Partition based on dynamic requirements for e.g. if data on nodes becomes too large, split
-    - Advantage of using less resources if not required
-    - Rebalancing can be costly depending on partitioning size
-- Rebalancing Nodes:
-    - Machines can go down or more machines can be needed for parallelizing
-    - Keyspace thus needs to be rebalanced between new nodes
-    - Strategies:
-        - hash mod N
-            - 🔴Never do this
-            - %N will split between N easily but whenever there is a single change in nodes a lot of keys will need
-              moving
-              since hash mod N will change for all
-        - Fixed Number of partitions:
-            - Create far more partitions than nodes giving more than 1 to each
-            - Whenever there's a new node give it some from node with most
-            - Whenever there's a node going down hand it to one with least
-            - Used in Redis
-    - Automatic vs Manual:
-        - Automatic Rebalancing can be convenient tool to rebalance data without needing admin supervision
-            - 🔴 Can Massively slow down the network if done without just cause
-        - Manual:
-            - 🟢 Often better when done with right intentions and checks on human part
-
-### 14. Skew:
-
-- Ideally data is evenly distributed
-- In reality data could be heavily skewed towards one partition or several
-- partition with disproportionately high load is called a hot spot
-- Reason?
-    - For ideal distribution we distribute randomly, this has downside of not knowing where each data should go
-    - Using a key assignment model we can deterministicly route to same node
-    - If too many keys route to same we get skew
-
-### 15. Concurrency Issues
-
-When multiple transactions execute simultaneously without proper isolation, several distinct concurrency bugs (often
-referred to as phenomena or anomalies) can occur.
-
-1. Dirty Read (Active/Uncommitted Dependency)
-    - Transaction reads data that another concurrent transaction has modified but not yet commited
-    - If TransactionA reads T1 and TransB reads T2 before A commits T1,
-        - TB update will overwrite whatever TA did if it commits first
-        - Opposite for the second, essentially one of the transactions lost
-    - SQL Isolation Level Guard: Prevented at Read Committed and higher.
-2. Non-Repeatable Read (Fuzzy Read)
-    - Transaction reads same row twice in transaction but gets different values (because another trans modified it in
-      between)
-    - SQL Isolation Level Guard: Prevented at Repeatable Read and higher.
-3. Phantom Read
-    - a transaction executes a query returning a set of rows satisfying a specific search condition, upon re-executing
-      the query the rows change
-    - Occurs when addition or deletion or upation of a row with condition happens
-    - SQL Isolation Level Guard: Prevented at Serializable.
-4. Lost Update
-    - Two transactions read same row, calculate new value based on original and update that row
-    - Update of one is lost e.g. if both do val + 10
-    - SQL Isolation Level Guard:
-        - Often prevented by using explicit pessimistic locking
-        - optimistic concurrency control (version checks)
-5. Write Skew
-    - anomaly that typically arises under Snapshot Isolation
-    - For e.g. constraint is A + B > 10, A = 10, B = 10
-        - T1 sees A, checks if A-10 allowed subtracts
-        - T2 sees B, checks if B-10 allowed subtracts
-        - Finally on committing system becomes inconsistent because constraint is violated
-    - SQL Isolation Level Guard: Strict Serializable is required to catch write skew.
-
-### 15. ANSI/ISO SQL Isolation Levels
-
-Database engines implement isolation levels by utilizing locking mechanisms (like shared and exclusive locks) or
-Multi-Version Concurrency Control (MVCC).
-
-1. Read Uncommitted
-    - Lowest isolation level.
-    - **Mechanics:** Shared locks not acquired for reads, transaction can read data currently being modified by another
-      uncommitted transaction.
-    - **Anomalies:** Allows **Dirty Reads**, **Non-Repeatable Reads**, and **Phantom Reads**.
-
-2. Read Committed
-    - Default isolation level for many major DBs (e.g., PostgreSQL, SQL Server).
-    - **Mechanics:** Transaction only reads data that has been committed before the read operation begins.
-        - Prevents dirty reads by holding write locks until end of the transaction
-        - Read locks are released as soon as the `SELECT` statement completes.
-    - **Anomalies:** Prevents Dirty Reads. Allows **Non-Repeatable Reads** and **Phantom Reads**.
-
-3. Repeatable Read
-    - Ensures any data read by a trans remains identical for entire duration of that transaction.
-    - **Mechanics:** Read locks are held on all discovered rows until the transaction terminates (commit or rollback).
-        - In MVCC systems, transaction reads from a consistent snapshot taken at the start of the transaction.
-    - **Anomalies:** Prevents Dirty Reads and Non-Repeatable Reads.
-        - Can allow **Phantom Reads** (though some implementations like InnoDB/MySQL use Next-Key locking to prevent
-          phantoms even at this level).
-
-4. Serializable
-    - Highest isolation level.
-    - Enforces strict transaction ordering, ensuring that the concurrent execution of transactions yields the exact same
-      state as if they were executed sequentially.
-    - **Mechanics:** Uses range-locks (Predicate Locking) or strict optimistic concurrency control to ensure that no new
-      rows can be inserted into a range currently being read by another transaction.
-    - **Anomalies:** Prevents **all** anomalies (Dirty, Non-Repeatable, and Phantom reads).
-    - **Trade-off:** Drastically reduces concurrency and increases deadlocks.
-      Note: Isolation levels are the theoretical concept and achieved using concurrency controls
-
-### 16. ** Optimistic vs. Pessimistic Concurrency Control**
-
-- Concurrency Control ensures that simultaneous transactions can execute safely without violating data integrity.
-
-1. Pessimistic Concurrency Control (PCC)
-    - Pessimistic Concurrency Control operates on assumption that data conflicts are highly likely to occur.
-    - Adopts a conservative approach by preemptively locking resources to prevent other transactions from modifying them
-    - **Mechanics**:
-        - Locking Protocol: When Transaction A wants to modify a record, it must first acquire an Exclusive Lock (X
-          Lock). If it only wants to read, it acquires a Shared Lock (S Lock).
-        - Two-Phase Locking (2PL): Often used to ensure serializability, requiring transactions to acquire all locks in
-          a "growing phase" and release them in a "shrinking phase."
-        - Blocking: If Transaction B attempts to access a record locked exclusively by Transaction A, Transaction B is
-          placed in a wait queue (blocked) until Transaction A commits or rolls back and releases the lock.
-2. Optimistic Concurrency Control (OCC)
-    - Operates on assumption that data conflicts are rare
-    - Allows transactions to proceed without locking any resources
-        - Mechanics:
-            - Read Phase: transaction reads rows and performs modifications on a local, isolated copy of data
-            - Validation Phase: When the transaction attempts to commit DB checks if original data modified, done using
-              version numbers or timestamps
-            - Write Phase: If no conflicts, commits, else aborted or rolled back
-
-### 17. Two-Phase Locking (2PL)
-
-- Pessimistic concurrency control protocol to guarantee Serializability
-- Core rule: Once a transaction releases a lock, it can never acquire any new locks.
-- Phases:
-    1. Growing Phase
-        - transaction may acquire locks and upgrade locks (e.g.Shared/Read lock to Exclusive/Write lock), cannot release
-          any locks yet
-        - transaction continually accumulates the resources it needs
-    2. Lock Point:
-        - moment when transaction has acquired final lock it requires to complete its task.
-        - Serialization order of transaction
-    3. Shrinking Phase
-        - transaction may release locks and downgrade locks, cannot acquire locks
-- In standard 2PL, a transaction can modify data and even release locks before it officially commits, as long as it
-  never acquires any new locks after that point.
-- Standard 2PL guarantees serializability, but it does not prevent all database anomalies, such as cascading rollbacks.
-  Therefore, actual production systems use variations:
-- **Strict 2PL (S-2PL)**
-    - Rule: The transaction must hold all its Exclusive (X) locks until the very end of the transaction (Commit or
-      Abort).
-- Cascading Aborts (where aborting one transaction forces the rollback of multiple other dependent transactions that
-  read its uncommitted writes)
+| **Bitmap Index**                          | Bit arrays per distinct value    | OLAP / low-cardinality columns         | Very fast logical (AND/OR) filtering; poor fit for high-cardinality columns.                             |
+
+**By role, not just structure:**
+
+- **Primary Index** — built on the primary key; usually clustered.
+- **Clustered Index** — determines the *physical* order of rows on disk. Only **one** per table (rows can only be
+  physically sorted one way). In many DBs the PK is the clustered index by default (e.g. SQL Server, InnoDB in MySQL).
+- **Non-Clustered (Secondary) Index** — a separate structure holding pointers to actual row locations; a table can have
+  *many* of these.
+- **Composite Index** — index on multiple columns; column order matters a lot (**leftmost prefix rule** — an index on
+  `(A, B, C)` serves queries on `A`, `A+B`, or `A+B+C`, but not `B` alone).
+- **Unique Index** — enforces uniqueness, also speeds lookup.
+- **Full-text Index** — for text search.
+- **Covering Index** — contains *all* columns needed by a query, so the DB never has to touch the actual table (
+  index-only scan) — a big performance win.
+
+### 5.2 B-Trees & B+ Trees
+
+- **B-Trees**: self-balancing search trees; each node can have multiple children. Guarantees $O(\log n)$ time complexity
+  for search, insertion, and deletion.
+- **B+ Trees**: a variation of the B-Tree.
+    - Internal nodes only store keys (for routing); data pointers live only in leaf nodes.
+    - Leaf nodes are linked together in a sequential chain — great for range queries (`BETWEEN`, `<`, `>`, `ORDER BY`)
+      as well as equality lookups.
+    - Most RDBMS (MySQL/InnoDB, PostgreSQL) use this — it's why B+Trees dominate over plain B-Trees in databases.
+    - Maximizes fan-out (more keys per node), reducing disk I/O: a standard B-Tree node stores key + data + child
+      pointers in a fixed-size page (more I/O while navigating); a B+ Tree only fetches data once it finds the right
+      leaf key, so more keys fit in the same page size.
+
+### 5.3 Hash Indexes
+
+- O(1) average lookup for equality (`=`), but useless for range queries or sorting.
+- Used in memory-based structures and some hash-indexed storage engines.
+
+### 5.4 Log-Structured Merge-Trees (LSM-Trees)
+
+- Appends data to a write-optimized structure rather than updating in place.
+- Writes go first to a fast, in-memory buffer (MemTable), sorted by key so operations on the same key can be batched.
+- When full, the MemTable is flushed to disk as an immutable Sorted String Table (SSTable); periodic background *
+  *compaction** merges these.
+- 🟢 Eliminates random disk writes, maximizing write throughput.
+- 🔴 Reads can be slower, since multiple SSTables may need to be checked to find the latest version of a key (mitigated
+  with Bloom filters).
+- Used in Cassandra, RocksDB, LevelDB.
+
+### 5.5 Bitmap Indexing
+
+- Uses arrays of bits (0s/1s) to represent presence/absence of a value in a row (e.g. marital status → `[0 1 1 1 0]`).
+- Common in data warehouses / OLAP, or low-cardinality columns (e.g. gender, boolean flags).
+- 🟢 Blazing-fast logical (ad-hoc, multi-filter) queries.
+- 🔴 High-cardinality trap: a column with millions of unique values (SSN, Email, User_ID) would need millions of
+  bitmaps — impractical.
+
+### 5.6 When Indexes Don't Help (or Actively Hurt)
+
+- Small tables — a full scan is faster than an index lookup plus overhead.
+- Low-selectivity/cardinality columns (e.g. a boolean flag) — index scan may barely beat a full table scan.
+- Heavy write workloads — every index adds write overhead.
+- Functions on indexed columns in `WHERE` (e.g. `WHERE YEAR(date_col) = 2024`) break index usage — rewrite as a range
+  instead: `WHERE date_col BETWEEN '2024-01-01' AND '2024-12-31'`.
+- Leading wildcard search (`LIKE '%abc'`) can't use a standard B+Tree index (`LIKE 'abc%'` can).
+
+### 5.7 Query Optimizer & `EXPLAIN`
+
+`EXPLAIN` (or `EXPLAIN ANALYZE`) shows the query execution plan: which indexes are used, join order, estimated rows
+scanned, whether a full table scan happens. A slow query is usually explained by a missing index, a function on an
+indexed column, or an implicit type conversion preventing index use.
+
+**Query optimization checklist:**
+
+- Add indexes on columns frequently used in `WHERE`, `JOIN`, and `ORDER BY`.
+- Avoid `SELECT *`; fetch only needed columns.
+- Avoid functions/type-casts on indexed columns in `WHERE` clauses.
+- Use `EXISTS` instead of `IN` for large subqueries (often better optimized, though modern optimizers increasingly
+  equalize these).
+- Batch large `INSERT`/`UPDATE` operations rather than row-by-row.
+- Use pagination (`LIMIT`/`OFFSET`, or better, keyset pagination for large offsets, since `OFFSET` still scans skipped
+  rows).
+- Denormalize selectively for read-heavy reporting tables.
+- Analyze with `EXPLAIN` before assuming a query is "slow because the DB is slow."
+
+---
+
+## Module 6: Transactions, ACID & BASE
+
+### 6.1 Transactions
+
+- A sequence of one or more operations (reads/writes) executed as a single, logical unit of work.
+- Every transaction must adhere to the four ACID properties ([§6.2](#62-acid)) to ensure consistency and validity.
+- **Core operations**: `COMMIT` (saves modifications permanently), `ROLLBACK` (undoes modifications, restoring the last
+  committed state), `SAVEPOINT` (a named point within a transaction to roll back to, without aborting the whole thing).
+
+### 6.2 ACID
+
+- **Atomicity** — all operations succeed or none do (all-or-nothing); enforced via logs/rollback. With this in place,
+  retrying a transaction doesn't perform the operation twice.
+- **Consistency** — a transaction brings the DB from one valid state to another, respecting all constraints. Arguably a
+  property of the *application* more than the engine, since it depends on business rules (e.g. balance = credit −
+  debit).
+- **Isolation** — concurrent transactions don't interfere with each other's intermediate states. Ideally each
+  transaction behaves as if it ran alone; the gold standard is Serializable isolation, but it's rarely used in practice
+  due to the performance cost.
+- **Durability** — once committed, changes survive crashes (via write-ahead logging / disk persistence). In some modern
+  databases, durability also implies the data has been replicated.
+
+> Note: NoSQL databases generally don't offer these guarantees — even operations like multi-put are often not atomic and
+> may fail partially.
+
+### 6.3 BASE
+
+Developed as an alternative to ACID, which is often too restrictive for massive, distributed systems.
+
+1. **Basically Available (BA)** — the system stays operational and responds to requests even if parts of the
+   network/hardware fail, returning a response (even if slightly stale) rather than refusing connections.
+2. **Soft State (S)** — data can change over time without explicit user interaction; it takes time for updates to
+   propagate everywhere.
+3. **Eventual Consistency (E)** — the system will eventually become consistent once it stops receiving updates.
+
+### 6.4 Idempotency 🆕
+
+*(Left as an empty header in the original notes — filled in below.)*
+
+- An operation is **idempotent** if performing it multiple times has the same effect as performing it once.
+- Critical for retries: if a client doesn't get a response and retries a request, an idempotent operation guarantees the
+  retry doesn't cause a duplicate side effect.
+- Examples:
+    - `UPDATE balance = 100` is idempotent. `UPDATE balance = balance + 10` is **not** (retry double-charges).
+    - `DELETE WHERE id = 5` is idempotent. `INSERT` without a uniqueness check is **not** (retries create duplicates).
+- How systems make non-idempotent operations retry-safe:
+    - **Idempotency keys**: client generates a unique key per logical request (e.g. a UUID for a payment); server checks
+      whether that key was already processed before applying the operation again.
+    - Convert relative updates into **absolute** ones where possible.
+    - Unique constraints at the DB level, to reject duplicate inserts silently.
+- Matters especially for distributed systems, since retries are unavoidable there (networks are unreliable —
+  see [CAP](#81-cap-theorem)); idempotency is what makes "retry until success" a safe default instead of a source of
+  bugs.
+
+### 6.5 Schedules & Serializability
+
+- **Serial schedule**: transactions run one completely after another (no interleaving) — always consistent, but no
+  concurrency.
+- **Serializable schedule**: an interleaved (concurrent) schedule whose effect is equivalent to *some* serial schedule —
+  the actual goal of concurrency control (see [Module 7](#module-7-concurrency-control)).
+- **Conflict serializability**: a schedule can be transformed into a serial schedule by swapping non-conflicting
+  operations. Checked using a precedence graph — if it has no cycle, the schedule is conflict serializable.
+
+---
+
+## Module 7: Concurrency Control
+
+### 7.1 Concurrency Anomalies
+
+Without proper isolation, concurrent transactions cause distinct bugs ("phenomena"):
+
+1. **Dirty Read** (Active/Uncommitted Dependency)
+    - A transaction reads data another concurrent transaction has modified but not yet committed.
+    - Guard: prevented at **Read Committed** and higher.
+2. **Non-Repeatable Read** (Fuzzy Read)
+    - Re-reading the same row within a transaction gives a different value, because another transaction updated +
+      committed it in between.
+    - Guard: prevented at **Repeatable Read** and higher.
+3. **Phantom Read**
+    - Re-running the same query returns a different *set* of rows, because another transaction inserted/deleted/updated
+      matching rows.
+    - Guard: prevented at **Serializable**.
+4. **Lost Update**
+    - Two transactions read the same row, compute a new value from the original, and write it back (e.g. both do
+      `val + 10`) — one update is silently lost.
+    - Guard: explicit pessimistic locking, or optimistic concurrency control (version checks).
+5. **Write Skew**
+    - Arises under Snapshot Isolation. Example: constraint `A + B > 10`, `A = 10, B = 10`. T1 reads A, checks `A − 10`
+      is allowed, subtracts. T2 reads B, checks `B − 10` is allowed, subtracts. Both commit — together they've violated
+      the constraint.
+    - Guard: **Strict Serializable** isolation is required to catch write skew.
+
+### 7.2 ANSI/ISO SQL Isolation Levels
+
+Database engines implement isolation levels via locking (shared/exclusive locks) or Multi-Version Concurrency Control (
+MVCC, see [§7.6](#76-mvcc-multi-version-concurrency-control-)).
+
+| Isolation Level      | Dirty Read | Non-Repeatable Read | Phantom Read                                                                |
+|----------------------|------------|---------------------|-----------------------------------------------------------------------------|
+| **Read Uncommitted** | Possible   | Possible            | Possible                                                                    |
+| **Read Committed**   | Prevented  | Possible            | Possible                                                                    |
+| **Repeatable Read**  | Prevented  | Prevented           | Possible (mostly — MySQL InnoDB actually prevents via gap/next-key locking) |
+| **Serializable**     | Prevented  | Prevented           | Prevented                                                                   |
+
+1. **Read Uncommitted** (lowest) — no shared locks acquired for reads; can read data another uncommitted transaction is
+   currently modifying.
+2. **Read Committed** (default for many major DBs, e.g. PostgreSQL, SQL Server) — only reads data committed before the
+   read began. Write locks held until end of transaction; read locks released as soon as the `SELECT` completes.
+3. **Repeatable Read** — read locks held on all discovered rows until the transaction ends; in MVCC systems, reads come
+   from a consistent snapshot taken at transaction start.
+4. **Serializable** (highest) — enforces strict transaction ordering via range-locks (predicate locking) or strict OCC.
+   Drastically reduces concurrency and increases deadlocks.
+
+> Note: isolation levels are the theoretical/contractual concept; they're achieved in practice via the
+> concurrency-control mechanisms below.
+
+### 7.3 Optimistic vs. Pessimistic Concurrency Control
+
+**Pessimistic Concurrency Control (PCC)**
+
+- Assumes conflicts are likely — preemptively locks resources to block other transactions.
+- **Locking protocol**: `Shared Lock (S)` for reading (multiple transactions can hold S locks on the same item
+  simultaneously); `Exclusive Lock (X)` for writing (only one transaction can hold X, and no other lock — S or X — can
+  coexist with it).
+- **Blocking**: if Transaction B tries to access a record exclusively locked by A, B waits in a queue until A
+  commits/rolls back.
+- Better for high-write-conflict or low-read systems.
+
+**Optimistic Concurrency Control (OCC)**
+
+- Assumes conflicts are rare — lets transactions proceed without locking anything upfront.
+- **Read phase**: reads rows, modifies a local/isolated copy.
+- **Validation phase**: on commit, DB checks whether the original data changed since (version numbers or timestamps).
+- **Write phase**: commit if no conflict; otherwise abort/retry.
+- Better for high-read, low-write-conflict systems.
+
+### 7.4 Two-Phase Locking (2PL)
+
+- A pessimistic concurrency-control protocol that guarantees conflict serializability.
+- Core rule: once a transaction releases a lock, it can never acquire a new one.
+- **Phases:**
+    1. **Growing Phase** — acquires/upgrades locks (e.g. Shared → Exclusive), releases none yet.
+    2. **Lock Point** — the moment the final lock needed is acquired; determines the transaction's serialization order.
+    3. **Shrinking Phase** — releases/downgrades locks, acquires none.
+- Guarantees serializability, but can cause deadlocks and — in the standard form — doesn't prevent cascading rollbacks.
+  Production systems use variations:
+    - **Strict 2PL (S-2PL)**: holds all Exclusive (X) locks until commit/abort — prevents cascading rollbacks; used in
+      most real systems.
+- **Cascading Aborts**: aborting one transaction forces rollback of other transactions that read its uncommitted writes.
+
+### 7.5 Deadlocks
+
+- Two or more transactions waiting on each other's locks in a cycle, forever (e.g. T1 holds A wants B, T2 holds B wants
+  A).
+- **Detection**: DB builds a "wait-for" graph between transactions; a cycle means a deadlock. The engine picks a "
+  victim" transaction to abort/roll back so the others can proceed.
+- **Prevention**:
+    - **Lock ordering**: always acquire locks in a globally consistent order (e.g. always lock the lower primary key
+      first) — makes cycles impossible.
+    - **Wait-Die / Wound-Wait**: schemes based on transaction timestamps — the older/younger transaction's priority
+      differs, deciding whether to wait or abort — guaranteeing no cycles form.
+    - **Timeouts**: abort a transaction that's waited too long for a lock rather than waiting indefinitely.
+- **Avoidance**: acquire all needed locks upfront — theoretically prevents deadlocks entirely, but impractical in most
+  real systems since you rarely know every lock you'll need in advance.
+- Deadlocks are a normal, expected occurrence in high-concurrency pessimistic systems — the goal is fast
+  detection/resolution (usually automatic retry of the aborted transaction), not elimination.
+
+### 7.6 MVCC (Multi-Version Concurrency Control) 🆕
+
+*(Referenced implicitly by "readers don't block writers" behavior in Repeatable Read, but never named — added here.)*
+
+- Instead of locking rows for reads, the DBMS keeps multiple versions of a row (tagged with timestamps or transaction
+  IDs).
+- Readers see a consistent snapshot without blocking writers, and writers don't block readers.
+- Used by PostgreSQL, MySQL InnoDB, Oracle — this is why "readers don't block writers and vice versa" holds in these
+  systems under most isolation levels.
+
+---
+
+## Module 8: Distributed Consistency
+
+### 8.1 CAP Theorem
+
+A distributed data store can simultaneously provide at most two out of three guarantees:
+
+1. **Consistency** — once a write completes on any node, all subsequent reads return that value or a newer one,
+   regardless of which node is queried.
+2. **Availability** — every read/write request either succeeds or receives an explicit failure — a healthy node can't
+   refuse to answer.
+3. **Partition Tolerance** — the system keeps operating despite arbitrary message loss/delay between nodes. Because real
+   networks are imperfect, partitions are unavoidable — not a configuration choice.
+
+You cannot choose "CA," because Partition Tolerance isn't a setting — it's a law of physics for any real network. Since
+partitions *will* happen, the real trade-off in practice is Consistency vs. Availability when a partition occurs:
+
+- **CP systems** (sacrifice availability): MongoDB (with strong-consistency configs), HBase, traditional RDBMS in
+  distributed setups. An isolated node refuses writes/reads and errors/times out — data stays correct, but the app can
+  look "down."
+- **AP systems** (sacrifice strict consistency): Cassandra, DynamoDB. An isolated node keeps serving stale data — the
+  app stays up, but data can diverge until reconciled.
+
+### 8.2 Consistency Models & Quorum
+
+**Quorum Consistency**
+
+- $N$: total replicas. $W$: write quorum (nodes that must ack a write). $R$: read quorum (nodes that must respond to a
+  read).
+- The client doesn't contact $R$ nodes manually — a **Coordinator Node** (whichever node the client hits) fetches from
+  the others on the client's behalf.
+- Also works across partitions, checking only partitions that are replicas of the same data.
+
+1. **Strong Consistency (Linearizability)** — once a write completes, any subsequent read returns that value or later,
+   from any node. Typically uses strict quorum ($R + W > N$), guaranteeing overlap. Prioritizes Consistency over
+   Availability → **CP system**.
+2. **Eventual Consistency** — if no new updates occur, all replicas eventually converge. Uses sloppy
+   quorums ($R + W \le N$), so reads can be stale. Needs conflict resolution (Last Write Wins, or
+   CRDTs — [§8.4](#84-crdts)). Prioritizes Availability + Partition Tolerance → **AP system**.
+3. **Weak Consistency** — fewest guarantees; doesn't even promise eventual convergence. Used for real-time streams (e.g.
+   video) where speed matters more than completeness.
+
+### 8.3 Consensus: Raft & Paxos
+
+- Designed to avoid **split brain** — where disconnected partitions each independently elect a leader and accept
+  updates.
+- Prevent this by requiring updates/leadership elections to occur only if a strict majority (quorum) of the cluster
+  agrees.
+
+### 8.4 CRDTs
+
+- **Conflict-Free Replicated Data Types**: mathematically designed so operations can be applied in any order across
+  servers and still merge into the same correct state.
+
+### 8.5 Vector Clocks 🆕
+
+*(The classic alternative/complement to Last-Write-Wins and CRDTs — referenced implicitly by "conflict resolution" but
+not explained.)*
+
+- Tracks causality between events across distributed nodes, without relying on wall-clock time (untrustworthy across
+  machines).
+- Each node keeps a counter per node it knows about, e.g. `{A: 2, B: 1, C: 0}`; increments its own on a local event,
+  merges via element-wise max (then increments its own) on receiving a message.
+- Comparing two vector clocks tells you: one **happened-before** the other → no conflict, keep the newer; neither
+  dominates → concurrent, genuine conflict needing app-level resolution (unlike CRDTs, which resolve automatically).
+- Used by systems like the original Amazon Dynamo to *detect* (not silently resolve) write conflicts.
+
+### 8.6 Consistency Problems in Practice
+
+**Read-After-Write Consistency (Reading Your Own Writes)**
+
+- Solved by: reading from the same node you wrote to (sticky sessions); reading only from the leader if a recent
+  modification is known; remembering a client-side timestamp and only serving reads at least that recent; locally
+  caching the result until fresh data loads.
+- Cross-device read-after-write is harder — it breaks all of the above, since the second device has none of that local
+  state.
+
+**Monotonic Reads**
+
+- Reading from multiple replicas can make a user appear to "go back in time" due to lag/order.
+- Solutions: sticky replica (always read from the same one); timestamp-based (refuse to serve/replace data older than
+  what's already been seen).
+
+**Consistent Prefix Reads**
+
+- Reading via independent readers across nodes can show cause and effect out of order.
+- Solutions: write causally-dependent entries to the same node; use algorithms that explicitly track causal ("
+  happens-before") ordering.
+
+### 8.7 Sharding vs. Partitioning vs. Replication (Quick Distinction)
+
+- **Partitioning**: splitting data (horizontally or vertically), possibly within the same server.
+- **Sharding**: horizontal partitioning *across* multiple servers/nodes, each holding a subset of rows — enables
+  horizontal scaling.
+- **Replication**: copying the same data across multiple nodes for redundancy/availability/read scaling (master-slave,
+  master-master, quorum-based).
+
+---
+
+## Module 9: Database Replication
+
+### 9.1 Leader-Follower Replication
+
+- Usually a master-slave (Primary-Replica / Leader-Follower) relationship.
+- Only the master (leader) supports writes; slaves (followers) get copies and only support reads (if enabled).
+- Most applications are read-heavy, so this works well — better read availability, and better reliability (losing one
+  server doesn't mean losing all data).
+
+### 9.2 Synchronous vs. Asynchronous Replication
+
+**Synchronous**: transaction isn't committed until propagated to all replicas; success is only returned afterward.
+
+- 🟢 Guarantees all followers are up-to-date.
+- 🔴 Terrible for performance — leader waits for the slowest node. In reality, systems often use **semi-synchronous**
+  replication (propagate to at least one replica).
+- 🔴 If a replica becomes unreachable, the write stalls or fails.
+
+**Asynchronous**: primary commits locally and returns success immediately, then broadcasts to replicas.
+
+- 🟢 Extremely low-latency writes; decouples network lag from acknowledgement.
+- 🔴 Creates replication delay ("data lag"); changes can be lost if the primary fails before propagating.
+
+### 9.3 Adding a New Replica
+
+1. Take a snapshot of the current leader.
+2. Copy the snapshot onto the follower.
+3. Get the changelog of changes since the snapshot.
+4. Replay those changes on the new follower.
+
+### 9.4 Failover
+
+- **Replica Failover**: ask the leader what's happened since the replica's last known timestamp.
+- **Leader Failover**: leader marked failed via heartbeat timeout → new leader elected (usually most up-to-date node) →
+  requests routed to it → old leader rejoins as a follower when it returns.
+    - **Split brain**: if two nodes both think they're leader, this is dangerous — both can go out of sync. Some systems
+      auto-shutdown when detected.
+
+### 9.5 Replication Methods
+
+- **Statement-based**: copy each statement (e.g. `INSERT`) to followers. Fails for non-deterministic operations (
+  `RAND()`, `NOW()`).
+- **Write-Ahead Log (WAL)**: append-only log of the physical effect of each query. Byte-level, so not
+  storage-engine-agnostic (a problem during migrations).
+- **Logical Log**: append-only, but logical (engine-agnostic): for `INSERT`, new column values; for `DELETE`, enough
+  info to identify the row; for `UPDATE`, similar to insert.
+- **Trigger-based**: user-defined application code performs the replication.
+
+---
+
+## Module 10: Scaling the Database
+
+### 10.1 Federation
+
+- Integrates multiple DBs into one common interface — the system looks like a single DB to the user.
+- Each DB keeps its own rules/autonomy; can be heterogeneous (SQL + Redis) or homogeneous.
+- 🟢 Connects old, disjointed systems without expensive/risky migrations.
+- 🔴 Performance bottleneck (only as fast as the slowest DB); hard to build an efficient cross-DB execution plan.
+
+### 10.2 Partitioning / Sharding
+
+- Horizontal partitioning strategy — a single DB is divided across multiple physical nodes ("shards"), sharing a schema,
+  with each row belonging to exactly one partition.
+- Trade-offs: 🟢 horizontal scale, higher throughput/availability. 🔴 cross-shard joins are inefficient (often pushed to
+  the app layer); cross-shard ACID needs a 2-Phase
+  Commit ([§10.5](#105-two-phase-commit-2pc-for-distributed-transactions-)).
+- **Shard Key**: the column(s) determining a row's partition.
+- **Partitioning methods:**
+    - **By Key Range**: 🟢 supports efficient range queries. 🔴 can still be unevenly distributed in practice, and can
+      create temporary hotspots (e.g. date-based keys sending all of "today"'s writes to one node).
+    - **Hash of Key**: 🟢 randomizes distribution better. 🔴 loses range-query/aggregation locality.
+    - **Dynamic Partitioning**: split based on need (e.g. partition grows too large) — uses fewer resources when not
+      required, but rebalancing can be costly.
+
+### 10.3 Rebalancing Nodes
+
+- **`hash mod N`**: 🔴 never do this — a single node-count change reshuffles nearly every key.
+- **Fixed number of partitions**: create far more partitions than nodes; hand partitions to/from nodes as they
+  join/leave. Used in Redis.
+- **Automatic vs. manual**: automatic is convenient but 🔴 can overload the network if triggered carelessly; manual is 🟢
+  often safer with the right human oversight.
+
+### 10.4 Skew & Hot Spots
+
+- Data is rarely perfectly evenly distributed; a partition with disproportionate load is a **hot spot**.
+- Trade-off: pure randomness avoids skew but loses deterministic routing; deterministic key-based routing risks skew if
+  too many keys map to the same node.
+
+### 10.5 Two-Phase Commit (2PC) for Distributed Transactions 🆕
+
+*(Referenced repeatedly — for cross-shard ACID and RDBMS horizontal scaling — but never explained. Added here.)*
+
+A protocol to make a transaction spanning multiple nodes commit atomically (all commit, or none do).
+
+- **Phase 1 — Prepare**: coordinator asks every participant "can you commit?" Each does the work, logs it, and replies
+  yes/no.
+- **Phase 2 — Commit/Abort**: if all said yes, coordinator tells everyone to commit; if any said no (or timed out),
+  everyone aborts/rolls back.
+- 🔴 Blocking: if the coordinator crashes after Phase 1, "yes" participants are stuck holding locks, waiting
+  indefinitely.
+- 🔴 Adds significant latency — two round-trips per node before anyone can proceed.
+- This cost is why NewSQL/distributed-SQL systems (CockroachDB, Spanner) prefer consensus protocols (
+  Raft/Paxos, [§8.3](#83-consensus-raft--paxos)) over classic 2PC.
+- Related pattern for long-running distributed workflows: the **Saga pattern** — break the transaction into a sequence
+  of local transactions, each with a compensating action to "undo" it if a later step fails.
+
+---
+
+## Module 11: Interview Quick-Reference
+
+### 11.1 Common "Explain the Difference" Questions
+
+- **Primary Key vs. Unique Key**: PK can't be NULL and only one per table; Unique key can have one NULL (in most DBs)
+  and multiple per table.
+- **Clustered vs. Non-Clustered Index**: clustered defines physical row order (1 per table); non-clustered is a separate
+  lookup structure (many per table).
+- **DROP vs. TRUNCATE vs. DELETE**: see [§4.1](#41-ddl-dml-dcl-tcl).
+- **CHAR vs. VARCHAR**: CHAR is fixed-length (padded with spaces), VARCHAR is variable-length (stores actual length) —
+  CHAR can be marginally faster for fixed-size data, VARCHAR saves space for variable content.
+- **UNION vs. UNION ALL**: UNION removes duplicates (implicit sort/distinct, slower); UNION ALL keeps all rows including
+  duplicates (faster).
+- **WHERE vs. HAVING**: see [§4.3](#43-where-vs-having).
+- **2NF vs. 3NF vs. BCNF**: see [Module 3](#module-3-normalization).
+- **Optimistic vs. Pessimistic Locking**: see [§7.3](#73-optimistic-vs-pessimistic-concurrency-control).
+- **Stored Procedure vs. Function**: see [§4.11](#411-stored-procedures-functions--triggers).
+- **Weak Entity vs. Strong Entity**: weak entity has no independent primary key — it depends on a strong entity's key +
+  a partial key (discriminator) to be uniquely identified.
+
+### 11.2 Rapid-Fire Quick Answers
+
+- **What is a foreign key for?** Enforces referential integrity — a value in the child table must exist in the parent
+  table (or be NULL).
+- **Can a table have no primary key?** Yes, technically, but it's bad practice — risks duplicate rows and loses the
+  default clustered-index benefit.
+- **Composite index leftmost-prefix rule?** Index on `(A,B,C)` helps queries on `A`, `(A,B)`, `(A,B,C)`, but not `B` or
+  `C` alone.
+- **What is a covering index?** See [§5.1](#51-index-types-overview).
+- **OLTP vs. OLAP?** See [§1.6](#16-oltp-vs-olap).
+- **What's a Star Schema?** See [§1.6](#16-oltp-vs-olap).
+- **What is referential integrity?** Foreign key values must match an existing primary key value in the referenced
+  table (or be NULL).
+
+### 11.3 Practice SQL Problems
+
+**1. Find duplicate rows in a table.**
+
+```sql
+SELECT name, email, COUNT(*)
+FROM Users
+GROUP BY name, email
+HAVING COUNT(*) > 1;
+```
+
+**2. Delete duplicate rows, keeping one.**
+
+```sql
+DELETE
+FROM Users
+WHERE id NOT IN (SELECT MIN(id)
+                 FROM Users
+                 GROUP BY email);
+```
+
+**3. Find employees who don't have a manager.**
+
+```sql
+SELECT *
+FROM Employee
+WHERE manager_id IS NULL;
+```
+
+**4. Department-wise highest salary.**
+
+```sql
+SELECT dept_id, MAX(salary)
+FROM Employee
+GROUP BY dept_id;
+```
+
+**5. Consecutive days a user was active** (gaps-and-islands problem — a favorite in FAANG interviews). Core idea:
+subtracting a row number from the date gives the same "group key" for consecutive dates.
+
+```sql
+SELECT user_id, date - ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY date) AS grp
+FROM Activity;
+-- rows with the same (user_id, grp) form a consecutive streak
+```
+
+*(See [§4.6](#46-subqueries-vs-joins) and [§4.7](#47-window-functions) for the Nth-highest-salary and running-total
+problems.)*
+
+### 11.4 How to Approach the Interview
+
+- **Design question** ("design a database for a ride-sharing app"): entities → relationships → keys → normalize to 3NF →
+  indexing strategy → read/write patterns → denormalization trade-offs if read-heavy.
+- **Write-SQL question**: always clarify NULL handling, tie-breaking (for "Nth highest" style questions), and whether
+  duplicates should be removed.
+- **Performance question**: mention checking `EXPLAIN`, checking indexes, checking for N+1 query patterns (common in
+  ORMs), considering a caching layer, considering read replicas.
+- **SQL vs. NoSQL question**: be ready to explain *why* NoSQL might be chosen (usually schema flexibility, horizontal
+  scale, or high write throughput) — and vice versa (usually the need for strong consistency/transactions across
+  entities).
+
+---
+
+## Suggested Topics to Add Later
+
+Still not covered in depth, but worth adding for full coverage:
+
+- **Database Recovery** — checkpointing, crash recovery using the WAL (ties into [§9.5](#95-replication-methods)'s WAL
+  discussion, but from a durability rather than replication angle), ARIES-style recovery.
+- **Database Security & Access Control** — roles, row-level security, encryption at rest/in transit.
+- **Backup Strategies** — full vs. incremental vs. differential, point-in-time recovery.
+- **Graph Query Languages** — Cypher (Neo4j), Gremlin — a natural follow-on to the Graph Database section
+  in [§1.8](#18-nosql-deep-dive-non-relational-models).
+- **Columnar Compression Techniques in Depth** — run-length encoding, dictionary encoding (touched on
+  in [§1.9](#19-other-database-paradigms) but not detailed).
+- **Distributed Transactions Beyond 2PC** — the Saga pattern in more depth (mentioned briefly
+  in [§10.5](#105-two-phase-commit-2pc-for-distributed-transactions-)).

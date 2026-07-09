@@ -12,7 +12,7 @@ layout: default
 ## Linear Data Structures
 
 1. ### Arrays
-    - Elements stored in contiguuous memory locations, accessed by index
+    - Elements stored in contiguous memory locations, accessed by index
     - When to Use:
         - When you know the size of data beforehand
         - When you need fast random access in O(1)
@@ -20,24 +20,25 @@ layout: default
     - When to avoid:
         - For frequent insertion or deletion (wherver shifting of all elements is required)
 2. ### Linked Lists
-    - Consists of nodes where each node contains a field and pointer(s) depending on singly linked or doubly linked
+    - Consists of nodes where each node contains a field and pointer(s)
+    - One or two pointers depending on singly linked or doubly linked
     - Insertion/Deletion at known position: $O(1)$
     - When to Use:
         - Size of data is dynamic and unpredictable
         - Requires frequent insertion and deletion
-        - Don't need random acces (go by index)
+        - Don't need random access (go by index)
 3. ### Stack
     - Last in First Out (LIFO)
     - Time Complexity: Push/Pop/Peek: $O(1)$
     - When to Use:
         - Undo redo functionality
         - Managing function calls (used extensively in Recursion)
-        - Syntax Parsing with matching (for eg brackets)
+        - Syntax Parsing with matching (for e.g. brackets)
 4. ### Queue
     - First In First Out (FIFO)
     - Time Complexity: Enqueue/Dequeue: $O(1)$
     - When to use:
-        - Managing queus for e.g job scheduling
+        - Managing queues for e.g job scheduling
         - Async Data Transfer (MQs)
         - Breadth First Search
 5. ### Deque (Double-Ended Queue)
