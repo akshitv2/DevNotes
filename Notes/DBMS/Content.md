@@ -151,6 +151,8 @@ DBs.
     - Popularized by Google's Bigtable paper.
     - Reason for high throughput: LSM Trees + lazy insertion via a Write-Ahead Log (WAL). Conflicts (since LSM Trees
       lack single-key consistency) are resolved at read time — last write wins.
+    - Not popular since wide columns can only be accessed through row key thus making new queries extremely difficult
+        - If you had to find all accounts with balance > 500 you need to go to each row by their account id first
 
 - **Graph Databases**
     - Concept: uses nodes (entities) and edges (relationships) to represent data — great for relationship-heavy queries.
@@ -236,7 +238,7 @@ A common interview ask:
 - 1:1 relationship → merge into either table, or add an FK on either side (with a unique constraint).
 - 1:N relationship → FK goes on the "many" side.
 - M:N relationship → separate junction/bridge table with FKs to both entities, forming a composite primary key.
-- Multi-valued attribute → separate table with an FK back to the owning entity.
+- Multivalued attribute → separate table with an FK back to the owning entity.
 
 ### 2.4 Relational Model & Relational Algebra
 
@@ -264,20 +266,62 @@ number of tuples.
 
 **Goal:** eliminate redundancy and avoid update/insert/delete anomalies.
 
+The Problem: Data Anomalies
+
+- Without normalization, databases suffer from redundancy, which leads to three main types of anomalies:
+    - Insertion Anomaly: Being unable to insert certain data because other related data is missing. (e.g., You cannot
+      add a new course because no students have enrolled in it yet).
+    - Update Anomaly: If redundant data exists in multiple places, updating it in one place but missing it in another
+      leads to inconsistent data.
+    - Deletion Anomaly: Unintentionally losing critical data when deleting a record. (e.g., Deleting the only student
+      enrolled in a course accidentally deletes the course details entirely).
+- If the related data to student i.e. the course is stored with student only then we depend on student table for all
+  course changes
+
 ### 3.1 Functional Dependency (FD)
 
 `A → B` means the value of A determines the value of B (A functionally determines B).
 
 ### 3.2 Normal Forms
 
-| Normal Form    | Rule                                                                                                                                                                                                         |
-|----------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **1NF**        | Every attribute holds atomic (indivisible) values; no repeating groups/arrays in a cell.                                                                                                                     |
-| **2NF**        | Must be in 1NF + no *partial dependency* — a non-key attribute must depend on the whole composite primary key, not just part of it. Only relevant when the PK is composite.                                  |
-| **3NF**        | Must be in 2NF + no *transitive dependency* — a non-key attribute must not depend on another non-key attribute; every non-key attribute depends directly on the key, the whole key, and nothing but the key. |
-| **BCNF**       | Stricter version of 3NF: for every FD `A → B`, A must be a super key. Handles edge cases 3NF misses, when there are multiple overlapping candidate keys.                                                     |
-| **4NF**        | No multi-valued dependencies — an attribute shouldn't have multiple independent multi-valued facts in the same table (e.g. a Student table shouldn't mix multi-valued Hobbies and Languages independently).  |
-| **5NF (PJNF)** | No join dependency — a table can be decomposed into smaller tables and reconstructed without loss of information (rarely asked in depth).                                                                    |
+Note: A prime attribute is an attribute (column) that is a member of at least one candidate key in a relation.
+
+1. **1NF**
+    - Every attribute holds atomic (indivisible) values; no repeating groups/arrays in a cell
+2. **2NF**
+    - Must be in 1NF + no *partial dependency* — a non-key attribute must depend on the whole composite primary key, not
+      just part of it.
+    - Only relevant when the PK is composite.
+    - Example:
+        - In employees spending table if Project Code, EmployeeCode → Money Spent, EmployeeCode → EmployeeName and PK(
+          Project Code, EmployeeCode)
+            - In this case there exists a partial dependency here
+3. **3NF**
+    - Must be in 2NF + no *transitive dependency* — a non-key attribute must not depend on another non-key attribute
+    - Every non-key attribute depends directly on the key, the whole key, and nothing but the key.
+    - Example:
+        - In a students table
+            - if StudentId -> Exam -> Exam Fee
+            - In this case Exam Fee becomes a property of Student id and should be separated out as an Exam, Exam Fee
+              Table
+4. **BCNNF**
+    - BCNF is a stricter, stronger version of 3NF, often called 3.5NF.
+    - Must already be 3NF
+    - for every non-trivial functional dependency $X \rightarrow Y$ $X$ is a superkey
+        - i.e. Part of a key cannot determine anything else
+
+- **3NF vs BCNF**:
+    - Let's look at the relation: $\text{Schema}(A, B, C)$ where the Candidate Keys are $\{A, B\}$ and $\{A, C\}$.
+    - Prime attributes: $A, B, C$ (All of them are part of a key) and B→C
+    - In 3NF: This is ALLOWED. Because $C$ is a prime attribute
+    - In BCNF: This is BANNED. BCNF removes the prime attribute exception, must be split into two separate tables.
+
+- Note:
+    - BCNF vs. Performance
+        - Book definition: You must normalize all the way to BCNF (and 4NF/5NF) to eliminate every molecule of
+          redundancy and prevent anomalies.
+        - Practical application: Normalizing to BCNF requires breaking a single table into multiple smaller tables. To
+          read that data back, your application now has to perform expensive SQL JOIN operations.
 
 **Classic example asked in interviews:**
 
@@ -482,12 +526,20 @@ every `INSERT`/`UPDATE`/`DELETE` must also update the index).
 
 ### 5.2 B-Trees & B+ Trees
 
-- **B-Trees**: self-balancing search trees; each node can have multiple children. Guarantees $O(\log n)$ time complexity
-  for search, insertion, and deletion.
+- **B-Trees**:
+    - ![img_4.png](img_4.png)
+    - self-balancing search trees;
+    - Each node can have multiple children. Guarantees $O(\log n)$ time complexity for search, insertion, and deletion.
+    - Are flat and wide due to having more than 2 children
+    - Store both keys and their associated data/pointers in both internal nodes and leaf nodes. If a match is found in
+      an internal node, the database can return the row immediately without traversing down to the leaves.
 - **B+ Trees**: a variation of the B-Tree.
+  -
+        - ![img_4.png](img.png)
     - Internal nodes only store keys (for routing); data pointers live only in leaf nodes.
     - Leaf nodes are linked together in a sequential chain — great for range queries (`BETWEEN`, `<`, `>`, `ORDER BY`)
       as well as equality lookups.
+    - Tree is used for random access giving fast lookups when ranges are not used
     - Most RDBMS (MySQL/InnoDB, PostgreSQL) use this — it's why B+Trees dominate over plain B-Trees in databases.
     - Maximizes fan-out (more keys per node), reducing disk I/O: a standard B-Tree node stores key + data + child
       pointers in a fixed-size page (more I/O while navigating); a B+ Tree only fetches data once it finds the right
