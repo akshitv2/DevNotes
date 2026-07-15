@@ -497,6 +497,18 @@ A virtual table based on a query result — doesn't store data itself (usually),
 
 ## Module 5: Database Indexing
 
+### 5.1 How they work
+
+- In SQL you create INDEX on a field manually
+    - ```sql
+        CREATE INDEX idx_lastname
+        ON employees (last_name);
+      ```
+- Then on querying SQL engine automatically uses it whenever that field is used in a query
+  - `SELECT * FROM employees WHERE last_name = 'Smith';`
+- The B-Tree structure makes reads become faster and writes (like insertions) become more expensive.
+- Index Bloat: Use of too many indexes slows down both read and write (especially)
+
 ### 5.1 Index Types Overview
 
 An index is an auxiliary data structure that speeds up data retrieval at the cost of extra storage and slower writes (
@@ -534,8 +546,7 @@ every `INSERT`/`UPDATE`/`DELETE` must also update the index).
     - Store both keys and their associated data/pointers in both internal nodes and leaf nodes. If a match is found in
       an internal node, the database can return the row immediately without traversing down to the leaves.
 - **B+ Trees**: a variation of the B-Tree.
-  -
-        - ![img_4.png](img.png)
+    - ![img_4.png](img.png)
     - Internal nodes only store keys (for routing); data pointers live only in leaf nodes.
     - Leaf nodes are linked together in a sequential chain — great for range queries (`BETWEEN`, `<`, `>`, `ORDER BY`)
       as well as equality lookups.
@@ -560,6 +571,8 @@ every `INSERT`/`UPDATE`/`DELETE` must also update the index).
 - 🔴 Reads can be slower, since multiple SSTables may need to be checked to find the latest version of a key (mitigated
   with Bloom filters).
 - Used in Cassandra, RocksDB, LevelDB.
+- Essentially you write to fast Memtable, when it fills up you dump to immutable SSTables which compact routinely to
+  save space
 
 ### 5.5 Bitmap Indexing
 
