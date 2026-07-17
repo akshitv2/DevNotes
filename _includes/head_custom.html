@@ -71,8 +71,7 @@
     }
 
     .infoMarker::before {
-        content: "𝐢" !important;
-        color: rgb(33, 150, 243) !important;
+        content: "ℹ️" !important;
     }
 
 </style>
@@ -109,13 +108,13 @@
     });
     document.addEventListener("DOMContentLoaded", () => {
         const content = document.body.innerHTML;
-        const updatedContent = content.replace(/🟦(.*?)🟦/g, (match, p1) => {
+        content = content.replace(/🟦(.*?)🟦/g, (match, p1) => {
             return `<span style="background-color:blue; color:white; padding:1px 4px; border-radius:2px; font-size:0.5em; font-weight:bold;">${p1}</span>`;
         });
-        const updatedContent2 = updatedContent.replace(/🟥(.*?)🟥/g, (match, p1) => {
+        content = updatedContent.replace(/🟥(.*?)🟥/g, (match, p1) => {
             return `<span style="background-color:red; color:white; padding:1px 4px; border-radius:2px; font-size:0.5em; font-weight:bold;">${p1}</span>`;
         });
-        const updatedContent3 = updatedContent2.replace(/⬜(.*?)⬜/g, (match, p1) => {
+        content = updatedContent2.replace(/⬜(.*?)⬜/g, (match, p1) => {
             return `<span style="background-color:gray; color:white; padding:1px 4px; border-radius:2px; font-size:0.5em; font-weight:bold;">${p1}</span>`;
         });
 

@@ -7,11 +7,6 @@ title: DBMS Notes
 
 # DBMS Notes
 
-> Organized into 11 modules, roughly building from fundamentals → design → SQL → storage internals →
-> transactions/concurrency → distributed systems → an interview quick-reference appendix at the end.
-> Sections marked **🆕 Added** were not in either of your original note sets — either something was referenced but never
-> explained, or a topic was missing entirely. A list of further topics you may still want to add is at the very end.
-
 ---
 
 ## Module 1: Foundations of Data Storage
@@ -648,8 +643,6 @@ Developed as an alternative to ACID, which is often too restrictive for massive,
 3. **Eventual Consistency (E)** — the system will eventually become consistent once it stops receiving updates.
 
 ### 6.4 Idempotency 🆕
-
-*(Left as an empty header in the original notes — filled in below.)*
 
 - An operation is **idempotent** if performing it multiple times has the same effect as performing it once.
 - Critical for retries: if a client doesn't get a response and retries a request, an idempotent operation guarantees the

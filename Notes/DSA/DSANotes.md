@@ -74,9 +74,9 @@ layout: default
               the worst case of $O(n)$.
         - Time Complexity (Balanced): Search/Insert/Delete: $O(\log n)$
 
-    - When to Use:
-        - You need to maintain data in a sorted order while allowing dynamic insertions and deletions.
-        - You need to find elements within a specific range quickly
+       - When to Use:
+           - You need to maintain data in a sorted order while allowing dynamic insertions and deletions.
+           - You need to find elements within a specific range quickly
 
     3. Trie (Prefix Tree)
     4. Segment Tree

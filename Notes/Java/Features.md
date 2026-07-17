@@ -73,14 +73,14 @@ layout: default
               ```
     - Can declare a constructor using compact construction
         - ```java
-      record EmployeeSecond(int id, String name, String position){
-      public EmployeeSecond {
-      if (id < 0 ){
-      throw new RuntimeException("Invalid ID");
-      }
-      }
-      }
-        ```
+            record EmployeeSecond(int id, String name, String position){
+                public EmployeeSecond {
+                    if (id < 0 ){
+                        throw new RuntimeException("Invalid ID");
+                    }
+                }
+            }
+          ```
 
 3. Sealed Classes:
     - Introduced in java 15
