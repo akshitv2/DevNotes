@@ -18,7 +18,7 @@ layout: default
         - When you need fast random access in O(1)
         - To avoid pointer memory overhead
     - When to avoid:
-        - For frequent insertion or deletion (wherver shifting of all elements is required)
+        - For frequent insertion or deletion (wherever shifting of all elements is required)
 2. ### Linked Lists
     - Consists of nodes where each node contains a field and pointer(s)
     - One or two pointers depending on singly linked or doubly linked
