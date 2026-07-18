@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quick Image Resizer</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+        #drop-zone {
+            border: 2px dashed #ccc;
+            border-radius: 6px;
+            padding: 40px 20px;
+            cursor: pointer;
+            background: #fafafa;
+            transition: background 0.2s, border-color 0.2s;
+        }
+        #drop-zone.hover {
+            background: #edf2f7;
+            border-color: #4299e1;
+        }
+        #file-input {
+            display: none;
+        }
+        .preview-box {
+            margin-top: 20px;
+            display: none;
+        }
+        #preview-img {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        button {
+            background: #4299e1;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.1s;
+        }
+        button:hover {
+            background: #2b6cb0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Image Resizer</h2>
+
+    <div id="drop-zone">
+        <p>Drag & drop your image here, or <strong>click to browse</strong></p>
+        <input type="file" id="file-input" accept="image/*">
+    </div>
+
+    <div class="preview-box" id="preview-box">
+        <img id="preview-img" src="" alt="Preview">
+        <div class="btn-group">
+            <button onclick="resizeAndDownload(0.5, '1_2x')">1/2x</button>
+            <button onclick="resizeAndDownload(0.25, '1_4x')">1/4x</button>
+            <button onclick="resizeAndDownload(0.125, '1_8x')">1/8x</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const dropZone = document.getElementById('drop-zone');
+    const fileInput = document.getElementById('file-input');
+    const previewBox = document.getElementById('preview-box');
+    const previewImg = document.getElementById('preview-img');
+
+    let originalImage = null;
+    let originalFileName = 'image';
+
+    // Click to select
+    dropZone.addEventListener('click', () => fileInput.click());
+
+    fileInput.addEventListener('change', (e) => handleFiles(e.target.files));
+
+    // Drag and drop handlers
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dropZone.addEventListener(eventName, (e) => {
+            e.preventDefault();
+            dropZone.classList.add('hover');
+        }, false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('hover');
+        }, false);
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+        handleFiles(e.dataTransfer.files);
+    });
+
+    function handleFiles(files) {
+        const file = files[0];
+        if (!file || !file.type.startsWith('image/')) return;
+
+        originalFileName = file.name.substring(0, file.name.lastIndexOf('.')) || file.name;
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            originalImage = new Image();
+            originalImage.onload = () => {
+                previewImg.src = e.target.result;
+                previewBox.style.display = 'block';
+            };
+            originalImage.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function resizeAndDownload(scale, label) {
+        if (!originalImage) return;
+
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+
+        // Calculate new dimensions
+        canvas.width = Math.round(originalImage.width * scale);
+        canvas.height = Math.round(originalImage.height * scale);
+
+        // Draw and scale image
+        ctx.drawImage(originalImage, 0, 0, canvas.width, canvas.height);
+
+        // Trigger download
+        const link = document.createElement('a');
+        link.download = `${originalFileName}_${label}.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+    }
+</script>
+
+</body>
+</html>

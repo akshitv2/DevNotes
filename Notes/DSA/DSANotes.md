@@ -70,9 +70,11 @@ parent: DSA
         - **Red-Black Tree**: Each node has a color (Red/Black), with each insertion being red by default (root is
           black). Red nodes can't have red children which causes rotation, the idea being every path from root to leaf
           should have equal blacks (can have n reds)
-    3. **Trie (Prefix Tree)**
-       Tree-like data structure used to store a dynamic set of strings with each node being a character, insertion is always $O(L)$ (L=length of string)    
-       Useful in text matching like autocomplete    
+    3. **Trie (Prefix Tree)**  
+       ![img.png](trie.png)  
+       Tree-like data structure used to store a dynamic set of strings with each node being a character, insertion is
+       always $O(L)$ (L=length of string)    
+       Useful in text matching like autocomplete
     4. Segment Tree
     5. Fenwick Tree (Binary Indexed Tree)
 
