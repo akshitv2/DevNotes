@@ -43,39 +43,36 @@ parent: DSA
    Typically implemented as a sequence of individually allocated fixed-size arrays  
    Time Complexity:
     - Amortized $O(1)$ for insertions and deletions at both ends | $O(1)$ random access.
-    - Note: amortized means spreading the cost of an expensive, infrequent operation over a long series of
-      cheap, frequent operations
-    - When you append an item to a dynamic array, it usually takes $O(1)$ (constant time)
-    - If you append 1,000 items, the array only resizes a handful of times.990 appends take $O(1)$ time.10
-      appends trigger a resize and take $O(n)$ time.
+    - Note: Amortized means on avg since resize which takes $O(n)$ happens only rarely.
     - When to use:
         - Implementing both Stack and Queue behaviors simultaneously.
 
 ## Non Linear Data Structures
 
 1. ### Trees:
-    1. ### Binary Search Tree (BST)
-        - node-based data structure
-            - left subtree of a node contains only nodes with keys lesser
-            - right subtree of a node contains only nodes with keys greater
-    2. ### Balanced Tree
-        - Self-balancing variant of a BST
-        - Automatically maintains its height at a minimum after every insertion and deletion
-        - Done for performance reasons
-        - Why?
-            - In a standard BST, if elements are inserted in a sorted or nearly sorted order (e.g., 1, 2, 3, 4, 5), the
-              tree
-              degenerates into a single long chain (essentially a linked list)
-            - time complexity for search, insertion, and deletion operations drops from the average case of $O(\log n)$
-              to
-              the worst case of $O(n)$.
-        - Time Complexity (Balanced): Search/Insert/Delete: $O(\log n)$
-
-        - When to Use:
-            - You need to maintain data in a sorted order while allowing dynamic insertions and deletions.
-            - You need to find elements within a specific range quickly
-
-    3. Trie (Prefix Tree)
+    1. **Binary Search Tree (BST)**
+       Node-based data structure
+        - Left subtree of a node contains only nodes with keys lesser value
+        - Right subtree of a node contains only nodes with keys greater value
+          Insertion is simple: Go from root, if smaller left, greater right until you reach final. (Can result in really
+          skewed trees)
+            - When? elements inserted in nearly sorted order (e.g., 1, 2, 3, 4, 5)
+              Complexity: Avg Insertion $\mathcal{O}(\log n)$, $\mathcal{O}(n)$ when skewed (same as array in that case)
+    2. **Balanced Tree**
+       Self-balancing variant of a BST which reduces depth, thus making it more performant  
+       Automatically maintains its height at a minimum after every insertion and deletion
+       Time Complexity (Balanced): Search/Insert/Delete: $O(\log n)$  
+       When to Use:
+        - You need to maintain data in a sorted order while allowing dynamic insertions and deletions.
+        - You need to find elements within a specific range quickly
+          Mainly Two Types:
+        - **AVL Trees**: Difference between heights of left and right subtrees cannot be more than one for all nodes
+        - **Red-Black Tree**: Each node has a color (Red/Black), with each insertion being red by default (root is
+          black). Red nodes can't have red children which causes rotation, the idea being every path from root to leaf
+          should have equal blacks (can have n reds)
+    3. **Trie (Prefix Tree)**
+       Tree-like data structure used to store a dynamic set of strings with each node being a character, insertion is always $O(L)$ (L=length of string)    
+       Useful in text matching like autocomplete    
     4. Segment Tree
     5. Fenwick Tree (Binary Indexed Tree)
 
