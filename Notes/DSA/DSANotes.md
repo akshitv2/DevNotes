@@ -1,56 +1,53 @@
 ---
-nav_order: 3
 parent: DSA
-title: DSA
-layout: default
 ---
 
-# DSA
+# DSA Theory Notes
 
 ## Data Structures
 
 ## Linear Data Structures
 
-1. ### Arrays
-    - Elements stored in contiguous memory locations, accessed by index
-    - When to Use:
-        - When you know the size of data beforehand
-        - When you need fast random access in O(1)
-        - To avoid pointer memory overhead
-    - When to avoid:
-        - For frequent insertion or deletion (wherever shifting of all elements is required)
-2. ### Linked Lists
-    - Consists of nodes where each node contains a field and pointer(s)
-    - One or two pointers depending on singly linked or doubly linked
-    - Insertion/Deletion at known position: $O(1)$
-    - When to Use:
-        - Size of data is dynamic and unpredictable
-        - Requires frequent insertion and deletion
-        - Don't need random access (go by index)
+1. **Arrays**  
+   Elements stored in contiguous memory locations, accessed by index  
+   When to Use:
+    - When you know the size of data beforehand
+    - When you need fast random access in O(1)
+    - To avoid pointer memory overhead  
+      When to avoid:
+    - For frequent insertion or deletion (wherever shifting of all elements is required)
+2. **Linked Lists**  
+   Consists of nodes where each node contains a field and pointer(s)  
+   One or two pointers depending on _singly linked_ or _doubly linked_  
+   Insertion/Deletion at known position: $O(1)$  
+   When to Use:
+    - Size of data is dynamic and unpredictable
+    - Requires frequent insertion and deletion
+    - Don't need random access (go by index)
 3. ### Stack
-    - Last in First Out (LIFO)
-    - Time Complexity: Push/Pop/Peek: $O(1)$
-    - When to Use:
-        - Undo redo functionality
-        - Managing function calls (used extensively in Recursion)
-        - Syntax Parsing with matching (for e.g. brackets)
+   Last in First Out (LIFO)  
+   Time Complexity: Push/Pop/Peek: $O(1)$  
+   When to Use:
+    - Undo redo functionality
+    - Managing function calls (used extensively in Recursion)
+    - Syntax Parsing with matching (for e.g. brackets)
 4. ### Queue
-    - First In First Out (FIFO)
-    - Time Complexity: Enqueue/Dequeue: $O(1)$
-    - When to use:
-        - Managing queues for e.g job scheduling
-        - Async Data Transfer (MQs)
-        - Breadth First Search
+   First In First Out (FIFO)  
+   Time Complexity: Enqueue/Dequeue: $O(1)$  
+   When to use:
+    - Managing queues for e.g job scheduling
+    - Async Data Transfer (MQs)
+    - Breadth First Search
 5. ### Deque (Double-Ended Queue)
-    - allows insertions and deletions at both the front and the back
-    - typically implemented as a sequence of individually allocated fixed-size arrays
-    - Time Complexity:
-        - Amortized $O(1)$ for insertions and deletions at both ends | $O(1)$ random access.
-            - Note: amortized means spreading the cost of an expensive, infrequent operation over a long series of
-              cheap, frequent operations
-                - When you append an item to a dynamic array, it usually takes $O(1)$ (constant time)
-                - If you append 1,000 items, the array only resizes a handful of times.990 appends take $O(1)$ time.10
-                  appends trigger a resize and take $O(n)$ time.
+   Allows insertions and deletions at both the front and the back  
+   Typically implemented as a sequence of individually allocated fixed-size arrays  
+   Time Complexity:
+    - Amortized $O(1)$ for insertions and deletions at both ends | $O(1)$ random access.
+    - Note: amortized means spreading the cost of an expensive, infrequent operation over a long series of
+      cheap, frequent operations
+    - When you append an item to a dynamic array, it usually takes $O(1)$ (constant time)
+    - If you append 1,000 items, the array only resizes a handful of times.990 appends take $O(1)$ time.10
+      appends trigger a resize and take $O(n)$ time.
     - When to use:
         - Implementing both Stack and Queue behaviors simultaneously.
 
@@ -74,9 +71,9 @@ layout: default
               the worst case of $O(n)$.
         - Time Complexity (Balanced): Search/Insert/Delete: $O(\log n)$
 
-       - When to Use:
-           - You need to maintain data in a sorted order while allowing dynamic insertions and deletions.
-           - You need to find elements within a specific range quickly
+        - When to Use:
+            - You need to maintain data in a sorted order while allowing dynamic insertions and deletions.
+            - You need to find elements within a specific range quickly
 
     3. Trie (Prefix Tree)
     4. Segment Tree

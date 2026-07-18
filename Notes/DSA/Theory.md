@@ -2,6 +2,7 @@
 nav_order: 3
 parent: DSA
 layout: default
+title: DELETE
 ---
 
 # Theory

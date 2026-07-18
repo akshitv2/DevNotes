@@ -62,8 +62,8 @@ parent: DSA
 - Sequential steps: add complexities → O(a) + O(b) = O(a+b) (keep both if not clearly dominant, e.g. graph algorithms
   are O(V+E)).
 - Nested steps: multiply → O(a) × O(b) = O(a·b).
-- **Amortized analysis**: e.g., dynamic array `push_back` is O(1) amortized despite occasional O(n) resize, because
-  resizes happen exponentially less often.
+- **Amortized analysis**: e.g., dynamic array `push_back` is O(1) amortized meaning average is O(1) despite occasional
+  O(n) resize, because resizes happen exponentially less often.
 - **Master Theorem** for divide-and-conquer recurrences `T(n) = aT(n/b) + f(n)`:
     - If `f(n) = O(n^c)` where `c < log_b(a)` → `T(n) = Θ(n^log_b(a))`
     - If `c = log_b(a)` → `T(n) = Θ(n^c log n)`
