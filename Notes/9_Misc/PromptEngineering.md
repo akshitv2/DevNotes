@@ -1,7 +1,7 @@
 ---
 title: Prompt Engineering
 nav_order: 3
-parent: AI
+parent: Misc
 layout: default
 ---
 

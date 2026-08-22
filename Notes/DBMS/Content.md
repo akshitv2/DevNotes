@@ -2,7 +2,7 @@
 parent: DBMS
 nav_order: 1
 layout: default
-title: DBMS Notes
+title: Theory
 ---
 
 # DBMS Notes
@@ -214,8 +214,8 @@ Most modern databases no longer limit themselves to a single category.
 - **Participation constraint**: total (double line — every entity must participate) vs. partial.
 - **Weak entity**: doesn't have a primary key of its own; depends on a strong (owner) entity via a foreign key + partial
   key (discriminator). Represented with a double rectangle.
-- ![img_3.png](img_3.png)
-- ![img_2.png](img_2.png)
+- ![img_3.png](media/img_3.png)
+- ![img_2.png](media/img_2.png)
 
 ### 2.2 Generalization, Specialization & Aggregation
 
@@ -534,14 +534,14 @@ every `INSERT`/`UPDATE`/`DELETE` must also update the index).
 ### 5.2 B-Trees & B+ Trees
 
 - **B-Trees**:
-    - ![img_4.png](img_4.png)
+    - ![img_4.png](media/img_4.png)
     - self-balancing search trees;
     - Each node can have multiple children. Guarantees $O(\log n)$ time complexity for search, insertion, and deletion.
     - Are flat and wide due to having more than 2 children
     - Store both keys and their associated data/pointers in both internal nodes and leaf nodes. If a match is found in
       an internal node, the database can return the row immediately without traversing down to the leaves.
 - **B+ Trees**: a variation of the B-Tree.
-    - ![img_4.png](img.png)
+    - ![img_4.png](media/img.png)
     - Internal nodes only store keys (for routing); data pointers live only in leaf nodes.
     - Leaf nodes are linked together in a sequential chain — great for range queries (`BETWEEN`, `<`, `>`, `ORDER BY`)
       as well as equality lookups.

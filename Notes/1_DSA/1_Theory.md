@@ -1,5 +1,6 @@
 ---
 parent: DSA
+nav_order: 1
 ---
 
 # DSA Theory Notes
@@ -71,7 +72,7 @@ parent: DSA
           black). Red nodes can't have red children which causes rotation, the idea being every path from root to leaf
           should have equal blacks (can have n reds)
     3. **Trie (Prefix Tree)**  
-       ![img.png](trie.png)  
+       ![img.png](media/trie.png)  
        Tree-like data structure used to store a dynamic set of strings with each node being a character, insertion is
        always $O(L)$ (L=length of string)    
        Useful in text matching like autocomplete
@@ -81,7 +82,7 @@ parent: DSA
 2. ### Heap
    A specialized tree-based data structure that satisfies the heap property: in a Min-Heap, the root is always the
    minimum element.
-   ![img.png](heap.png)
+   ![img.png](media/heap.png)
    Time Complexity: Get Min/Max: $O(1)$, Insert/Delete: $O(\log n)$
     - When to use:
         - constant-time access to the highest or lowest priority element.

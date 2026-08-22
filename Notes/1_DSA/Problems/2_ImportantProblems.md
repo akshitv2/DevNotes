@@ -1,7 +1,7 @@
 ---
-nav_order: 4
-parent: DSA
-title: DSA Problems Quick
+nav_order: 3
+parent: Problems
+title: Cheatsheet
 layout: default
 ---
 

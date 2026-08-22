@@ -1,7 +1,7 @@
 ---
 nav_order: 4
-parent: DSA
-title: Leetcode quick
+parent: Problems
+title: Leetcode Cheatsheet
 layout: default
 ---
 

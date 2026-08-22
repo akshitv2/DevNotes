@@ -4,7 +4,7 @@ nav_order: 2
 layout: default
 ---
 
-# Networking Notes
+# Theory
 
 A comprehensive reference of networking concepts expected at senior/staff-adjacent software engineering levels —
 covering both interview prep and real-world system design fluency.

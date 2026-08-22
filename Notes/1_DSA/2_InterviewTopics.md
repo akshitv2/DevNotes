@@ -1,45 +1,35 @@
 ---
 parent: DSA
+nav_order: 2
 ---
 
-# DSA Interview Notes
+# DSA Interview Topics
 
 ---
 
 ## Table of Contents
 
-1. [How to Use These Notes](#how-to-use-these-notes)
-2. [Complexity Analysis](#1-complexity-analysis)
-3. [Arrays & Strings](#2-arrays--strings)
-4. [Two Pointers & Sliding Window](#3-two-pointers--sliding-window)
-5. [Hashing](#4-hashing)
-6. [Linked Lists](#5-linked-lists)
-7. [Stacks & Queues](#6-stacks--queues)
-8. [Recursion & Backtracking](#7-recursion--backtracking)
-9. [Sorting Algorithms](#8-sorting-algorithms)
-10. [Binary Search](#9-binary-search)
-11. [Trees](#10-trees)
-12. [Heaps / Priority Queues](#11-heaps--priority-queues)
-13. [Graphs](#12-graphs)
-14. [Dynamic Programming](#13-dynamic-programming)
-15. [Greedy Algorithms](#14-greedy-algorithms)
-16. [Bit Manipulation](#15-bit-manipulation)
-17. [Advanced Data Structures](#16-advanced-data-structures)
-18. [String Algorithms](#17-string-algorithms)
-19. [Math for DSA](#18-math-for-dsa)
-20. [Problem-Solving Framework](#19-problem-solving-framework)
-21. [Tech-Lead-Specific Angle](#20-tech-lead-specific-angle)
-22. [Additional Topics (quick-reference list)](#21-additional-topics-quick-reference-list)
-
----
-
-## How to Use These Notes
-
-- Read a topic, then **implement it from scratch** without looking — muscle memory matters more than recognition.
-- For each pattern, know: **when to use it** (trigger phrases in the problem), **time/space complexity**, and **1-2
-  canonical problems**.
-- As a tech lead, also prepare to explain **why** you chose an approach over alternatives — interviewers weight this
-  heavily at senior levels.
+1. [Complexity Analysis](#1-complexity-analysis)
+2. [Arrays & Strings](#2-arrays--strings)
+3. [Two Pointers & Sliding Window](#3-two-pointers--sliding-window)
+4. [Hashing](#4-hashing)
+5. [Linked Lists](#5-linked-lists)
+6. [Stacks & Queues](#6-stacks--queues)
+7. [Recursion & Backtracking](#7-recursion--backtracking)
+8. [Sorting Algorithms](#8-sorting-algorithms)
+9. [Binary Search](#9-binary-search)
+10. [Trees](#10-trees)
+11. [Heaps / Priority Queues](#11-heaps--priority-queues)
+12. [Graphs](#12-graphs)
+13. [Dynamic Programming](#13-dynamic-programming)
+14. [Greedy Algorithms](#14-greedy-algorithms)
+15. [Bit Manipulation](#15-bit-manipulation)
+16. [Advanced Data Structures](#16-advanced-data-structures)
+17. [String Algorithms](#17-string-algorithms)
+18. [Math for DSA](#18-math-for-dsa)
+19. [Problem-Solving Framework](#19-problem-solving-framework)
+20. [Tech-Lead-Specific Angle](#20-tech-lead-specific-angle)
+21. [Additional Topics (quick-reference list)](#21-additional-topics-quick-reference-list)
 
 ---
 
@@ -78,13 +68,63 @@ The substrate for most problems. Know these cold:
 
 - **In-place reversal**, rotation (via reversal trick: reverse whole array, then reverse each half — O(n) time, O(1)
   space).
-- **Prefix sums**: precompute `prefix[i] = sum(arr[0..i])` for O(1) range-sum queries. Extend to 2D prefix sums for
-  matrix range queries.
+    * **Concept:** Rotating an array or string by $k$ elements can be done in-place without allocating a new array. The
+      trick avoids shifting elements one by one, which would take $O(n \cdot k)$ time.
+    * **Mechanism:** To rotate an array right by $k$ positions:
+
+    1. Normalize $k$: $k = k \pmod n$ (handles cases where $k \ge n$).
+    2. Reverse the entire array.
+    3. Reverse the first $k$ elements.
+    4. Reverse the remaining $n - k$ elements.
+
+    * **Complexity:**
+        * **Time:** $O(n)$ — Each element is visited a constant number of times.
+        * **Space:** $O(1)$ — Modified completely in-place.
+- **Prefix sums**:
+    * **Concept:** Used for fast range sum queries. Precomputes an array where `prefix[i]` stores the sum of elements
+      from index `0` to `i`.
+    * **Formula:** $\text{Sum}(i, j) = \text{prefix}[j] - \text{prefix}[i-1]$ (using 1-based indexing to handle bounds
+      cleanly).
+    * **Complexity:** Precomputation: $O(n)$ time. Query: $O(1)$ time.
+    * Simple Technique useful in many problems using sum at each step
 - **Kadane's Algorithm** (max subarray sum): track `currentMax = max(arr[i], currentMax + arr[i])`, update global max.
   O(n).
+    * **Concept:** Solves the **Maximum Subarray Problem** by answering the question at each index $i$: *"Is it better
+      to extend the existing subarray sum, or start a brand-new subarray at element $i$?"*
+    * **State Equation:**
+      $$\text{currentMax}[i] = \max(\text{arr}[i], \text{currentMax}[i-1] + \text{arr}[i])$$
+    * **Complexity:**
+        * **Time:** $O(n)$ — Single pass loop.
+        * **Space:** $O(1)$ — Only tracking running and global maxes.
+
+
 - **Dutch National Flag** (3-way partition, e.g. sort 0s/1s/2s in one pass using low/mid/high pointers). O(n), O(1)
   space.
-- **Difference arrays** for range-update queries: `diff[l] += val; diff[r+1] -= val`, then prefix-sum to materialize.
+    * **Concept:** A 3-way partitioning algorithm that groups items into three distinct categories (e.g., sorting 0s,
+      1s, and 2s) in a single pass using three pointers (`low`, `mid`, `high`).
+    * **Pointer Rules:**
+    * `[0 ... low-1]`: Elements are 0.
+    * `[low ... mid-1]`: Elements are 1.
+    * `[mid ... high]`: Unexamined elements.
+    * `[high+1 ... n-1]`: Elements are 2.
+
+    * **Loop Logic:** Iterate while `mid <= high`:
+    * If `arr[mid] == 0`: Swap `arr[low]` and `arr[mid]`, increment `low` and `mid`.
+    * If `arr[mid] == 1`: Increment `mid`.
+    * If `arr[mid] == 2`: Swap `arr[mid]` and `arr[high]`, decrement `high` (do *not* increment `mid` yet, as the
+      swapped element needs validation).
+    * **Complexity:** $O(n)$ time, $O(1)$ space.
+
+- **Difference arrays** for range-update queries
+    * **Concept:** The inverse of a prefix sum. Designed for scenarios requiring multiple **range updates** (adding $x$
+      to all elements from index $l$ to $r$) followed by rare queries.
+    * **Mechanism:**
+        1. Create an array `diff` initialized to 0.
+        2. For each update query $(l, r, \text{val})$: Apply `diff[l] += val` and `diff[r + 1] -= val`.
+        3. To materialize the final values, calculate the prefix sum of `diff`.
+    * **Complexity:** Each update operation takes $O(1)$ time. Final materialization takes $O(n)$ time. Contrast this
+      with updating an array directly, which takes $O(n)$ per update query.
+
 - **In-place matrix operations**: transpose + reverse rows = rotate 90°.
 - String immutability (Java/Python) — building strings in a loop is O(n²); use `StringBuilder`/list-join instead.
 
@@ -101,6 +141,12 @@ Java/C++), mutating array while iterating.
 
 - **Opposite ends** (sorted array, converge inward): e.g., two-sum on sorted array, container with most water, valid
   palindrome.
+    * **Concept:** Used primarily on **sorted linear collections**. Two pointers (`left` at index `0`, `right` at index
+      `n-1`) move toward each other based on a monotonic condition.
+    * **Mechanism:** If the current combined property (e.g., sum) is too small, move `left` inward to increase it. If it
+      is
+      too large, move `right` inward to decrease it.
+    * **Complexity:** $O(n)$ time (pointers cross at most once), $O(1)$ space.
 - **Fast/slow pointers**: cycle detection (Floyd's Tortoise and Hare), finding middle of linked list, removing
   duplicates in-place.
 

@@ -9,12 +9,12 @@ layout: default
 
 | Category                         | Key Topics                                          | Progress                                                |
 |:---------------------------------|:----------------------------------------------------|:--------------------------------------------------------|
-| **Java Internals & Performance** | JVM Architecture (JIT, Classloaders)                | [🔗](../Java/JVM.md)                                    |
-|                                  | Garbage Collection tuning (G1GC, ZGC, Shenandoah)   | [🔗](../Java/JVM.md)                                    |
-|                                  | Memory Management (Heap vs. Non-Heap, Stack)        | [🔗](../Java/JVM.md)                                    |
-|                                  | Java Flight Recorder (JFR)                          | [🔗](../Java/JVM.md)                                    |
-| **Concurrency & Parallelism**    | Virtual Threads (Project Loom)                      | [🔗](../Java/3_Parallelization.md#virtual-threads-project-loom) |
-|                                  | Structured Concurrency                              | [🔗](../Java/3_Parallelization.md#Structured-Concurrency)       |
+| **Java Internals & Performance** | JVM Architecture (JIT, Classloaders)                | [🔗](../2_Java/JVM.md)                                    |
+|                                  | Garbage Collection tuning (G1GC, ZGC, Shenandoah)   | [🔗](../2_Java/JVM.md)                                    |
+|                                  | Memory Management (Heap vs. Non-Heap, Stack)        | [🔗](../2_Java/JVM.md)                                    |
+|                                  | Java Flight Recorder (JFR)                          | [🔗](../2_Java/JVM.md)                                    |
+| **Concurrency & Parallelism**    | Virtual Threads (Project Loom)                      | [🔗](../2_Java/3_Parallelization.md#virtual-threads-project-loom) |
+|                                  | Structured Concurrency                              | [🔗](../2_Java/3_Parallelization.md#Structured-Concurrency)       |
 |                                  | Memory Barriers                                     |                                                         |
 |                                  | Fork/Join Framework                                 |                                                         |
 |                                  | Atomic Variables                                    |                                                         |
@@ -75,10 +75,10 @@ layout: default
 |     |                                | Communication                | 10   | MQ                                       | [🔗](../SoftwareEngineering/CommunicationProtocols.md#Message-Queue) |
 |     |                                | Design                       | 11   | Design Patterns like singleton           | ❌                                                                    |
 | 2   | **Java**                       | Java Basics                  | 1    | Syntax                                   | ❌                                                                    |
-|     |                                | Java Basics                  | 2    | JVM Working                              | [🔗](../Java/JVM.md)                                                 |
+|     |                                | Java Basics                  | 2    | JVM Working                              | [🔗](../2_Java/JVM.md)                                                 |
 |     |                                | Java Basics                  | 3    | Interpreter vs Compiler                  | ❌                                                                    |
 |     |                                | Java Basics                  | 4    | Collections                              | ❌                                                                    |
-|     |                                | Java Basics                  | 5    | New additions Records, Sealed classes    | [🔗](../Java/2_Features.md#Java-Features)                              |
+|     |                                | Java Basics                  | 5    | New additions Records, Sealed classes    | [🔗](../2_Java/2_Features.md#Java-Features)                              |
 |     |                                | Concurrency and Threading    | 6    | Concurrency                              | ❌                                                                    |
 |     |                                | Concurrency and Threading    | 8    | Deadlock                                 | ❌                                                                    |
 |     |                                | Concurrency and Threading    | 9    | Race Conditions                          | ❌                                                                    |

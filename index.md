@@ -1,6 +1,6 @@
 ---
 title: Index
-nav_order: 1
+nav_order: 0
 layout: default
 ---
 
@@ -14,19 +14,19 @@ Welcome to my study notebook! This serves as an index to all topics and notes.<b
 ## Notes
 
 1. ## Java: 
-   1. ### [JVM](Notes/Java/JVM.md)
-   2. ### [History Of Java](Notes/Java/History.md)
-   3. ### [Threading](Notes/Java/3_Parallelization.md)
+   1. ### [JVM](Notes/2_Java/JVM.md)
+   2. ### [History Of Java](Notes/2_Java/History.md)
+   3. ### [Threading](Notes/2_Java/3_Parallelization.md)
 2. ## Spring/SpringBoot:
-   1. ### [Spring Intro](Notes/Spring/Spring.md)
+   1. ### [Spring Intro](Notes/3_Spring/Spring.md)
 3. ### Competitive Coding:
    1. ### [Tips & Tricks](Notes/CompetitiveCoding/CompetitiveCoding.md)
 4. ## Software:
    1. ### [Redis](Notes/Software/Redis.md)
    2. ### [Netty](Notes/Software/Netty.md)
 5. ### Book Notes:
-   1. ### [Designing Data Intensive Applications](Notes/Books/DesigningDataIntensiveApplications.md)
-   2. ### [System Design Interview Guide](Notes/Books/SystemDesignInterviewGuide.md)
+   1. ### [Designing Data Intensive Applications](Notes/9_Books/DesigningDataIntensiveApplications.md)
+   2. ### [System Design Interview Guide](Notes/9_Books/SystemDesignInterviewGuide.md)
 
 ## Topics
 1. ### [Topics](Notes/Topics/Topics)

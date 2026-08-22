@@ -1,7 +1,7 @@
 ---
 title: Topics
 nav_order: 3
-parent: Big Tech Topics
+parent: Misc
 layout: default
 ---
 

@@ -22,7 +22,7 @@ title: Designs & Arch
 
 ## 2. Database Replication:
 
-- ![img_1.png](../Books/img_1.png)
+- ![img_1.png](../9_Books/img_1.png)
 - Usually done with a master slave relationship (often called Primary Replica or Leader Follower)
 - Write operations are only supported by Master node
 - Slave get copies of master DB and only supports read (when enabled)
