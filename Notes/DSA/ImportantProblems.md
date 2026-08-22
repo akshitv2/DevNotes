@@ -8,6 +8,7 @@ layout: default
 | x  | Problem                                                    | Solution                                                                                                                                          |
 |----|------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------|
 | 🟢 | Generate all subarrays of an array [1,2] -> [1][2][1,2]    | Double loop, creating every in order array starting from that outer index printed at every step                                                   |
+| 🟢 | Rotate an array [1,2,3,4,5],3 -> [4,5,1,2,3]               | Reverse entire array, then reverse till kth index and kth to end seperately                                                                       |
 | 🟢 | Check Substring of Other                                   | Loop String B over A, check if B in A at every position                                                                                           |
 | 🟠 | Check Substring of Other                                   | KMP Algo                                                                                                                                          |
 |    |                                                            | The Rule: When a mismatch occurs, use precomputed table to find the longest matching prefix that is also a suffix of the pattern analyzed so far. |

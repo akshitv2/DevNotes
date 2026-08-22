@@ -2,6 +2,7 @@
 parent: Java
 nav_order: 3
 layout: default
+title: Parallelization
 ---
 
 # Threading in Java

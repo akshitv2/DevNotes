@@ -16,7 +16,7 @@ Welcome to my study notebook! This serves as an index to all topics and notes.<b
 1. ## Java: 
    1. ### [JVM](Notes/Java/JVM.md)
    2. ### [History Of Java](Notes/Java/History.md)
-   3. ### [Threading](Notes/Java/Threading.md)
+   3. ### [Threading](Notes/Java/3_Parallelization.md)
 2. ## Spring/SpringBoot:
    1. ### [Spring Intro](Notes/Spring/Spring.md)
 3. ### Competitive Coding:

@@ -2,6 +2,7 @@
 parent: Java
 nav_order: 2
 layout: default
+title: Java Features
 ---
 
 # Java Features
@@ -161,7 +162,7 @@ layout: default
             - `javac -d mods/com.mycompany.service --module-source-path src $(find src -name "*.java")`
     - Note: Why isn't this popular?
         - Modern devs rarely manage dependencies manually, so no rush to migrate following this expensive process
-5. Virtual Threads (Project Loom) [🔗](Threading.md#virtual-threads-project-loom)
+5. Virtual Threads (Project Loom) [🔗](3_Parallelization.md#virtual-threads-project-loom)
 6. Scoped Values
 7. Pattern Matching Switch
 8. Collections
