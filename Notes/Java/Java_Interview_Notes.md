@@ -66,8 +66,7 @@ layout: default
    Mark and Sweep: It "marks" objects that are still in use and "sweeps" (deletes) those that aren't.  
    Types:
     1. **G1 (Garbage First)**: Default since java 9; Breaks memory into small pieces, clears most garbage filled
-       piece
-       first balancing throughput and latency
+       piece first balancing throughput and latency. Causes sizable pauses (compared to others)
     2. **ZGC (Z Garbage Collector)**: Scalable, low latency, cpu taxing (since it clears concurrently), for low
        latency
        when RAM is massive
@@ -77,6 +76,15 @@ layout: default
     - Profiling and event-collection framework built into the Java Virtual Machine (JVM)
     - Captures discrete events such as thread stalls, GC (Garbage Collection) pauses, CPU usage, and I/O activity
 
+6. Key JVMs:
+    - GraalVM: High-performance Java Virtual Machine (JVM) and software development ecosystem created by Oracle.
+        - **Ahead-of-Time (AOT) Compilation:** Compiles Java applications into standalone native executables (using
+          GraalVM Native Image), resulting in faster startup times and lower memory footprints.
+        - **Polyglot Capabilities:** Allows code written in Java, JavaScript, Python, Ruby, and WebAssembly to run
+          seamlessly together and interoperate within the same application.
+        - **Advanced Just-in-Time (JIT) Compiler:** Utilizes the Graal compiler to optimize application performance
+          dynamically at runtime.
+
 ### 1.2 Compilation & Execution Flow
 
 ```
@@ -84,7 +92,6 @@ layout: default
 ```
 
 - Class Loader Subsystem: Loading → Linking (Verify, Prepare, Resolve) → Initialization.
-- Types of class loaders: Bootstrap → Extension/Platform → Application/System (delegation hierarchy — parent-first).
 
 ### 1.3 Data Types
 
@@ -93,24 +100,23 @@ layout: default
   Collections (which need Objects).
 - Default values differ for fields (0, null, false) vs local variables (must be explicitly initialized — no default).
 
-> 🎯 Often Asked: Difference between primitive and wrapper types; autoboxing pitfalls (e.g., `==` comparison on Integer
-> objects failing outside -128 to 127 cache range); why local variables need explicit initialization.
+- 🎯 Often Asked: Difference between primitive and wrapper types;
+    - Data Storage: Primitives stored straight in stack memory faster to use, wrapper in heap with a pointer
+    - Primitives cannot be null unlike wrappers
+    - Wrappers required for collections
+- autoboxing pitfalls (e.g., `==` comparison on Integer
+    - it compares object references, not their values. This often leads to unexpected bugs.
+- why local variables need explicit initialization.
+    - Don't get init to 0 or false like class variables, init prevents reading uncleaned memory value
 
 ### 1.4 Variables & Literals
 
 - Instance variables, static (class) variables, local variables.
 - `final` variable = constant, must be assigned once.
 - Note: `final` keyword has multiple uses:
-    - Variables:
-        - Local Variables: Must be assigned a value exactly once.
-        - Instance Variables: Can be initialized at the time of declaration, inside an instance initializer block, or
-          within the constructor
-        - Static Variables (Constants): Can be initialized at declaration or inside a static block. They are typically
-          named in UPPERCASE_SNAKE_CASE.
-    - Methods:
-        - A method declared as `final` cannot be overridden by subclasses.
-    - Class:
-        - A class declared as `final` cannot be extended (inherited). Used for security
+    - Variables: Can be assigned only once (depending on local at creation, instance at init, static in class)
+    - Methods: A method declared as `final` cannot be overridden by subclasses.
+    - Class:  A class declared as `final` cannot be extended (inherited). Used for security
 
 ### 1.5 Operators & Control Flow
 
@@ -124,10 +130,11 @@ layout: default
 
 ### 2.1 Four Pillars
 
-1. **Encapsulation** – bundling data + methods as a single unit; achieved via private fields + public getters/setters.
+1. **Encapsulation** – bundling data + methods as a single unit and restricting access to certain components achieved
+   via private fields + public getters/setters.
 2. **Inheritance** – code reuse via `extends`/`implements`; Java supports single inheritance for classes, multiple for
    interfaces.
-3. **Polymorphism**
+3. **Polymorphism**: Allows different implementation for same method call
     - *Compile-time (static)*: Method overloading.
     - *Runtime (dynamic)*: Method overriding, achieved via dynamic method dispatch.
 4. **Abstraction** – hiding implementation details via abstract classes/interfaces.
@@ -145,10 +152,23 @@ layout: default
 | Multiple inheritance | Not supported                | Supported (a class can implement many)                                      |
 | Access modifiers     | Any                          | Public (implicitly)                                                         |
 
-> 🎯 Often Asked: When to use abstract class vs interface; functional interfaces; diamond problem with default methods
-> and how Java resolves it (explicit override required).
+> 🎯 Often Asked:
+
+- When to use abstract class vs interface;
+    - Abstract class **Is A** relationship, when you need instance variables
+    - Interface **Can Do** relationship
+    - Single or multiple inheritance
+- functional interfaces
+    - interface that contains exactly one abstract method, useful for lambda expressions
+    - e.g. `Runnable newWay = () -> System.out.println("Running");`  implies execute this inside the only method in this
+      functional interface
+- diamond problem with default methods and how Java resolves it
+    - When two interfaces are implemented with same default
+        - Either explicitly override both
+        - Or Refer one my name `InterfaceName.super.methodName()`
 
 ### 2.2.1 Inheritance
+
 - Constructors are not inherited, subclass constructor needs to call `super()` as first statement to init
 - Subclass can override existing method
 - In java one class can only extend one parent class
@@ -213,6 +233,7 @@ layout: default
 - `String` objects are immutable — any modification creates a new object.
 - Reasons: security (used in class loading, network connections), thread-safety, hashcode caching (safe as HashMap
   keys), String pool reuse.
+- Since java is pass by value important params cannot be modified between methods
 
 ### 3.2 String Pool (String Intern Pool)
 
@@ -325,14 +346,22 @@ Map (key-value, not a Collection): HashMap, LinkedHashMap, TreeMap, Hashtable, C
 - **Fail-fast**: throws `ConcurrentModificationException` if collection structurally modified during iteration (
   ArrayList, HashMap).
 - **Fail-safe**: works on a clone/snapshot, no exception (CopyOnWriteArrayList, ConcurrentHashMap).
+- No real benifit but allows more precise control over traversal
+    - Used in for each loop for(String x:y) (for each can't do remove while looping through)
 
 ### 5.6 Comparable vs Comparator
 
-- `Comparable`: `compareTo()`, defines natural ordering, implemented by the class itself.
+- `Comparable`: `compareTo()`, interface, defines natural ordering, implemented by the class itself.
 - `Comparator`: `compare()`, external, allows multiple sort orders, often used with lambdas:
   `list.sort((a,b) -> a.getAge() - b.getAge())`.
 
-### 5.7 Queue/Deque
+### 5.7 Queue/Deque/Stack
+
+| Data structure | Principle | Add        | Remove     |
+|----------------|-----------|------------|------------|
+| **Stack**      | LIFO      | Top        | Top        |
+| **Queue**      | FIFO      | Rear       | Front      |
+| **Deque**      | Both ends | Front/Rear | Front/Rear |
 
 - `PriorityQueue`: heap-based, orders elements by natural ordering/comparator, not FIFO.
 - `ArrayDeque`: resizable array, can be used as stack or queue, faster than `Stack`/`LinkedList` for that purpose.
@@ -351,25 +380,29 @@ Map (key-value, not a Collection): HashMap, LinkedHashMap, TreeMap, Hashtable, C
   write/consumer) — PECS principle ("Producer Extends, Consumer Super").
 - **Type erasure**: generic type info removed at runtime by compiler, replaced with bounds or Object — this is why you
   can't do `new T()` or `instanceof T`.
+- Example:
+    - ```java
+    static <T extends Number> double square(T x) {
+    return x.doubleValue() * x.doubleValue();
+    }
+    ``` 
+        - This gives us a named type T
+    - List<? extends Number> list;
+        - mostly for assignment usually to a collection
+    -
 
-> 🎯 Often Asked: What is type erasure and its implications; PECS principle; why generic arrays can't be created
-> directly (`new T[]` not allowed).
+> 🎯 Often Asked:
 
----
-
-## 7. Multithreading & Concurrency
-
-### 7.1 Creating Threads
-
-- Extend `Thread` class (override `run()`) or implement `Runnable` (preferred — allows extending other classes, better
-  separation of task from execution mechanism).
-- `Callable` (returns value + can throw checked exception) vs `Runnable` (no return, no checked exceptions).
-
-### 7.2 Thread Lifecycle
-
-```
-NEW → RUNNABLE → RUNNING → (BLOCKED/WAITING/TIMED_WAITING) → TERMINATED
-```
+- What is type erasure and its implications
+    - Java actually converts
+        - `List<String> names = new ArrayList<>();` to `List names = new ArrayList();` in runtime
+        - `String` is applied on the get `String name = (String) names.get(0);`
+        - Implication: `if (obj instanceof List<String>)` ❌ Incorrect
+- PECS principle
+    - PECS = Producer Extends(read), Consumer Super (write)(Mnemonic)
+    - If a collection produces values for you to read, use extends.
+        - Java's generic types are invariant by default. This means List<Integer> is not a subtype of List<Number>, even
+          though Integer is a subtype of Number.
 
 ### 7.3 Synchronization
 
@@ -448,15 +481,28 @@ NEW → RUNNABLE → RUNNING → (BLOCKED/WAITING/TIMED_WAITING) → TERMINATED
 ### 9.1 Lambda Expressions
 
 - Syntax: `(parameters) -> expression/block`.
-- Enables treating functionality as a method argument (functional programming style).
+- Essentially a quick way to implement a functional interface
+- let you **pass behavior as a value**
 
 ### 9.2 Functional Interfaces
 
 - Interface with exactly one abstract method (SAM), annotated `@FunctionalInterface` (optional but recommended).
 - Built-in ones: `Function<T,R>`, `Predicate<T>`, `Consumer<T>`, `Supplier<T>`, `BiFunction<T,U,R>`, `UnaryOperator<T>`.
 
-> 🎯 Often Asked: Write/explain a custom functional interface; difference between `Function`, `Predicate`, `Consumer`,
-`Supplier`; can a functional interface have default/static methods (yes, only one abstract method restriction applies).
+> 🎯 Often Asked: Write/explain a custom functional interface;
+
+- difference between `Function`, `Predicate`, `Consumer`,`Supplier`
+4 Functional interfaces proiveded simply by Java
+
+| Interface        | Takes   | Returns          | Typical use              |
+|------------------|---------|------------------|--------------------------|
+| `Function<T, R>` | 1 input | 1 output         | Transform something      |
+| `Predicate<T>`   | 1 input | `boolean`        | Test something           |
+| `Consumer<T>`    | 1 input | Nothing (`void`) | Do something with it     |
+| `Supplier<T>`    | Nothing | 1 output         | Provide/create something |
+
+- Can a functional interface have default/static methods
+    - yes, only one abstract method restriction applies
 
 ### 9.3 Streams API
 

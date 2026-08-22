@@ -1,7 +1,7 @@
 ---
 nav_order: 4
 parent: DSA
-title: DSA Problems Quick
+title: Leetcode quick
 layout: default
 ---
 

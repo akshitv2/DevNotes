@@ -1,6 +1,6 @@
 ---
-title: Scratch book
-nav_order: 5
+title: Java Topics
+parent: Java
 layout: default
 ---
 
