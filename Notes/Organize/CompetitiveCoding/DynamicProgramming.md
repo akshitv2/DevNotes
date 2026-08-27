@@ -1,6 +1,7 @@
 ---
-parent: Competitive Coding
+parent: scrapyard
 layout: default
+
 ---
 
 # Dynamic Programming

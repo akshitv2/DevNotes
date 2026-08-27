@@ -1,5 +1,5 @@
 ---
-parent: Study Index
+parent: scrapyard
 title: Detailed Index
 nav_order: 4
 layout: default
@@ -13,8 +13,8 @@ layout: default
 |                                  | Garbage Collection tuning (G1GC, ZGC, Shenandoah)   | [🔗](../2_Java/JVM.md)                                    |
 |                                  | Memory Management (Heap vs. Non-Heap, Stack)        | [🔗](../2_Java/JVM.md)                                    |
 |                                  | Java Flight Recorder (JFR)                          | [🔗](../2_Java/JVM.md)                                    |
-| **Concurrency & Parallelism**    | Virtual Threads (Project Loom)                      | [🔗](../2_Java/3_Parallelization.md#virtual-threads-project-loom) |
-|                                  | Structured Concurrency                              | [🔗](../2_Java/3_Parallelization.md#Structured-Concurrency)       |
+| **Concurrency & Parallelism**    | Virtual Threads (Project Loom)                      | [🔗](../../2_Java/3_Parallelization.md#virtual-threads-project-loom) |
+|                                  | Structured Concurrency                              | [🔗](../../2_Java/3_Parallelization.md#Structured-Concurrency)       |
 |                                  | Memory Barriers                                     |                                                         |
 |                                  | Fork/Join Framework                                 |                                                         |
 |                                  | Atomic Variables                                    |                                                         |
@@ -68,17 +68,17 @@ layout: default
 |     |                                | System Design                | 3    | Resilience                               | ❌                                                                    |
 |     |                                | Microservices                | 4    | Microservice Architecture                | ❌                                                                    |
 |     |                                | Microservices                | 5    | API Gateways like vinz tyk zuul          | ❌                                                                    |
-|     |                                | Communication                | 6    | REST                                     | [🔗](../SoftwareEngineering/CommunicationProtocols.md#REST)          |
-|     |                                | Communication                | 7    | SOAP                                     | [🔗](../SoftwareEngineering/CommunicationProtocols.md#SOAP)          |
-|     |                                | Communication                | 8    | gRPC                                     | [🔗](../SoftwareEngineering/CommunicationProtocols.md#RPC)           |
+|     |                                | Communication                | 6    | REST                                     | [🔗](../../5_SystemDesign/CommunicationProtocols.md#REST)          |
+|     |                                | Communication                | 7    | SOAP                                     | [🔗](../../5_SystemDesign/CommunicationProtocols.md#SOAP)          |
+|     |                                | Communication                | 8    | gRPC                                     | [🔗](../../5_SystemDesign/CommunicationProtocols.md#RPC)           |
 |     |                                | Communication                | 9    | eventDrive/Kafka                         | ❌                                                                    |
-|     |                                | Communication                | 10   | MQ                                       | [🔗](../SoftwareEngineering/CommunicationProtocols.md#Message-Queue) |
+|     |                                | Communication                | 10   | MQ                                       | [🔗](../../5_SystemDesign/CommunicationProtocols.md#Message-Queue) |
 |     |                                | Design                       | 11   | Design Patterns like singleton           | ❌                                                                    |
 | 2   | **Java**                       | Java Basics                  | 1    | Syntax                                   | ❌                                                                    |
 |     |                                | Java Basics                  | 2    | JVM Working                              | [🔗](../2_Java/JVM.md)                                                 |
 |     |                                | Java Basics                  | 3    | Interpreter vs Compiler                  | ❌                                                                    |
 |     |                                | Java Basics                  | 4    | Collections                              | ❌                                                                    |
-|     |                                | Java Basics                  | 5    | New additions Records, Sealed classes    | [🔗](../2_Java/2_Features.md#Java-Features)                              |
+|     |                                | Java Basics                  | 5    | New additions Records, Sealed classes    | [🔗](../../2_Java/2_Features.md#Java-Features)                              |
 |     |                                | Concurrency and Threading    | 6    | Concurrency                              | ❌                                                                    |
 |     |                                | Concurrency and Threading    | 8    | Deadlock                                 | ❌                                                                    |
 |     |                                | Concurrency and Threading    | 9    | Race Conditions                          | ❌                                                                    |

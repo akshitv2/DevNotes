@@ -1,6 +1,6 @@
 ---
 nav_order: 1
-parent: Competitive Coding
+parent: scrapyard
 layout: default
 ---
 

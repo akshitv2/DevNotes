@@ -1,7 +1,7 @@
 ---
 title: Important Collections
 nav_order: 3
-parent: Competitive Coding
+parent: scrapyard
 layout: default
 ---
 

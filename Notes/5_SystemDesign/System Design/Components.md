@@ -339,11 +339,11 @@ Describing Performance:
 
 ### 7. Cap Theorem
 
-[Read Here](../DBMS/Basics.md#10-cap-theorem)
+[Read Here](../1_DBMS/Basics.md#10-cap-theorem)
 
 ### 8. Consistency
 
-[Read Here](../DBMS/Basics.md#11-consistency)
+[Read Here](../1_DBMS/Basics.md#11-consistency)
 
 ### 9. In-memory data store (Caching):
 

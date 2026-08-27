@@ -20,16 +20,16 @@ Welcome to my study notebook! This serves as an index to all topics and notes.<b
 2. ## Spring/SpringBoot:
    1. ### [Spring Intro](Notes/3_Spring/Spring.md)
 3. ### Competitive Coding:
-   1. ### [Tips & Tricks](Notes/CompetitiveCoding/CompetitiveCoding.md)
+   1. ### [Tips & Tricks](Notes/Organize/CompetitiveCoding/CompetitiveCoding.md)
 4. ## Software:
-   1. ### [Redis](Notes/Software/Redis.md)
-   2. ### [Netty](Notes/Software/Netty.md)
+   1. ### [Redis](Notes/7_Tools/Redis.md)
+   2. ### [Netty](Notes/7_Tools/Netty.md)
 5. ### Book Notes:
    1. ### [Designing Data Intensive Applications](Notes/9_Books/DesigningDataIntensiveApplications.md)
    2. ### [System Design Interview Guide](Notes/9_Books/SystemDesignInterviewGuide.md)
 
 ## Topics
-1. ### [Topics](Notes/Topics/Topics)
+1. ### [Topics](Notes/Organize/Topics/Topics)
 
 ## Contributing
 

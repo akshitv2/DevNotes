@@ -9,26 +9,19 @@ layout: default
 
 #### Easy Maths
 
-**1. Even or Odd**
-
+**1. Even or Odd** 
 * **Description:** Determine whether a given integer $N$ is even or odd.
-* **Examples:** Input: $N = 4 \rightarrow$ Output: Even | Input: $N = 7 \rightarrow$ Output: Odd
 * **Solution Steps:**
-* *Approach 1 (Modulo):* Check if $N \pmod 2 == 0$. If true, return "Even", else "Odd".
-* *Approach 2 (Bitwise):* Check if $(N \ \& \ 1) == 0$. If true, return "Even", else "Odd".
+* Check if $N \pmod 2 == 0$. If true, return "Even", else "Odd".
 
 **2. Sum of Naturals**
-
 * **Description:** Calculate the sum of the first $N$ natural numbers ($1 + 2 + \dots + N$).
 * **Examples:** Input: $N = 5 \rightarrow$ Output: 15
 * **Solution Steps:**
 * *Naive:* Loop from $1$ to $N$ accumulating sum. Time: $O(N)$, Space: $O(1)$.
 * *Efficient:* Apply formula $\frac{N \times (N + 1)}{2}$. Time: $O(1)$, Space: $O(1)$.
 
-
-
-**3. Closest Number**
-
+**3. Closest Number** 🔴
 * **Description:** Given two integers $N$ and $M$, find the number closest to $N$ and divisible by $M$. If two exist, return the one with the maximum absolute value.
 * **Examples:** Input: $N = 13, M = 4 \rightarrow$ Output: 12 | Input: $N = -15, M = 6 \rightarrow$ Output: -18
 * **Solution Steps:**
@@ -40,7 +33,6 @@ layout: default
 
 
 **4. Sum of Consecutive**
-
 * **Description:** Find the number of ways $N$ can be expressed as a sum of two or more consecutive positive integers.
 * **Examples:** Input: $N = 15 \rightarrow$ Output: 3 (15 = 1+2+3+4+5 = 4+5+6 = 7+8)
 * **Solution Steps:**
@@ -263,8 +255,7 @@ layout: default
 
 
 
-**28. Maximum Product Subarray**
-
+**28. Maximum Product Subarray** 🔴
 * **Description:** Find contiguous subarray with maximum product.
 * **Examples:** Input: `[2, 3, -2, 4]` $\rightarrow$ Output: 6
 * **Solution Steps:** Track `max_prod`, `min_prod`, and `res`. Loop elements: if negative, swap `max_prod` and `min_prod`. Update `max_prod = max(arr[i], max_prod * arr[i])` and `min_prod = min(arr[i], min_prod * arr[i])`. Update `res`. Time: $O(N)$, Space: $O(1)$.
@@ -272,7 +263,6 @@ layout: default
 ---
 
 #### Searching
-
 **29. Binary Search**
 
 * **Description:** Search key in sorted array using divide and conquer.

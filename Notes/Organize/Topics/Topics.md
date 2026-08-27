@@ -1,5 +1,5 @@
 ---
-parent: Study Index
+parent: scrapyard
 title: Topics To Do
 nav_order: 4
 layout: default
