@@ -1,6 +1,5 @@
 ---
-parent: Programming Core
-nav_order: 1
+parent: System Design
 layout: default
 ---
 
