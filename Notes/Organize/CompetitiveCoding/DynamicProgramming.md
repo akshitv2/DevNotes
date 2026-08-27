@@ -1,5 +1,5 @@
 ---
-parent: scrapyard
+parent: Scrapyard
 layout: default
 
 ---

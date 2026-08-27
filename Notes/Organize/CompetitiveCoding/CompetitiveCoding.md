@@ -1,6 +1,6 @@
 ---
 nav_order: 1
-parent: scrapyard
+parent: Scrapyard
 layout: default
 ---
 

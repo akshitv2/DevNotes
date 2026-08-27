@@ -1,5 +1,5 @@
 ---
-parent: scrapyard
+parent: Scrapyard
 title: Detailed Index
 nav_order: 4
 layout: default

@@ -1,5 +1,5 @@
 ---
-parent: scrapyard
+parent: Scrapyard
 title: Topics To Do
 nav_order: 4
 layout: default
