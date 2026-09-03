@@ -121,9 +121,18 @@ Notes:
 - **Authorization Code Grant**: the standard, most secure flow for server-side apps. User is redirected to auth server,
   logs in, auth server redirects back with a one-time `code`, which the backend exchanges for an access token (using a
   client secret). Token never touches the browser directly.
+  - Why?
+    - We don't trust the webpage or app itself to get account creds in first place directly talk to auth server
 - **Authorization Code + PKCE (Proof Key for Code Exchange)**: mandatory extension for public clients (SPAs, mobile
   apps) that can't safely hold a client secret. Client generates a `code_verifier` and sends its hashed form (
   `code_challenge`) upfront; prevents authorization code interception attacks.
+    - Note: SPA (single page app) and mobile apps (can technically obfuscate using hardware keys) should not be sent the
+      keys at all if possible
+    - Why?
+        - Since any malicious app can register itself to handle the callback
+        - The app generates the code_verifier, you send it to auth server, then app sends unhashed one later to verify right callback
+    - Essentially trusted client app generates random string, hashes it and sends it along with authN creds
+    
 - **Client Credentials Grant**: machine-to-machine (no user involved) — service authenticates with its own client
   ID/secret to get a token.
 - **Implicit Grant**: (deprecated) returned tokens directly in the URL fragment — vulnerable to leakage via browser
@@ -157,6 +166,7 @@ Notes:
 - Adds a standard `/userinfo` endpoint and standardized discovery (`/.well-known/openid-configuration`).
 - This is what powers "Sign in with Google/Microsoft/Apple."
 - Interview soundbite: "OAuth answers 'can this app access this data?', OIDC answers 'who is this user?'"
+- Note: It is authentication to a third party and not authentication into the Identity Provider (google) itself
 
 ---
 
