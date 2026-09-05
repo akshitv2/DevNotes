@@ -31,6 +31,7 @@ title: Java Overview
        Loads all classes from jre/libs i.e. system libs
     3. **Application Classloader**:    
        Loads the application classes
+
     - Loading means bringing the `.class` file into JVM memory.
     - **Linking**:  
       Performs 3 steps:
@@ -131,14 +132,23 @@ title: Java Overview
 
 ### 2.1 Four Pillars
 
-1. **Encapsulation** – bundling data + methods as a single unit and restricting access to certain components achieved
-   via private fields + public getters/setters.
-2. **Inheritance** – code reuse via `extends`/`implements`; Java supports single inheritance for classes, multiple for
-   interfaces.
+1. **Encapsulation** –
+    - bundling data + methods as a single unit and restricting access to certain components achieved via private
+      fields + public getters/setters.
+    - 🟢 Prevents unauthorized external modification and corrupt state bugs by controlling access strictly through
+      getter/setter methods.
+2. **Inheritance**
+    - code reuse via `extends`/`implements`; Java supports single inheritance for classes, multiple for
+      interfaces.
 3. **Polymorphism**: Allows different implementation for same method call
     - *Compile-time (static)*: Method overloading.
     - *Runtime (dynamic)*: Method overriding, achieved via dynamic method dispatch.
-4. **Abstraction** – hiding implementation details via abstract classes/interfaces.
+    - 🟢 Flexibility: Enables writing modular code that can process different data types or object behaviors through a
+      uniform API without modifying existing logic.
+4. **Abstraction**
+    - hiding implementation details via abstract classes/interfaces.
+    - 🟢Reduces complexity: Allows developers to interact with system components without needing to understand or manage
+      internal logic.
 
 > 🎯 Often Asked: Difference between overloading and overriding; can we override static/private/final methods (No —
 > static is hidden not overridden, private/final can't be overridden); real-world examples of each pillar.
@@ -383,9 +393,9 @@ Map (key-value, not a Collection): HashMap, LinkedHashMap, TreeMap, Hashtable, C
   can't do `new T()` or `instanceof T`.
 - Example:
     - ```java
-    static <T extends Number> double square(T x) {
-    return x.doubleValue() * x.doubleValue();
-    }
+  static <T extends Number> double square(T x) {
+  return x.doubleValue() * x.doubleValue();
+  }
     ``` 
         - This gives us a named type T
     - List<? extends Number> list;
@@ -493,7 +503,7 @@ Map (key-value, not a Collection): HashMap, LinkedHashMap, TreeMap, Hashtable, C
 > 🎯 Often Asked: Write/explain a custom functional interface;
 
 - difference between `Function`, `Predicate`, `Consumer`,`Supplier`
-4 Functional interfaces proiveded simply by Java
+  4 Functional interfaces proiveded simply by Java
 
 | Interface        | Takes   | Returns          | Typical use              |
 |------------------|---------|------------------|--------------------------|
@@ -636,6 +646,7 @@ Map (key-value, not a Collection): HashMap, LinkedHashMap, TreeMap, Hashtable, C
 ## History
 
 ## Phases
+
 1. Sun Microsystems owned:
     - WORA ("Write Once, Run Anywhere")
     - Two types of Java:
@@ -657,6 +668,7 @@ Map (key-value, not a Collection): HashMap, LinkedHashMap, TreeMap, Hashtable, C
       Note: Eclipse was created then open sourced by IBM (to eclipse the sun 😂)
 
 ## Features Added in Versions:
+
 1. Java 8 (2014) - Functional Update:
     - Lambda Expressions
     - Stream API
