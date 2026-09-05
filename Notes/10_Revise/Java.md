@@ -1,8 +1,8 @@
 ---
-parent: Java
+parent: Revise
 nav_order: 1
 layout: default
-title: Java Overview
+title: Java
 ---
 
 **Java**
