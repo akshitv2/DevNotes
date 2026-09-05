@@ -31,7 +31,7 @@ title: Java Overview
        Loads all classes from jre/libs i.e. system libs
     3. **Application Classloader**:    
        Loads the application classes
-
+    - Loading means bringing the `.class` file into JVM memory.
     - **Linking**:  
       Performs 3 steps:
         1. Verification (ensures bytecode is valid)
