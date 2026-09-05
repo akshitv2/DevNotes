@@ -121,8 +121,8 @@ Notes:
 - **Authorization Code Grant**: the standard, most secure flow for server-side apps. User is redirected to auth server,
   logs in, auth server redirects back with a one-time `code`, which the backend exchanges for an access token (using a
   client secret). Token never touches the browser directly.
-  - Why?
-    - We don't trust the webpage or app itself to get account creds in first place directly talk to auth server
+    - Why?
+        - We don't trust the webpage or app itself to get account creds in first place directly talk to auth server
 - **Authorization Code + PKCE (Proof Key for Code Exchange)**: mandatory extension for public clients (SPAs, mobile
   apps) that can't safely hold a client secret. Client generates a `code_verifier` and sends its hashed form (
   `code_challenge`) upfront; prevents authorization code interception attacks.
@@ -130,9 +130,10 @@ Notes:
       keys at all if possible
     - Why?
         - Since any malicious app can register itself to handle the callback
-        - The app generates the code_verifier, you send it to auth server, then app sends unhashed one later to verify right callback
+        - The app generates the code_verifier, you send it to auth server, then app sends unhashed one later to verify
+          right callback
     - Essentially trusted client app generates random string, hashes it and sends it along with authN creds
-    
+
 - **Client Credentials Grant**: machine-to-machine (no user involved) — service authenticates with its own client
   ID/secret to get a token.
 - **Implicit Grant**: (deprecated) returned tokens directly in the URL fragment — vulnerable to leakage via browser
@@ -261,10 +262,14 @@ decode and read the payload).
 
 - **Session fixation**: attacker tricks victim into using a known session ID, then hijacks it after victim logs in. Fix:
   regenerate session ID on privilege change (login).
+    - Essentially attacker starts own session, gets legit anonymous session id, sneaks it to user who attaches his
+      account to it, the attacker then continues using the victims account
+    - Websites should only take session id from secure samesite cookies
 - **Session hijacking**: stealing a valid session token (via XSS, network sniffing, malware). Fix: HTTPS everywhere,
   httpOnly + Secure + SameSite cookies, short session lifetimes.
 - **CSRF (Cross-Site Request Forgery)**: tricking a logged-in user's browser into making an unwanted request to another
   site. Fix: CSRF tokens, `SameSite=Lax/Strict` cookies, checking `Origin`/`Referer` headers.
+    - Essentially a site expects its own generated token to allow requests
 - **Idle vs absolute timeout**: idle timeout logs out after inactivity; absolute timeout forces re-auth after a fixed
   period regardless of activity.
 - **Cookie flags**: `HttpOnly` (JS can't read it, mitigates XSS token theft), `Secure` (HTTPS only), `SameSite` (
@@ -311,10 +316,18 @@ decode and read the payload).
 
 ## 12. Common Web Vulnerabilities (OWASP Top 10 flavor)
 
+OWASP: Open Worldwide Application Security Project, is an online community that publishes open-source information and
+resources on IoT, system software and web application security.
+
 - **Injection (SQLi, NoSQLi, Command Injection)**: untrusted input concatenated into a query/command. Fix: parameterized
   queries/prepared statements, ORMs, input validation, least-privileged DB accounts.
 - **XSS (Cross-Site Scripting)**: injecting malicious script into pages viewed by others. Types: stored, reflected,
   DOM-based. Fix: output encoding/escaping, Content Security Policy (CSP), avoid `innerHTML` with untrusted data.
+    - e.g. a comment containing js code injection `<script>alert("This code ran!")</script>`
+        - Fixes:
+            - Proper output encoding/escaping
+            - Avoiding unsafe DOM APIs such as innerHTML when unnecessary
+            - Using safe APIs such as textContent
 - **CSRF**: see Session Management above.
 - **SSRF (Server-Side Request Forgery)**: tricking a server into making requests to internal/unintended resources (e.g.,
   cloud metadata endpoints `169.254.169.254`). Fix: allow-list outbound destinations, block internal IP ranges, disable
@@ -338,8 +351,12 @@ decode and read the payload).
 ## 13. Security Headers
 
 - `Content-Security-Policy (CSP)`: restricts sources of scripts/styles/images — the single strongest XSS mitigation.
+    - Defines explicitly domains from which scripts or assets can be loaded.
 - `Strict-Transport-Security (HSTS)`: forces HTTPS, prevents downgrade/SSL-stripping attacks.
 - `X-Content-Type-Options: nosniff`: prevents MIME-sniffing attacks.
+    - Mime attack abuses how browser interprets MIME(multipurpose internet mail extensions)
+    - Browsers sniff incorrect file extensions e.g. js as plaintext and execute. mime prevents the execution if it
+      doesn't match it's type
 - `X-Frame-Options` / `frame-ancestors`: clickjacking protection.
 - `Referrer-Policy`: controls how much URL info leaks to third parties via the Referer header.
 - CORS (`Access-Control-Allow-Origin`, etc.): not itself a security header for the server's own protection, but a
@@ -351,13 +368,15 @@ decode and read the payload).
 ## 14. Secrets Management
 
 - Never hardcode secrets/credentials in source code or commit them to git.
-- Use dedicated secret managers: **HashiCorp Vault**, **AWS Secrets Manager/KMS**, **Azure Key Vault**, **GCP Secret
-  Manager**.
+- Use dedicated secret managers: **HashiCorp Vault**, **AWS Secrets Manager/KMS (Key Management Service/System)**
+  ,**Azure Key Vault**, **GCP Secret Manager**.
 - **Envelope encryption**: encrypt data with a data key, encrypt the data key with a master key held in a KMS/HSM —
   limits blast radius and enables key rotation without re-encrypting all data.
 - Rotate secrets regularly; use short-lived, dynamically generated credentials where possible (e.g., Vault dynamic DB
   credentials).
 - Principle: secrets should be injected at runtime (env vars from a vault, sidecar injection), not baked into images.
+- Note: Vaults like Tomcat and AWS inject secrets directly into application variables at runtime. This way passwords are
+  never visible in plain text if you check the s3 of current running app (for example checking contex.xml)
 
 ---
 
