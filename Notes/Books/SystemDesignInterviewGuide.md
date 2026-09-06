@@ -192,7 +192,7 @@ layout: default
                 - Sharding Key:
                     - Key allows you to route to the same node consistently
                     - If too many entries on same key (using {} hash) causes hot slot
-                      problem [see](../7_Tools/Redis.md#hot-slot)
+                      problem [see](../Tools/Redis.md#hot-slot)
                 - Join and Denormalization:
                     - Once data has been sharded joins become harder to perform since data is no longer on same node
                     - Possible solution is to denormalize data to begin with
