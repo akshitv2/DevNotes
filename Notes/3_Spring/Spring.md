@@ -221,6 +221,7 @@ layout: default
           blocking, compression, or logging raw request data.
         -
     - ### `HandlerInterceptor`:
+        - Aware of the controller and method being called by Spring since this is called after the decision is made
         - allows you to intercept HTTP requests and responses at various stages of their lifecycle
         - To create an interceptor, you implement the HandlerInterceptor interface, which provides three key hook
           points:
@@ -250,7 +251,7 @@ layout: default
             - Checking specific Controller annotations or permissions.
             - Performance monitoring of specific API endpoints.
 9. ### Web/Rest Clients
-    - RestClient
+    - **RestClient**
         - Spring created RestClient recently (Spring 6) as a modern alternative to RestTemplate
         - RestClient is a synchronous, fluent API used to make HTTP requests.
         - Core Features
@@ -258,6 +259,10 @@ layout: default
             - Fluent API: Uses a method-chaining style (e.g., .get(), .uri(), .retrieve())
             - Infrastructure Reuse: It uses the same HTTP message converters and request factories as RestTemplate
             - Exception Handling: Provides simplified status code handling via .onStatus()
+        - Note: fluent API is an API designed so that method calls can be chained together in a way that reads almost
+          like natural language.
+            - Example: Streams:
+              `List<String> result = names.stream() .filter(name -> name.length() > 3) .map(String::toUpperCase) .sorted() .toList();`
         - Example:
             - ```java
           // Creation
@@ -280,7 +285,7 @@ layout: default
           })
           .toBodilessEntity();
          ```
-    - WebClient
+    - **WebClient**
         - WebClient is a non-blocking, reactive client used to perform HTTP requests
         - part of the Spring WebFlux module, allows use of asynchronous logic without dealing with threads
         - Reactive: It is built on Project Reactor, utilizing Mono (for 0-1 results) and Flux (for 0-N results) to
@@ -304,8 +309,8 @@ layout: default
               Represents a stream of 0 or 1 element. It is a specialized version of a Flux used when the result is a
               single value or an empty notification.  
               Emits at most one item.
-    - Request/Respone Handlers
-        - Interceptors:
+    - **Request/Respone Handlers**
+        - **Interceptors**:
             - allows you to intercept HTTP requests and responses at various stages of their lifecycle. It is primarily
               used for cross-cutting concerns like logging, authentication, and modifying the model before it reaches
               the view.
@@ -324,3 +329,21 @@ layout: default
               a byte stream.
             - Spring WebFlux is built on functional, immutable principles. Both the ClientRequest and the data buffers (
               DataBuffer) are designed to be replaced rather than mutated.
+10. ## WebFlux
+    - **Reactive Framework**:
+        - Architecture built around non-blocking, event-driven data streams.
+        - **Core Pillars of Reactive APIs
+            - Non-Blocking I/O: Threads register a callback but don't wait for response (hanlde other requests)
+            - Async Data Streams
+            - Backpressure: Consumer signals to producer how much data it can handle
+    - ## Spring WebFlux:
+        - Spring Framework's reactive web framework running by default on Netty instead of Tomcat.
+        - Change of base server happens automatically in **Spring boot** based on presence of webflux lib
+        - Key Abstractions: Mono and Flux
+            - Spring WebFlux utilizes Project Reactor's core types to represent asynchronous streams:
+                - Mono<T>: Emits 0 or 1 element. Used for single items (e.g., fetching a user by ID).
+                - Flux<T>: Emits 0 to N elements. Used for collections or continuous streaming (e.g., fetching all
+                  products or real-time event logs).
+        - Error Scenario:
+          - If the initial response is 200 then code can't change mid-stream, thus an error payload is sent and app must define it's own error handling logic.
+          - Thus key trade-off of reactive systems: Complexity traded for Scalability.
