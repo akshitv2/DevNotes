@@ -19,7 +19,6 @@
     <!-- Third-party CDN Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked@12.0.0/marked.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css"></script>
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 
@@ -220,6 +219,41 @@
           max-width: 880px;
         }
 
+        /* Index Overview Cards/List Styles */
+        .index-container {
+          display: flex;
+          flex-direction: column;
+          gap: 2rem;
+        }
+
+        .index-section {
+          border: 1px solid var(--border-color);
+          border-radius: 8px;
+          padding: 1.5rem;
+          background: #fafafa;
+        }
+
+        .index-section-title {
+          font-family: var(--font-sans);
+          font-size: 1.25rem;
+          font-weight: 700;
+          margin-bottom: 1rem;
+        }
+
+        .index-list {
+          list-style: none;
+          padding-left: 0 !important;
+        }
+
+        .index-list li {
+          margin-bottom: 0.5rem;
+        }
+
+        .index-list li a {
+          font-family: var(--font-sans);
+          font-weight: 500;
+        }
+
         /* Medium-inspired Typography */
         #content h1,
         #content h2,
@@ -391,7 +425,7 @@
         <span></span>
     </button>
     <div class="mobile-title">
-        <a href="/#/index.md" class="site-title-link" id="mobile-site-title">Documentation</a>
+        <a href="/#/" class="site-title-link" id="mobile-site-title">Documentation</a>
     </div>
 </header>
 
@@ -400,7 +434,7 @@
 <div id="app">
     <aside id="sidebar">
         <div class="site-title">
-            <a href="/#/index.md" class="site-title-link" id="site-title">Documentation</a>
+            <a href="/#/" class="site-title-link" id="site-title">Documentation</a>
         </div>
         <nav id="nav-tree"></nav>
     </aside>
@@ -452,7 +486,7 @@
 
     marked.use({ extensions: [katexExtension] });
 
-    let navRoutes = [];
+    let siteConfig = null;
 
     // 2. Fetch and Parse `index.yaml`
     async function init() {
@@ -460,16 +494,16 @@
         const response = await fetch('index.yaml');
         if (!response.ok) throw new Error(`Failed to load index.yaml (${response.status})`);
         const yamlText = await response.text();
-        const config = jsyaml.load(yamlText);
+        siteConfig = jsyaml.load(yamlText);
 
-        if (config.site_name) {
-          document.title = config.site_name;
-          document.getElementById('site-title').textContent = config.site_name;
-          document.getElementById('mobile-site-title').textContent = config.site_name;
+        if (siteConfig.site_name) {
+          document.title = siteConfig.site_name;
+          document.getElementById('site-title').textContent = siteConfig.site_name;
+          document.getElementById('mobile-site-title').textContent = siteConfig.site_name;
         }
 
         const navTreeEl = document.getElementById('nav-tree');
-        navTreeEl.appendChild(buildNavTree(config.nav));
+        navTreeEl.appendChild(buildNavTree(siteConfig.nav));
 
         // Handle initial routing
         handleRoute();
@@ -524,18 +558,62 @@
       a.textContent = title;
       a.href = `/#/${path}`;
       a.dataset.path = path;
-      navRoutes.push(path);
       return a;
     }
 
-    // 4. Fetch and Render Markdown Content
-    async function handleRoute() {
-      let hashPath = window.location.hash.replace(/^#\/?/, '');
+    // 4. Dynamic Index Generator from YAML Config
+    function renderGeneratedIndex() {
+      if (!siteConfig || !siteConfig.nav) return;
 
-      // Default to index.md or first route if hash is empty
+      const contentEl = document.getElementById('content');
+      let html = `<h1>${siteConfig.site_name || 'Documentation'}</h1>`;
+      html += `<p style="color: var(--text-muted);">Select a section below or use the sidebar to navigate the documentation.</p>`;
+      html += `<div class="index-container">`;
+
+      function renderNavSection(items) {
+        let sectionHtml = `<ul class="index-list">`;
+        items.forEach(item => {
+          if (typeof item === 'string') {
+            sectionHtml += `<li><a href="/#/${item}">${item}</a></li>`;
+          } else if (typeof item === 'object') {
+            const title = Object.keys(item)[0];
+            const value = item[title];
+
+            if (typeof value === 'string') {
+              sectionHtml += `<li><a href="/#/${value}">${title}</a></li>`;
+            } else if (Array.isArray(value)) {
+              sectionHtml += `
+                <li style="margin-top: 1rem;">
+                  <div class="index-section">
+                    <div class="index-section-title">${title}</div>
+                    ${renderNavSection(value)}
+                  </div>
+                </li>`;
+            }
+          }
+        });
+        sectionHtml += `</ul>`;
+        return sectionHtml;
+      }
+
+      html += renderNavSection(siteConfig.nav);
+      html += `</div>`;
+
+      contentEl.innerHTML = html;
+
+      // Reset active state on nav links
+      document.querySelectorAll('#nav-tree a').forEach(a => a.classList.remove('active'));
+    }
+
+    // 5. Fetch and Render Markdown Content or Generated Home
+    async function handleRoute() {
+      const hashPath = window.location.hash.replace(/^#\/?/, '');
+
+      // Render home index generated from YAML if path is empty
       if (!hashPath) {
-        hashPath = navRoutes.includes('index.md') ? 'index.md' : navRoutes[0];
-        window.location.hash = `#/${hashPath}`;
+        closeMobileMenu();
+        renderGeneratedIndex();
+        window.scrollTo(0, 0);
         return;
       }
 
@@ -543,7 +621,7 @@
       document.querySelectorAll('#nav-tree a').forEach(a => {
         if (a.dataset.path === hashPath) {
           a.classList.add('active');
-          // Auto-expand parent details element for active link
+          // Expand parent details element for current active link
           let parent = a.closest('details');
           while (parent) {
             parent.open = true;
@@ -584,7 +662,7 @@
       }
     }
 
-    // 5. Mobile Drawer Interactions
+    // 6. Mobile Drawer Interactions
     const menuToggle = document.getElementById('menu-toggle');
     const sidebar = document.getElementById('sidebar');
     const backdrop = document.getElementById('backdrop');
