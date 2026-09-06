@@ -35,4 +35,4 @@ def generate_index(root_dir, output_file="INDEXD.md"):
         f.writelines(index_lines)
 
 # Usage: Run in the directory containing your folders/md files
-generate_index(".")
+generate_index("./notes")

@@ -33,6 +33,8 @@ layout: default
     - Spring Boot comes with autoconfiguration, embedded server and prewritten boiler plate
     - Spring boot generates FAT Jar that runs on JRE
     - Spring generates war and requires Tomcat server to deploy
+    - Note: FAT/uber JAR contains application’s compiled .class files and All the dependency JARs and config (and is directly deployable)
+      - Normal jars don't carry their dependencies
 3. ### Auto-Configuration
     - Springboot handles configuring components for you based on Jars available
     - Components:
