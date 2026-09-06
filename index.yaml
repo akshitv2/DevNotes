@@ -1,0 +1,63 @@
+site_name: Knowledge Base Index
+
+nav:
+  - Core CS Fundamentals:
+      - Database Management Systems:
+          - DBMS Notes: Notes/1_DBMS/Content.md
+          - Implementations: Notes/1_DBMS/Impls.md
+          - DBMS Todo: Notes/1_DBMS/Todo.md
+      - Computer Networks:
+          - Networking Theory: Notes/4_Networks/Networking-notes.md
+      - System Design:
+          - Core Concepts: Notes/5_SystemDesign/Concepts.md
+          - Communication Protocols: Notes/5_SystemDesign/CommunicationProtocols.md
+          - Design Patterns: Notes/5_SystemDesign/DesignPatterns.md
+          - Operating Systems: Notes/5_SystemDesign/OS.md
+          - Architecture & Practice:
+              - Components: Notes/5_SystemDesign/System Design/Components.md
+              - System Designs: Notes/5_SystemDesign/System Design/Designs.md
+      - Security:
+          - Security Notes: Notes/6_Security/SecurityNotes.md
+
+  - Data Structures & Algorithms:
+      - Theory & Topics:
+          - DSA Theory Notes: Notes/1_DSA/1_Theory.md
+          - Interview Topics: Notes/1_DSA/2_InterviewTopics.md
+          - Dynamic Programming: Notes/1_DSA/3_DynamicProgramming.md
+      - Problem Sets:
+          - Problem Set 0: Notes/1_DSA/Problems/0.md
+          - GeeksForGeeks Problems: Notes/1_DSA/Problems/1_GFGProblems.md
+          - Important Problems: Notes/1_DSA/Problems/2_ImportantProblems.md
+          - LeetCode Problems: Notes/1_DSA/Problems/3_LeetCodeProblems.md
+
+  - Java & Spring Framework:
+      - Java:
+          - Overview & Interview Prep: Notes/2_Java/1_Java_Overview.md
+          - Java Features: Notes/2_Java/2_Features.md
+          - Threading & Parallelization: Notes/2_Java/3_Parallelization.md
+          - Topic Breakdown: Notes/2_Java/JavaTopics.md
+      - Spring Ecosystem:
+          - Spring Basics: Notes/3_Spring/Spring.md
+          - Spring Boot: Notes/3_Spring/SpringBoot.md
+          - Spring Boot Starters: Notes/3_Spring/Starters.md
+          - Libraries: Notes/3_Spring/Libraries.md
+          - Interview Questions: Notes/3_Spring/InterviewQuestions.md
+
+  - Book Notes & Guides:
+      - Designing Data-Intensive Applications: Notes/9_Books/DesigningDataIntensiveApplications.md
+      - System Design Interview Guide: Notes/9_Books/SystemDesignInterviewGuide.md
+      - Transactions: Notes/9_Books/Notes.md
+
+  - Tools & Utilities:
+      - Java Libraries — Interview Notes: Notes/7_Tools/JavaImportantLibs.md
+      - Software List: Notes/7_Tools/Softwares.md
+
+  - Revision, Misc & Tasks:
+      - Revision:
+          - Java Revision: Notes/10_Revise/Java.md
+      - Miscellaneous:
+          - From Banking to Big Tech:
+              - System Design Toolkit: Notes/9_Misc/BigTechTopics.md
+          - Prompt Engineering: Notes/9_Misc/PromptEngineering.md
+      - Tasks:
+          - Global Todo List: Notes/Todo.md
