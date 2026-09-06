@@ -425,7 +425,7 @@
         <span></span>
     </button>
     <div class="mobile-title">
-        <a href="/#/" class="site-title-link" id="mobile-site-title">Documentation</a>
+        <a href="#/" class="site-title-link" id="mobile-site-title">Documentation</a>
     </div>
 </header>
 
@@ -434,7 +434,7 @@
 <div id="app">
     <aside id="sidebar">
         <div class="site-title">
-            <a href="/#/" class="site-title-link" id="site-title">Documentation</a>
+            <a href="#/" class="site-title-link" id="site-title">Documentation</a>
         </div>
         <nav id="nav-tree"></nav>
     </aside>
@@ -537,7 +537,6 @@
             li.appendChild(a);
           } else if (Array.isArray(value)) {
             const details = document.createElement('details');
-            // Dropdowns remain collapsed by default
 
             const summary = document.createElement('summary');
             summary.textContent = title;
@@ -556,7 +555,7 @@
     function createNavLink(title, path) {
       const a = document.createElement('a');
       a.textContent = title;
-      a.href = `/#/${path}`;
+      a.href = `#/${path}`;
       a.dataset.path = path;
       return a;
     }
@@ -574,13 +573,13 @@
         let sectionHtml = `<ul class="index-list">`;
         items.forEach(item => {
           if (typeof item === 'string') {
-            sectionHtml += `<li><a href="/#/${item}">${item}</a></li>`;
+            sectionHtml += `<li><a href="#/${item}">${item}</a></li>`;
           } else if (typeof item === 'object') {
             const title = Object.keys(item)[0];
             const value = item[title];
 
             if (typeof value === 'string') {
-              sectionHtml += `<li><a href="/#/${value}">${title}</a></li>`;
+              sectionHtml += `<li><a href="#/${value}">${title}</a></li>`;
             } else if (Array.isArray(value)) {
               sectionHtml += `
                 <li style="margin-top: 1rem;">
