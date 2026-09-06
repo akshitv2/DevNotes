@@ -488,6 +488,30 @@
 
     let siteConfig = null;
 
+    // Helper: Resolves a relative path against the current Markdown file's folder directory
+    function resolveRelativePath(basePath, relativePath) {
+      if (!relativePath || /^(?:[a-z]+:|\/\/|\/)/i.test(relativePath)) {
+        return relativePath;
+      }
+
+      const dirIndex = basePath.lastIndexOf('/');
+      const dir = dirIndex !== -1 ? basePath.substring(0, dirIndex + 1) : '';
+
+      const stack = dir.split('/').filter(Boolean);
+      const parts = relativePath.split('/');
+
+      for (const part of parts) {
+        if (part === '' || part === '.') continue;
+        if (part === '..') {
+          if (stack.length > 0) stack.pop();
+        } else {
+          stack.push(part);
+        }
+      }
+
+      return stack.join('/');
+    }
+
     // 2. Fetch and Parse `index.yaml`
     async function init() {
       try {
@@ -644,7 +668,15 @@
         markdown = markdown.replace(/^---\r?\n[\s\S]*?\r?\n---\r?\n?/, '');
 
         const contentEl = document.getElementById('content');
-        contentEl.innerHTML = marked.parse(markdown);
+
+        // Parse markdown and rewrite image paths relative to current .md file path
+        contentEl.innerHTML = marked.parse(markdown, {
+          walkTokens(token) {
+            if (token.type === 'image' && token.href) {
+              token.href = resolveRelativePath(hashPath, token.href);
+            }
+          }
+        });
 
         // Highlight code blocks
         contentEl.querySelectorAll('pre code').forEach((block) => {
