@@ -9,6 +9,7 @@ layout: default
 | DBMS          | 2 Phase Locking                                                                                  |
 |               | Multi-Version Concurrency Control (MVCC)                                                         |
 |               | ANSI SQL Isolation Levels                                                                        |
+| Spring        | Dispatcher Servlet                                                                               |
 | System Design | Circuit Breaker                                                                                  |
 |               | Server-to-Server Real-Time: gRPC vs. Webhooks vs. Message Queues                                 |
 |               | Advanced Event-Driven Concepts: Event Sourcing & CQRS                                            |

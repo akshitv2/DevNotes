@@ -4,52 +4,74 @@ nav_order: 0
 layout: default
 ---
 
-* **1_DBMS**
-    * [DBMS Notes](Notes/1_DBMS/Content.md)
-    * [Impls.md](Notes/1_DBMS/Impls.md)
-    * [Todo.md](Notes/1_DBMS/Todo.md)
-* **1_DSA**
-    * [DSA Theory Notes](Notes/1_DSA/1_Theory.md)
-    * [DSA Interview Topics](Notes/1_DSA/2_InterviewTopics.md)
-    * [Dynamic Programming](Notes/1_DSA/3_DynamicProgramming.md)
-    * **Problems**
-        * [0.md](Notes/1_DSA/Problems/0.md)
-        * [1_GFGProblems.md](Notes/1_DSA/Problems/1_GFGProblems.md)
-        * [2_ImportantProblems.md](Notes/1_DSA/Problems/2_ImportantProblems.md)
-        * [3_LeetCodeProblems.md](Notes/1_DSA/Problems/3_LeetCodeProblems.md)
-* **2_Java**
-    * [Java Interview Preparation Notes](Notes/2_Java/1_Java_Overview.md)
-    * [Java Features](Notes/2_Java/2_Features.md)
-    * [Threading in Java](Notes/2_Java/3_Parallelization.md)
-    * [JavaTopics.md](Notes/2_Java/JavaTopics.md)
-* **3_Spring**
-    * [Interview Questions](Notes/3_Spring/InterviewQuestions.md)
-    * [Libraries](Notes/3_Spring/Libraries.md)
-    * [Spring Basics](Notes/3_Spring/Spring.md)
-    * [Spring Boot](Notes/3_Spring/SpringBoot.md)
-    * [Spring Boot Starters](Notes/3_Spring/Starters.md)
-* **4_Networks**
-    * [Theory](Notes/4_Networks/Networking-notes.md)
-* **5_SystemDesign**
-    * [Communication Protocols](Notes/5_SystemDesign/CommunicationProtocols.md)
-    * [Concepts](Notes/5_SystemDesign/Concepts.md)
-    * [Design Patterns](Notes/5_SystemDesign/DesignPatterns.md)
-    * [OS](Notes/5_SystemDesign/OS.md)
-    * **System Design**
-        * [Components.md](Notes/5_SystemDesign/System Design/Components.md)
-        * [Designs.md](Notes/5_SystemDesign/System Design/Designs.md)
-* **6_Security**
-    * [Security Notes](Notes/6_Security/SecurityNotes.md)
-* **7_Tools**
-    * [Java Libraries — Interview Notes](Notes/7_Tools/JavaImportantLibs.md)
-    * [Softwares.md](Notes/7_Tools/Softwares.md)
-* **9_Books**
-    * [Designing Data Intensive Applications](Notes/9_Books/DesigningDataIntensiveApplications.md)
-    * [Transactions](Notes/9_Books/Notes.md)
-    * [System Design Interview](Notes/9_Books/SystemDesignInterviewGuide.md)
-* **9_Misc**
-    * [From Banking to Big Tech: The System Design Toolkit](Notes/9_Misc/BigTechTopics.md)
-    * [Prompt Engineering](Notes/9_Misc/PromptEngineering.md)
-* **10_Revise**
-    * [Java.md](Notes/10_Revise/Java.md)
-* [Todo.md](Notes/Todo.md)
+# Knowledge Base Index
+
+## Core CS Fundamentals
+* **Database Management Systems**
+  * [DBMS Notes](Notes/1_DBMS/Content.md)
+  * [Implementations](Notes/1_DBMS/Impls.md)
+  * [DBMS Todo](Notes/1_DBMS/Todo.md)
+* **Computer Networks**
+  * [Networking Theory](Notes/4_Networks/Networking-notes.md)
+* **System Design**
+  * [Core Concepts](Notes/5_SystemDesign/Concepts.md)
+  * [Communication Protocols](Notes/5_SystemDesign/CommunicationProtocols.md)
+  * [Design Patterns](Notes/5_SystemDesign/DesignPatterns.md)
+  * [Operating Systems](Notes/5_SystemDesign/OS.md)
+  * **Architecture & Practice**
+    * [Components](Notes/5_SystemDesign/System Design/Components.md)
+    * [System Designs](Notes/5_SystemDesign/System Design/Designs.md)
+* **Security**
+  * [Security Notes](Notes/6_Security/SecurityNotes.md)
+
+---
+
+## Data Structures & Algorithms
+* **Theory & Topics**
+  * [DSA Theory Notes](Notes/1_DSA/1_Theory.md)
+  * [Interview Topics](Notes/1_DSA/2_InterviewTopics.md)
+  * [Dynamic Programming](Notes/1_DSA/3_DynamicProgramming.md)
+* **Problem Sets**
+  * [Problem Set 0](Notes/1_DSA/Problems/0.md)
+  * [GeeksForGeeks Problems](Notes/1_DSA/Problems/1_GFGProblems.md)
+  * [Important Problems](Notes/1_DSA/Problems/2_ImportantProblems.md)
+  * [LeetCode Problems](Notes/1_DSA/Problems/3_LeetCodeProblems.md)
+
+---
+
+## Java & Spring Framework
+* **Java**
+  * [Overview & Interview Prep](Notes/2_Java/1_Java_Overview.md)
+  * [Java Features](Notes/2_Java/2_Features.md)
+  * [Threading & Parallelization](Notes/2_Java/3_Parallelization.md)
+  * [Topic Breakdown](Notes/2_Java/JavaTopics.md)
+* **Spring Ecosystem**
+  * [Spring Basics](Notes/3_Spring/Spring.md)
+  * [Spring Boot](Notes/3_Spring/SpringBoot.md)
+  * [Spring Boot Starters](Notes/3_Spring/Starters.md)
+  * [Libraries](Notes/3_Spring/Libraries.md)
+  * [Interview Questions](Notes/3_Spring/InterviewQuestions.md)
+
+---
+
+## Book Notes & Guides
+* [Designing Data-Intensive Applications](Notes/9_Books/DesigningDataIntensiveApplications.md)
+* [System Design Interview Guide](Notes/9_Books/SystemDesignInterviewGuide.md)
+* [Transactions](Notes/9_Books/Notes.md)
+
+---
+
+## Tools & Utilities
+* [Java Libraries — Interview Notes](Notes/7_Tools/JavaImportantLibs.md)
+* [Software List](Notes/7_Tools/Softwares.md)
+
+---
+
+## Revision, Misc & Tasks
+* **Revision**
+  * [Java Revision](Notes/10_Revise/Java.md)
+* **Miscellaneous**
+  * [From Banking to Big Tech: System Design Toolkit](Notes/9_Misc/BigTechTopics.md)
+  * [Prompt Engineering](Notes/9_Misc/PromptEngineering.md)
+* **Tasks**
+  * [Global Todo List](Notes/Todo.md)

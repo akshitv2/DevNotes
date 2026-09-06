@@ -345,5 +345,20 @@ layout: default
                 - Flux<T>: Emits 0 to N elements. Used for collections or continuous streaming (e.g., fetching all
                   products or real-time event logs).
         - Error Scenario:
-          - If the initial response is 200 then code can't change mid-stream, thus an error payload is sent and app must define it's own error handling logic.
-          - Thus key trade-off of reactive systems: Complexity traded for Scalability.
+            - If the initial response is 200 then code can't change mid-stream, thus an error payload is sent and app
+              must define its own error handling logic.
+            - Thus key trade-off of reactive systems: Complexity traded for Scalability.
+11. ## Key Challenges: Spring Monoliths to Spring Boot:
+    1. Hard Coupling to External Servlet Containers (web.xml)
+        - Requires significant rewrite writing DispatcherServlet filters and listeners to java springboot
+    2. Deep XML Based Dependency Injection:
+        - Requires deep rewrite as well as complex inheritance, XML often tolerates circular dependencies
+    3. Outdated Java/Spring Dependency Baselines: java 17 req jakarta + old libraries in spring are dropped e.g.
+       template engine
+    4. In-Memory Web Sessions and Sticky Sessions
+        - Monoliths almost always store session in jvm, springboot assumes stateless arch.
+        - Requires external session like redis or sticky session routing
+    5. Direct JNDI, JTA, and Application Server Dependencies
+        - Monoliths depend on server to manage configs, dbs, queues etc vs Springboot which emphasizes self-contained
+          config
+    6. Spaghetti code that crosses functional boundaries: e.g. Feature A calls feature C's db or mutates D's internal state

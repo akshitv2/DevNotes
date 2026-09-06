@@ -33,8 +33,12 @@ layout: default
     - Spring Boot comes with autoconfiguration, embedded server and prewritten boiler plate
     - Spring boot generates FAT Jar that runs on JRE
     - Spring generates war and requires Tomcat server to deploy
-    - Note: FAT/uber JAR contains application’s compiled .class files and All the dependency JARs and config (and is directly deployable)
-      - Normal jars don't carry their dependencies
+    - Note: FAT/uber JAR contains application’s compiled .class files and All the dependency JARs and config (and is
+      directly deployable)
+        - Normal jars don't carry their dependencies
+    - Spring Boot prioritizes convention over configuration:
+        - Gives you sensible default choices (conventions) based on dependencies and application structure, so you don't
+          have to explicitly configure everything yourself.
 3. ### Auto-Configuration
     - Springboot handles configuring components for you based on Jars available
     - Components:
@@ -53,28 +57,28 @@ layout: default
     1. ### `@SpringBootApplication`:
         - "The springboot special":
         - Actually combines 3:
-            1. @Configuration: Marks this class as source
-            2. @EnableAutoConfiguration: Explained above [🔗](#Auto-Configuration)
-            3. @ComponentScan: Tells springboot to discover application's (user code's) beans
+            1. `@Configuration`: Marks this class as source
+            2. `@EnableAutoConfiguration`: Explained above [🔗](#Auto-Configuration)
+            3. `@ComponentScan`: Tells springboot to discover application's (user code's) beans
     2. ### Stereotype Annotations:
         - Special annotations in Spring used to auto-detect and register beans in the application context.
-        - ### @Component:
+        - ### `@Component`:
             - Any general purpose bean
-        - ### @Service:
+        - ### `@Service`:
             - Business Logic Layer
             - Specialized Component Bean
             - Intended to contain business logic with @Transactional and security (can also be done in component)
             - More or less just semantically different from Component
-        - ### @Repository
+        - ### ` @Repository`
             - Classes that talk to DB
             - Specialized Component Bean
             - Adds extra exception handling (JDBC, JPA, Hibernate) and automatic exception translation
-        - ### @Controller/@RestController:
+        - ### `@Controller`/`@RestController`:
             - Marks a class as a web controller handling HTTP requests
             - [Linked](#controllerrestcontroller)
-    3. ### @Bean
+    3. ### `@Bean`
         - Not used on classes like above but instead on method which returns an object you want Bean-ified
-    4. ### @Configuration:
+    4. ### `@Configuration`:
         - Advanced version of @Component
         - Does class proxying
         - Safe way to use @Bean annotation
