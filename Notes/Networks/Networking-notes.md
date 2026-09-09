@@ -401,6 +401,7 @@ REST (Representational State Transfer) is a set of architectural constraints, no
 - Starts as a normal HTTP request with an `Upgrade: websocket` header; if the server agrees, the HTTP connection is *
   *upgraded in place** to a persistent, full-duplex WebSocket connection over the same underlying TCP socket (no new
   connection is opened).
+- Starts off on http but moves to straight TCP
 - Once upgraded, either side can push messages at any time — unlike HTTP's strict request/response model.
 - **Use cases**: chat apps, live collaborative editing, real-time dashboards, multiplayer game state — anything needing
   low-latency bidirectional messaging where the server needs to push unprompted.

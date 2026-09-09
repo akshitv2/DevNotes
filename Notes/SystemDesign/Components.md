@@ -194,6 +194,51 @@ very well
 
 ### 9. Hash Functions
 
+A hash function maps arbitrary-sized data to a fixed-size string or numerical value called hash or digest *
+*deterministically**.  
+Uses: Data partitioning & routing (by hashing to same cluster), Hash table O(1) Lookup, Integrity & Deduplication (MD5
+comparison), probabilistic checks (bloom filters)  
+A **cryptographic hash function** is designed so that an attacker should have a very hard time finding relationships
+between inputs and hashes.  
+A **non-cryptographic hash function** is usually designed for speed and practical data structures, rather than resisting
+attackers.
+
+| **Category**                                                                    | **Algorithm / Function**   | **Best Used For**                                                                    | **Primary Traits**                                                                                                                                              |
+|---------------------------------------------------------------------------------|----------------------------|--------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Non-Cryptographic**  <br>       (Prioritize extreme speed & low CPU overhead) | **MurmurHash (v2 / v3)**   | High-performance hash maps, Bloom Filters, Cassandra / Solr partitioning             | Fast execution, uniform distribution, non-cryptographic                                                                                                         |
+|                                                                                 | **xxHash**                 | In-memory engines (Redis, RocksDB), fast checksums, network packet hashing           | Extremely fast; optimized for modern CPUs                                                                                                                       |
+|                                                                                 | **CityHash / FarmHash**    | Large-scale string hashing, search indexes, distributed systems                      | Optimized for short/medium strings and modern hardware                                                                                                          |
+| **Cryptographic / Legacy**                                                      | **MD5**                    | Legacy checksums, non-security file identification, compatibility with older systems | 128-bit output, very fast, **cryptographically broken due to collision attacks**; should not be used for passwords, signatures, or security-sensitive integrity |
+| **Cryptographic**                                                               | **SHA-256 (SHA-2 Family)** | HMAC auth, API signatures, blockchain, TLS/SSL certificates                          | Strong collision resistance, standardized, hardware-accelerated on many CPUs                                                                                    |
+| **Cryptographic**                                                               | **BLAKE3**                 | File checksums, object-storage deduplication, modern secure pipelines                | Very fast, parallelizable, modern cryptographic design                                                                                                          |
+| **Password Hashing**                                                            | **bcrypt / Argon2**        | User password hashing and verification                                               | Intentionally slow; designed to resist brute-force and GPU attacks                                                                                              |
+
+### 10. Unique ID Generation
+
+### UUID (Universally Unique Identifier)
+
+Generates 128 bits using pseudo-random bytes. 🟢 Simple Stateless but 🔴Non-sortable
+
+### Twitter Snowflake
+
+Generates 64-bit integer IDs optimized for distributed systems without cross-node coordination.
+Contains Millisecond timestamp relative to a custom epoch + Machine/Worker ID (upto 1024) + Sequence number
+🟢 Time ordered and high throughput 🔴But incorrect clock sync can cause duplicates
+
+### ULID (Universally Unique Lexicographically Sortable Identifier)
+
+### NanoID
+
+### 11. WebHooks
+
+An automated HTTP callback that sends real-time data from one application to another whenever a specific event occurs.
+Unlike traditional APIs where you must repeatedly query (poll) a server for updates, webhooks automatically push data as
+soon as an event happens.  
+### Process:
+1. Registration: You provide a destination URL (endpoint) on your server to the source provider
+2. Event Triggers: An event occurs in the source system
+3. Payload Delivery: Source system calls your server (simply source server calls your server)
+4. Action: Your server receives the HTTP POST request and returns a 200 OK
 
 ### 6. Performance Metrics
 

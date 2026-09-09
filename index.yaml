@@ -39,8 +39,11 @@ nav:
           - Libraries: Notes/Spring/Libraries.md
           - Interview Questions: Notes/Spring/InterviewQuestions.md
   - Tools & Utilities:
-      - Java Libraries — Interview Notes: Notes/Tools/JavaImportantLibs.md
+      - Important Java Libraries: Notes/Tools/JavaImportantLibs.md
       - Software List: Notes/Tools/Softwares.md
+      - Tools:
+            - Kafka: Notes/Tools/Kafka.md
+            - Netty: Notes/Tools/Netty.md
   - Miscellaneous:
       - From Banking to Big Tech: Notes/Misc/BigTechTopics.md
       - Prompt Engineering: Notes/Misc/PromptEngineering.md
