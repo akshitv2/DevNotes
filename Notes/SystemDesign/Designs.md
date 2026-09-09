@@ -4,7 +4,7 @@ layout: default
 title: Designs & Arch
 ---
 
-## 1. ## Vertical vs Horizontal scaling:
+## 1. Vertical vs Horizontal scaling:
 
 - ### Vertical or Scale Up:
     - Upgrade to more powerful machines with more compute/RAM
@@ -22,7 +22,7 @@ title: Designs & Arch
 
 ## 2. Database Replication:
 
-- ![img_1.png](../../Books/img_1.png)
+- ![img_1.png](../Books/img_1.png)
 - Usually done with a master slave relationship (often called Primary Replica or Leader Follower)
 - Write operations are only supported by Master node
 - Slave get copies of master DB and only supports read (when enabled)
@@ -115,3 +115,13 @@ healthy component to mitigate operational disruption.
     - Problem: If a service goes down, hundreds of thousands of client apps will instantly retry. If they all retry at
       exactly 1s, 2s, and 4s, they will repeatedly crash the recovering server.
     - Solution: Clients wait exponentially longer between retries, plus they add a random delay (Jitter).
+
+### 4. Circuit Breaker pattern
+
+Microservices resilience pattern, prevents system cascade failures when remote service is down or slow.  
+Three States:
+
+- Closed (Normal operation): Requests flow through to the target service with low failure rate
+- Open (Tripped): Failures beyond threshold, requests fail instantly to prevent resource exhaustion
+- Half Open (Testing Recovery): After a timeout, breaker lets a few request through to check failure rate to keep close
+  or open

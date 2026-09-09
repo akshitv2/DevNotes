@@ -8,13 +8,13 @@ nav:
   - Computer Networks:
       - Networking Theory: Notes/Networks/Networking-notes.md
   - System Design:
-      - Core Concepts: Notes/SystemDesign/Concepts.md
+      - Principles: Notes/SystemDesign/Principles.md
       - Communication Protocols: Notes/SystemDesign/CommunicationProtocols.md
       - Design Patterns: Notes/SystemDesign/DesignPatterns.md
       - Operating Systems: Notes/SystemDesign/OS.md
-      - Architecture & Practice:
-          - Components: Notes/SystemDesign/System Design/Components.md
-          - System Designs: Notes/SystemDesign/System Design/Designs.md
+      - Components: Notes/SystemDesign/Components.md
+      - System Designs: Notes/SystemDesign/Designs.md
+      - Interview Problems: Notes/SystemDesign/Problems.md
   - Security:
       - Security Notes: Notes/Security/SecurityNotes.md
   - Data Structures & Algorithms:

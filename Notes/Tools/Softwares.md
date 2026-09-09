@@ -5,6 +5,25 @@ layout: default
 parent: Tools
 ---
 
+## 1. Build Tools
+
+### 1.1 Gradle
+
+### 1.2 Maven
+
+### 1.3 POM VS BOM
+
+| Aspect                      | POM                         | BOM                        |
+|-----------------------------|-----------------------------|----------------------------|
+| Purpose                     | Build & configure a project | Manage dependency versions |
+| Has code                    | Yes                         | Usually no                 |
+| Produces artifact           | Yes (jar/war)               | No (pom only)              |
+| Uses `dependencyManagement` | Optional                    | Required                   |
+| One per project             | Yes                         | Shared across projects     |
+
+
+## 1. Kafka 
+
 ## 1. Netty
 
 1. ## What is netty?
@@ -49,7 +68,7 @@ parent: Tools
 
 ---
 
-## 2.  Redis
+## 2. Redis
 
 1. ## Basics
 

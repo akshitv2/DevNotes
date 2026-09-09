@@ -201,6 +201,10 @@ Most modern databases no longer limit themselves to a single category.
     - Fits on a single terabyte-scale machine → stick to RDBMS.
     - Petabyte scale requiring horizontal scaling → NoSQL or natively distributed SQL (CockroachDB, Spanner).
 
+### 1.11 CRUD
+- CRUD stands for Create, Read, Update, and Delete. These are the four basic functions of persistent storage in database management and software design.
+
+
 ---
 
 ## Module 2: ER Model & Relational Design
