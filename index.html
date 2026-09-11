@@ -414,6 +414,68 @@
                 padding: 5rem 1.25rem 4rem;
             }
         }
+
+        /* Mobile Responsive Breakpoint */
+        @media (max-width: 768px) {
+            .mobile-header {
+                display: flex;
+            }
+
+            #sidebar {
+                transform: translateX(-100%);
+                top: 56px;
+            }
+
+            #sidebar.open {
+                transform: translateX(0);
+            }
+
+            #backdrop.open {
+                display: block;
+            }
+
+            #main-content {
+                margin-left: 0;
+                padding: 5rem 1.25rem 4rem;
+                width: 100%;
+                overflow-x: hidden;
+            }
+
+            #content {
+                max-width: 100%;
+                overflow-wrap: break-word;
+                word-break: break-word;
+            }
+
+            #content h1 {
+                font-size: 1.8rem;
+            }
+
+            #content h2 {
+                font-size: 1.4rem;
+            }
+
+            #content h3 {
+                font-size: 1.2rem;
+            }
+
+            table {
+                display: block;
+                max-width: 100%;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+
+            #content pre {
+                max-width: 100%;
+                overflow-x: auto;
+                white-space: pre;
+            }
+
+            #content code {
+                word-break: break-word;
+            }
+        }
     </style>
 </head>
 <body>
