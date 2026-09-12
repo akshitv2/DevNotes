@@ -1,6 +1,8 @@
 # Design Patterns
 
-Design patterns are typical, reusable solutions to commonly occurring software design problems. They fall into three main categories:
+Design patterns are typical, reusable solutions to commonly occurring software design problems. They fall into three
+main categories:
+
 * **Creational:** Object creation mechanisms that increase code flexibility and reuse.
 * **Structural:** Structures for assembling objects and classes into larger, flexible configurations.
 * **Behavioral:** Patterns concerned with algorithms and the assignment of responsibilities between objects.
@@ -10,42 +12,64 @@ Design patterns are typical, reusable solutions to commonly occurring software d
 ## Quick Reference
 
 ### Creational Patterns
-* **Singleton:** Restricts a class to a single instance while providing global access to it.
-* **Factory Method:** Provides an interface for creating objects, delegating instantiation logic to subclasses.
-* **Abstract Factory:** Creates families of related or dependent objects without specifying their concrete classes.
-* **Builder:** Constructs complex objects step-by-step, separating construction from representation.
-* **Prototype:** Creates new objects by cloning an existing configured instance.
+
+* **🔴[Singleton](#5-singleton-critical):** Restricts a class to a single instance while providing global access to it.
+* **🔴[Factory Method](#1-factory-method-critical):** Provides an interface for creating objects, delegating
+  instantiation logic to subclasses.
+* **🟠[Abstract Factory](#2-abstract-factory-critical):** Creates families of related or dependent objects without
+  specifying their concrete classes.
+* **🔴[Builder](#3-builder-moderate):** Constructs complex objects step-by-step, separating construction from
+  representation.
+* **🟡[Prototype](#4-prototype-fringe):** Creates new objects by cloning an existing configured instance.
 
 ### Structural Patterns
-* **Adapter:** Allows objects with incompatible interfaces to collaborate via a wrapper interface.
-* **Bridge:** Decouples an abstraction from its implementation so both can vary independently.
-* **Composite:** Treats individual objects and object compositions uniformly using a tree structure.
-* **Decorator:** Attaches additional responsibilities to an object dynamically without modifying its base code.
-* **Facade:** Offers a simplified, high-level interface to a complex system of classes or libraries.
-* **Flyweight:** Reduces memory footprint by sharing common parts of state across multiple objects.
-* **Proxy:** Provides a placeholder or gatekeeper to control access, caching, or logging for another object.
+
+* **🔴[Adapter](#1-adapter-critical):** Allows objects with incompatible interfaces to collaborate via a wrapper
+  interface.
+* **🟡[Bridge](#2-bridge-fringe):** Decouples an abstraction from its implementation so both can vary independently.
+* **🟠[Composite](#3-composite-moderate):** Treats individual objects and object compositions uniformly using a tree
+  structure.
+* **🟠[Decorator](#4-decorator-moderate):** Attaches additional responsibilities to an object dynamically without
+  modifying its base code.
+* **🟠[Facade](#5-facade-moderate):** Offers a simplified, high-level interface to a complex system of classes or
+  libraries.
+* **🟡[Flyweight](#6-flyweight-fringe):** Reduces memory footprint by sharing common parts of state across multiple
+  objects.
+* **🟠[Proxy](#7-proxy-moderate):** Provides a placeholder or gatekeeper to control access, caching, or logging for
+  another object.
 
 ### Behavioral Patterns
-* **Chain of Responsibility:** Passes a request along a chain of handlers until one processes it.
-* **Command:** Encapsulates a request as an object, enabling queuing, logging, and undo operations.
-* **Interpreter:** Evaluates language grammar or expressions for a defined representation.
-* **Iterator:** Sequentially accesses elements of a collection without exposing its underlying structure.
-* **Mediator:** Centralizes complex communications and control flow between interdependent objects.
-* **Memento:** Captures and restores an object's internal state without violating encapsulation.
-* **Observer:** Defines a subscription mechanism to notify multiple objects of state changes.
-* **State:** Permits an object to alter its behavior when its internal state changes.
-* **Strategy:** Encapsulates interchangeable algorithms behind a single interface to swap them at runtime.
-* **Template Method:** Defines the skeleton of an algorithm in a base class, delegating specific steps to subclasses.
-* **Visitor:** Separates an algorithm from the object structure on which it operates.
+
+* **🔴[Chain of Responsibility](#1-chain-of-responsibility-critical):** Passes a request along a chain of handlers until
+  one processes it.
+* **🔴[Command](#2-command-critical):** Encapsulates a request as an object packaging its own data as well as code,
+  enabling queuing, logging, and undo
+  operations.
+* **[Interpreter](#behavioral-patterns):** Evaluates language grammar or expressions for a defined representation.
+* **🔴[Iterator](#3-iterator-critical):** Sequentially accesses elements of a collection without exposing its underlying
+  structure.
+* **🟠[Mediator](#4-mediator-moderate):** Centralizes complex communications and control flow between interdependent
+  objects.
+* **🟡[Memento](#5-memento-fringe):** Captures and restores an object's internal state without violating encapsulation.
+* **🔴[Observer](#6-observer-critical):** Defines a subscription mechanism to notify multiple objects of state changes.
+* **[State](#7-state-critical):** Permits an object to alter its behavior when its internal state changes.
+* **[Strategy](#8-strategy-critical):** Encapsulates interchangeable algorithms behind a single interface to swap them
+  at runtime.
+* **[Template Method](#9-template-method-critical):** Defines the skeleton of an algorithm in a base class, delegating
+  specific steps to subclasses.
+* **[Visitor](#10-visitor-fringe):** Separates an algorithm from the object structure on which it operates.
 
 ---
 
 ## Creational Patterns
 
 ### 1. Factory Method `[CRITICAL]`
-Provides an interface for object creation in a superclass while allowing subclasses to alter the type of objects that are instantiated.  
 
-* **Key Concept:** Defers instantiation logic to concrete subclasses. The caller remains decoupled from the specific class implementation.
+Provides an interface for object creation in a superclass while allowing subclasses to alter the type of objects that
+are instantiated.
+
+* **Key Concept:** Defers instantiation logic to concrete subclasses. The caller remains decoupled from the specific
+  class implementation.
 
 ```java
 // Abstract Creator
@@ -82,33 +106,40 @@ class SquareFactory extends ShapeFactory {
 
 Enables the creation of families of related objects without specifying their concrete classes.  
 Think of it as a factory of factories operating across multiple dimensions (e.g., cross-platform UI suites).
-Essentially if you have related classes (like ui elements) and you want to enforce creation to a common category (mac os) then you employ this.
-
+Essentially if you have related classes (like ui elements) and you want to enforce creation to a common category (mac
+os) then you employ this.
 
 ```python
 from abc import ABC, abstractmethod
+
 
 # Abstract Products
 class Button(ABC):
     @abstractmethod
     def render(self) -> str: pass
 
+
 class Checkbox(ABC):
     @abstractmethod
     def render(self) -> str: pass
+
 
 # Concrete Products
 class WinButton(Button):
     def render(self) -> str: return "Render Windows Button"
 
+
 class WinCheckbox(Checkbox):
     def render(self) -> str: return "Render Windows Checkbox"
+
 
 class MacButton(Button):
     def render(self) -> str: return "Render macOS Button"
 
+
 class MacCheckbox(Checkbox):
     def render(self) -> str: return "Render macOS Checkbox"
+
 
 # Abstract Factory
 class GUIFactory(ABC):
@@ -118,14 +149,19 @@ class GUIFactory(ABC):
     @abstractmethod
     def create_checkbox(self) -> Checkbox: pass
 
+
 # Concrete Factories
 class WinFactory(GUIFactory):
     def create_button(self) -> Button: return WinButton()
+
     def create_checkbox(self) -> Checkbox: return WinCheckbox()
+
 
 class MacFactory(GUIFactory):
     def create_button(self) -> Button: return MacButton()
+
     def create_checkbox(self) -> Checkbox: return MacCheckbox()
+
 
 # Client Code
 def build_ui(factory: GUIFactory):
@@ -133,6 +169,7 @@ def build_ui(factory: GUIFactory):
     checkbox = factory.create_checkbox()
     print(button.render())
     print(checkbox.render())
+
 
 # Usage
 build_ui(WinFactory())
@@ -143,7 +180,8 @@ build_ui(WinFactory())
 
 ### 3. Builder `[MODERATE]`
 
-Separates complex object construction from its representation, allowing the same construction process to create different configurations step-by-step.
+Separates complex object construction from its representation, allowing the same construction process to create
+different configurations step-by-step.
 
 ```java
 public class Computer {
@@ -155,10 +193,21 @@ public class Computer {
     private boolean isGraphicsCardEnabled;
     private boolean isBluetoothEnabled;
 
-    public String getHDD() { return HDD; }
-    public String getRAM() { return RAM; }
-    public boolean isGraphicsCardEnabled() { return isGraphicsCardEnabled; }
-    public boolean isBluetoothEnabled() { return isBluetoothEnabled; }
+    public String getHDD() {
+        return HDD;
+    }
+
+    public String getRAM() {
+        return RAM;
+    }
+
+    public boolean isGraphicsCardEnabled() {
+        return isGraphicsCardEnabled;
+    }
+
+    public boolean isBluetoothEnabled() {
+        return isBluetoothEnabled;
+    }
 
     private Computer(ComputerBuilder builder) {
         this.HDD = builder.HDD;
@@ -215,9 +264,17 @@ abstract class Shape implements Cloneable {
 
     abstract void draw();
 
-    public String getType() { return type; }
-    public String getId() { return id; }
-    public void setId(String id) { this.id = id; }
+    public String getType() {
+        return type;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     @Override
     public Object clone() {
@@ -233,11 +290,13 @@ abstract class Shape implements Cloneable {
 
 // Concrete Prototype
 class Rectangle extends Shape {
-    public Rectangle() { type = "Rectangle"; }
+    public Rectangle() {
+        type = "Rectangle";
+    }
 
     @Override
-    public void draw() { 
-        System.out.println("Inside Rectangle::draw() method."); 
+    public void draw() {
+        System.out.println("Inside Rectangle::draw() method.");
     }
 }
 
@@ -274,7 +333,8 @@ public class DatabaseConnection {
 
 ### 1. Adapter `[CRITICAL]`
 
-Converts the interface of a class into another interface expected by the client. Enables incompatible interfaces to work together.
+Converts the interface of a class into another interface expected by the client. Enables incompatible interfaces to work
+together.
 
 ```java
 interface MediaPlayer {
@@ -310,15 +370,20 @@ class MediaAdapter implements MediaPlayer {
 
 ### 2. Bridge `[FRINGE]`
 
-Decouples a high-level abstraction from its low-level implementation, allowing both hierarchies to develop independently via delegation.
+Decouples a high-level abstraction from its low-level implementation, allowing both hierarchies to develop independently
+via delegation.
 
 ```java
 // Implementation Interface
 public interface Device {
     boolean isEnabled();
+
     void enable();
+
     void disable();
+
     void setVolume(int percent);
+
     int getVolume();
 }
 
@@ -327,11 +392,30 @@ public class Radio implements Device {
     private boolean on = false;
     private int volume = 30;
 
-    @Override public boolean isEnabled() { return on; }
-    @Override public void enable() { on = true; }
-    @Override public void disable() { on = false; }
-    @Override public void setVolume(int v) { this.volume = v; }
-    @Override public int getVolume() { return volume; }
+    @Override
+    public boolean isEnabled() {
+        return on;
+    }
+
+    @Override
+    public void enable() {
+        on = true;
+    }
+
+    @Override
+    public void disable() {
+        on = false;
+    }
+
+    @Override
+    public void setVolume(int v) {
+        this.volume = v;
+    }
+
+    @Override
+    public int getVolume() {
+        return volume;
+    }
 }
 
 // Abstraction
@@ -365,23 +449,36 @@ public class RemoteControl {
 
 ### 3. Composite `[MODERATE]`
 
-Composes objects into tree structures to represent part-whole hierarchies. Enables clients to treat individual objects and compositions uniformly.
+Composes objects into tree structures to represent part-whole hierarchies. Enables clients to treat individual objects
+and compositions uniformly.
 
 ```java
-interface Node { 
-    void print(); 
+interface Node {
+    void print();
 }
 
 class Leaf implements Node {
     private String name;
-    Leaf(String name) { this.name = name; }
-    public void print() { System.out.println(name); }
+
+    Leaf(String name) {
+        this.name = name;
+    }
+
+    public void print() {
+        System.out.println(name);
+    }
 }
 
 class Composite implements Node {
     private List<Node> children = new ArrayList<>();
-    void add(Node n) { children.add(n); }
-    public void print() { children.forEach(Node::print); }
+
+    void add(Node n) {
+        children.add(n);
+    }
+
+    public void print() {
+        children.forEach(Node::print);
+    }
 }
 
 // Usage
@@ -404,29 +501,60 @@ public class Main {
 
 ### 4. Decorator `[MODERATE]`
 
-Attaches additional responsibilities to an object dynamically. Provides a flexible alternative to subclassing for extending functionality.
+Attaches additional responsibilities to an object dynamically. Provides a flexible alternative to subclassing for
+extending functionality.
+
+- It might be better to use a builder when the order doesn't matter otherwise you end up with this
 
 ```java
-interface Coffee { 
-    double cost(); 
+Coffee drink = new SugarPump(
+        new SugarPump(
+                new PumpkinSpice(
+                        new SoyMilk(
+                                new NonFatBase(
+                                        new Espresso()
+                                )
+                        )
+                )
+        );
+```
+
+Useful here: `new BufferedReader(new GZIPInputStream(new FileInputStream(file))))`
+
+```java
+interface Coffee {
+    double cost();
 }
 
 class SimpleCoffee implements Coffee {
-    public double cost() { return 2.0; }
+    public double cost() {
+        return 2.0;
+    }
 }
 
 // Abstract Decorator
 abstract class CoffeeDecorator implements Coffee {
     protected Coffee coffee;
-    public CoffeeDecorator(Coffee c) { this.coffee = c; }
-    public double cost() { return coffee.cost(); }
+
+    public CoffeeDecorator(Coffee c) {
+        this.coffee = c;
+    }
+
+    public double cost() {
+        return coffee.cost();
+    }
 }
 
 // Concrete Decorator
 class Milk extends CoffeeDecorator {
-    public Milk(Coffee c) { super(c); }
+    public Milk(Coffee c) {
+        super(c);
+    }
+
     @Override
-    public double cost() { return super.cost() + 0.5; }
+    public double cost() {
+        return super.cost() + 0.5;
+    }
 }
 
 ```
@@ -439,8 +567,17 @@ Provides a simplified interface to a complex subsystem of classes, library, or f
 
 ```java
 // Subsystems
-class Audio { void on() { System.out.println("Audio on"); } }
-class Video { void on() { System.out.println("Video on"); } }
+class Audio {
+    void on() {
+        System.out.println("Audio on");
+    }
+}
+
+class Video {
+    void on() {
+        System.out.println("Video on");
+    }
+}
 
 // Facade
 class CinemaFacade {
@@ -466,7 +603,8 @@ public class Main {
 
 ### 6. Flyweight `[FRINGE]`
 
-Reduces memory usage by sharing common constant parts of state across multiple instances instead of keeping identical data inside each object.
+Reduces memory usage by sharing common constant parts of state across multiple instances instead of keeping identical
+data inside each object.
 
 ---
 
@@ -505,13 +643,15 @@ class Proxy implements Subject {
 
 ### 1. Chain of Responsibility `[CRITICAL]`
 
-Passes requests along a sequential chain of potential handlers until one processes the request. (e.g., Spring Security Filters).
+Passes requests along a sequential chain of potential handlers until one processes the request. (e.g., Spring Security
+Filters).
 
 ---
 
 ### 2. Command `[CRITICAL]`
 
-Encapsulates a request as an independent object, parameterizing clients with different requests, queueing executions, and enabling undo operations.
+Encapsulates a request as an independent object, parameterizing clients with different requests, queueing executions,
+and enabling undo operations.
 
 ```java
 // 1. Command Interface
@@ -521,21 +661,35 @@ interface Command {
 
 // 2. Receiver
 class Light {
-    void turnOn() { System.out.println("Light is ON"); }
+    void turnOn() {
+        System.out.println("Light is ON");
+    }
 }
 
 // 3. Concrete Command
 class LightOnCommand implements Command {
     private Light light;
-    public LightOnCommand(Light light) { this.light = light; }
-    public void execute() { light.turnOn(); }
+
+    public LightOnCommand(Light light) {
+        this.light = light;
+    }
+
+    public void execute() {
+        light.turnOn();
+    }
 }
 
 // 4. Invoker
 class RemoteControl {
     private Command slot;
-    public void setCommand(Command command) { slot = command; }
-    public void pressButton() { slot.execute(); }
+
+    public void setCommand(Command command) {
+        slot = command;
+    }
+
+    public void pressButton() {
+        slot.execute();
+    }
 }
 
 // Client
@@ -552,45 +706,49 @@ public class Main {
 
 ```
 
-* **Trade-off:** Decouples invokers from receivers but increases class proliferation (a separate class per command action).
+* **Trade-off:** Decouples invokers from receivers but increases class proliferation (a separate class per command
+  action).
 
 ---
 
 ### 3. Iterator `[CRITICAL]`
 
-Provides a uniform strategy to access elements of an aggregate collection sequentially without exposing its underlying internal representation.
+Provides a uniform strategy to access elements of an aggregate collection sequentially without exposing its underlying
+internal representation.
 
 ---
 
 ### 4. Mediator `[MODERATE]`
 
-Restricts direct communications between objects by forcing all collaboration to route through a single mediator component.
-
-| Direct Coupling (Before) | Centralized Mediator (After) |
-| --- | --- |
-|  |  |
+Restricts direct communications between objects by forcing all collaboration to route through a single mediator
+component thus removing N to N coupling, channeling flow of data through mediator
 
 ---
 
 ### 5. Memento `[FRINGE]`
 
-Captures and externalizes an object's internal state so that it can be restored later without violating encapsulation (used for undo operations).
+Captures and externalizes an object's internal state so that it can be restored later without violating encapsulation (
+used for undo operations).
+Basically you pass in a nested class which holds the Stack/Array of changes.
 
 ---
 
 ### 6. Observer `[CRITICAL]`
 
-Defines a one-to-many dependency relationship so that when one object changes state, all registered dependents are notified automatically (Publisher/Subscriber model).
+Defines a one-to-many dependency relationship so that when one object changes state, all registered dependents are
+notified automatically (Publisher/Subscriber model).
 
 * **Push Model:** Publisher forces state payloads out to all subscribers.
 * **Pull Model:** Publisher notifies subscribers, and subscribers pull data on demand.
-* **Note:** Unlike message queues operating asynchronously via polling, traditional standard Observers are temporally coupled (publisher and subscriber must execute concurrently).
+* **Note:** Unlike message queues operating asynchronously via polling, traditional standard Observers are temporally
+  coupled (publisher and subscriber must execute concurrently).
 
 ---
 
 ### 7. State `[CRITICAL]`
 
-Allows an object to alter its behavior when its internal state changes, making it appear as if the object changed its class. Replaces conditional statements (`if/else`, `switch`) with polymorphic state objects.
+Allows an object to alter its behavior when its internal state changes, making it appear as if the object changed its
+class. Replaces conditional statements (`if/else`, `switch`) with polymorphic state objects.
 
 ```java
 // State Interface
@@ -603,7 +761,7 @@ class OnState implements State {
     public void handle(LightSwitch context) {
         System.out.println("Turning light OFF.");
         context.setState(new OffState());
-    }  
+    }
 }
 
 class OffState implements State {
@@ -617,8 +775,13 @@ class OffState implements State {
 class LightSwitch {
     private State state = new OffState(); // Initial state
 
-    public void setState(State state) { this.state = state; }
-    public void press() { state.handle(this); }
+    public void setState(State state) {
+        this.state = state;
+    }
+
+    public void press() {
+        state.handle(this);
+    }
 
     public static void main(String[] args) {
         LightSwitch light = new LightSwitch();
@@ -629,7 +792,8 @@ class LightSwitch {
 
 ```
 
-* **Transition Ownership:** Transitions can reside either within **Concrete States** (self-transitioning) or within the **Context** class.
+* **Transition Ownership:** Transitions can reside either within **Concrete States** (self-transitioning) or within the
+  **Context** class.
 
 ---
 
@@ -684,7 +848,8 @@ public class Main {
 
 ### 9. Template Method `[CRITICAL]`
 
-Defines the invariant step framework of an algorithm in a base class method while allowing subclasses to override specific step implementations.
+Defines the invariant step framework of an algorithm in a base class method while allowing subclasses to override
+specific step implementations.
 
 ```java
 abstract class DataMiner {
@@ -696,15 +861,16 @@ abstract class DataMiner {
         closeFile();
     }
 
-    private void openFile() { 
-        System.out.println("Opening file..."); 
+    private void openFile() {
+        System.out.println("Opening file...");
     }
 
-    private void closeFile() { 
-        System.out.println("Closing file..."); 
+    private void closeFile() {
+        System.out.println("Closing file...");
     }
 
     protected abstract void extractData();
+
     protected abstract void parseData();
 }
 
