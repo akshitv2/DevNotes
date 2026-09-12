@@ -13,7 +13,7 @@ title: Java
 * exec $\rightarrow$ interpreter, jit , gc $\rightarrow$ g1, zgc
 
 
-* oops $\rightarrow$ 4 pillars $\rightarrow$ encap. , inheritance, polymorphism , abstraction
+* OOPS $\rightarrow$ 4 pillars $\rightarrow$ encap. , inheritance, polymorphism , abstraction
 * primitives & wrappers, autoboxing - unboxing .
 * final keyword , abstract class vs interface
 * inheritance , constructor , this & super , access modifiers

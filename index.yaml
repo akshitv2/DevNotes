@@ -54,5 +54,6 @@ nav:
   - Revision & Tasks:
       - Revision:
           - Java Revision: Notes/Revise/Java.md
+          - System Design: Notes/Revise/SystemDesign.md
       - Tasks:
           - Todo List: Notes/Todo.md

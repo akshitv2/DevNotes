@@ -52,12 +52,12 @@ main categories:
   objects.
 * **🟡[Memento](#5-memento-fringe):** Captures and restores an object's internal state without violating encapsulation.
 * **🔴[Observer](#6-observer-critical):** Defines a subscription mechanism to notify multiple objects of state changes.
-* **[State](#7-state-critical):** Permits an object to alter its behavior when its internal state changes.
-* **[Strategy](#8-strategy-critical):** Encapsulates interchangeable algorithms behind a single interface to swap them
+* **🔴[State](#7-state-critical):** Permits an object to alter its behavior when its internal state changes.
+* **🔴[Strategy](#8-strategy-critical):** Encapsulates interchangeable algorithms behind a single interface to swap them
   at runtime.
-* **[Template Method](#9-template-method-critical):** Defines the skeleton of an algorithm in a base class, delegating
+* **🔴[Template Method](#9-template-method-critical):** Defines the skeleton of an algorithm in a base class, delegating
   specific steps to subclasses.
-* **[Visitor](#10-visitor-fringe):** Separates an algorithm from the object structure on which it operates.
+* **🟡[Visitor](#10-visitor-fringe):** Separates an algorithm from the object structure on which it operates.
 
 ---
 
@@ -749,6 +749,7 @@ notified automatically (Publisher/Subscriber model).
 
 Allows an object to alter its behavior when its internal state changes, making it appear as if the object changed its
 class. Replaces conditional statements (`if/else`, `switch`) with polymorphic state objects.
+Essentially it instantiates each state and then switches between them on each call.
 
 ```java
 // State Interface
