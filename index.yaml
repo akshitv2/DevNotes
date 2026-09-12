@@ -44,6 +44,9 @@ nav:
       - Tools:
             - Kafka: Notes/Tools/Kafka.md
             - Netty: Notes/Tools/Netty.md
+  - AI:
+      - Prompt Engineering: Notes/AI/PromptEngineering.md
+      - Claude Code: Notes/AI/ClaudeCode.md
   - Miscellaneous:
       - From Banking to Big Tech: Notes/Misc/BigTechTopics.md
       - Prompt Engineering: Notes/Misc/PromptEngineering.md
