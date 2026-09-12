@@ -693,53 +693,66 @@
     }
 
     // 5. Fetch and Render Markdown Content or Generated Home
-    async function handleRoute() {
-        const hashPath = window.location.hash.replace(/^#\/?/, '');
+async function handleRoute() {
+    const rawHash = window.location.hash.replace(/^#\/?/, '');
 
-        // Render home index generated from YAML if path is empty
-        if (!hashPath) {
-            closeMobileMenu();
-            renderGeneratedIndex();
-            window.scrollTo(0, 0);
-            return;
-        }
-
-        // Update active links
-        document.querySelectorAll('#nav-tree a').forEach(a => {
-            if (a.dataset.path === hashPath) {
-                a.classList.add('active');
-                // Expand parent details element for current active link
-                let parent = a.closest('details');
-                while (parent) {
-                    parent.open = true;
-                    parent = parent.parentElement.closest('details');
-                }
-            } else {
-                a.classList.remove('active');
-            }
-        });
-
-        // Close mobile menu on navigate
+    // Render home index generated from YAML if path is empty
+    if (!rawHash) {
         closeMobileMenu();
+        renderGeneratedIndex();
+        window.scrollTo(0, 0);
+        return;
+    }
 
-        // Fetch and render .md file
+    // Split route path from anchor link fragment
+    const [hashPath, anchorId] = rawHash.split('#');
+
+    // Update active links
+    document.querySelectorAll('#nav-tree a').forEach(a => {
+        if (a.dataset.path === hashPath) {
+            a.classList.add('active');
+            let parent = a.closest('details');
+            while (parent) {
+                parent.open = true;
+                parent = parent.parentElement.closest('details');
+            }
+        } else {
+            a.classList.remove('active');
+        }
+    });
+
+    closeMobileMenu();
+
+    const contentEl = document.getElementById('content');
+
+    // Fetch and render markdown if navigating to a new page
+    if (contentEl.dataset.currentPath !== hashPath) {
         try {
             const res = await fetch(hashPath);
             if (!res.ok) throw new Error(`File not found: ${hashPath}`);
             let markdown = await res.text();
 
-            // Strip YAML front matter metadata header if present
             markdown = markdown.replace(/^---\r?\n[\s\S]*?\r?\n---\r?\n?/, '');
 
-            const contentEl = document.getElementById('content');
-
-            // Parse markdown and rewrite image paths relative to current .md file path
             contentEl.innerHTML = marked.parse(markdown, {
                 walkTokens(token) {
                     if (token.type === 'image' && token.href) {
                         token.href = resolveRelativePath(hashPath, token.href);
                     }
+                    // Rewrite internal anchor links to include current page path
+                    if (token.type === 'link' && token.href && token.href.startsWith('#')) {
+                        token.href = `#/${hashPath}${token.href}`;
+                    }
                 }
+            });
+
+            // Auto-generate IDs on headings for anchor links
+            contentEl.querySelectorAll('h1, h2, h3, h4, h5, h6').forEach(heading => {
+                heading.id = heading.textContent
+                    .toLowerCase()
+                    .replace(/[^\w\s-]/g, '')
+                    .trim()
+                    .replace(/\s+/g, '-');
             });
 
             // Highlight code blocks
@@ -747,15 +760,28 @@
                 hljs.highlightElement(block);
             });
 
-            // Scroll main area to top
-            window.scrollTo(0, 0);
+            contentEl.dataset.currentPath = hashPath;
         } catch (err) {
             document.getElementById('content').innerHTML = `
           <h1>404 - Not Found</h1>
           <p>Unable to load document at <code>${hashPath}</code>.</p>
         `;
+            delete contentEl.dataset.currentPath;
+            return;
         }
     }
+
+    // Scroll to internal anchor or top of page
+    if (anchorId) {
+        const targetElement = document.getElementById(anchorId);
+        if (targetElement) {
+            targetElement.scrollIntoView({ behavior: 'smooth' });
+            return;
+        }
+    }
+
+    window.scrollTo(0, 0);
+}
 
     // 6. Mobile Drawer Interactions
     const menuToggle = document.getElementById('menu-toggle');

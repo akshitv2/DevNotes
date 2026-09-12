@@ -14,4 +14,6 @@ If you want to add more topics or notes, feel free to submit a pull request.
 
 https://akshitv2.github.io/DevNotes/
 
-bundle exec jekyll serve
+```shell
+python -m http.server 8000 --bind 0.0.0.0
+```
