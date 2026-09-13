@@ -45,8 +45,8 @@ nav:
       - Important Java Libraries: Notes/Tools/JavaImportantLibs.md
       - Software List: Notes/Tools/Softwares.md
       - Tools:
-            - Kafka: Notes/Tools/Kafka.md
-            - Netty: Notes/Tools/Netty.md
+          - Kafka: Notes/Tools/Kafka.md
+          - Netty: Notes/Tools/Netty.md
   - AI:
       - Prompt Engineering: Notes/AI/PromptEngineering.md
       - Claude Code: Notes/AI/ClaudeCode.md
