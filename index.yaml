@@ -4,7 +4,6 @@ nav:
   - Database Management Systems:
       - DBMS Notes: Notes/DBMS/Content.md
       - Implementations: Notes/DBMS/Impls.md
-      - DBMS Todo: Notes/DBMS/Todo.md
   - Computer Networks:
       - Networking Theory: Notes/Networks/Networking-notes.md
   - System Design:

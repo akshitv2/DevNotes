@@ -10,8 +10,12 @@ layout: default
 |               | Multi-Version Concurrency Control (MVCC)                                                         |
 |               | ANSI SQL Isolation Levels                                                                        |
 |               | handling partial failures and retries                                                            |
+|               | Replication Topologies                                                                           |
+|               | Zero downtime database migrations                                                                |
+|               | Indexes: Clustered vs non, Composite/Compound                                                                      |
+|               |  Query Execution Plans                                                                                                                  |
 | Spring        | Dispatcher Servlet                                                                               |
-| System Design |                                                                                  |
+| System Design |                                                                                                  |
 |               | Server-to-Server Real-Time: gRPC vs. Webhooks vs. Message Queues                                 |
 |               | Advanced Event-Driven Concepts: Event Sourcing & CQRS                                            |
 |               | Distributed IDs: Generating unique, time-sorted IDs at scale (e.g., Twitter Snowflake algorithm) |
@@ -25,6 +29,5 @@ layout: default
 |               | blob storage                                                                                     |
 |               | Bloom filters                                                                                    |
 |               | distributed locking                                                                              |
-|               |                                                                                                  |
-| Tools         | Kafka                                                                                            |
+| AI            | Cursor                                                                                           |
 | Misc          | AWS                                                                                              |

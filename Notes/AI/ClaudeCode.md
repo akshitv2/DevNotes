@@ -4,18 +4,14 @@
 
 ## 1. What Claude Code Is
 
-Claude Code is an agentic coding tool that reads your codebase, edits files, runs shell commands, and integrates with
-your dev tools (git, GitHub/GitLab, MCP servers, browsers). It's not a single app — it's one underlying engine reachable
-from many **surfaces**:
+Agentic coding tool that reads your codebase, edits files, runs shell commands, and integrates with dev tools (git,
+GitHub/GitLab, MCP servers, browsers). Provides following interfaces:
 
 - **Terminal CLI** — the full-featured original, `claude` command
-- **VS Code extension** (and Cursor)
-- **JetBrains plugin** (IntelliJ, PyCharm, WebStorm, etc.)
+- **VS Code extension/JetBrains plugin/Cursor**
 - **Desktop app** (macOS, Windows, Linux beta) — visual diffs, parallel sessions, scheduling
 - **Web** — claude.ai/code, run tasks with no local setup, works from mobile too
 - **Slack** (`@Claude` mentions), **GitHub Actions**, **GitLab CI/CD**, **Chrome extension** (browser automation)
-
-All surfaces share the same repo's `CLAUDE.md`, settings, and MCP servers — your config travels with you.
 
 ### Core capabilities
 
@@ -26,101 +22,32 @@ All surfaces share the same repo's `CLAUDE.md`, settings, and MCP servers — yo
 - Connect external tools via **MCP** (Jira, Slack, databases, Google Drive, etc.)
 - Customize via **CLAUDE.md**, **auto memory**, **skills**, **hooks**
 - Run **subagents** in parallel; **agent teams**; the **Agent SDK** for fully custom agents
-- **Pipe/script it**: `git log | claude -p "summarize"`, use in CI, chain with Unix tools
 - **Schedule** recurring work: Routines (cloud), Desktop scheduled tasks, `/loop`
-- Work from anywhere: Remote Control (phone/browser → local session), Dispatch, teleport between web/terminal
 
 ---
-
-## 2. Installation
-
-### Recommended: native installer (auto-updates in background)
-
-```bash
-# macOS / Linux / WSL
-curl -fsSL https://claude.ai/install.sh | bash
-
-# Windows PowerShell
-irm https://claude.ai/install.ps1 | iex
-
-# Windows CMD
-curl -fsSL https://claude.ai/install.cmd -o install.cmd && install.cmd && del install.cmd
-```
-
-### Alternatives (do **not** auto-update — you must run `brew upgrade` / `winget upgrade` yourself)
-
-```bash
-brew install --cask claude-code          # macOS, tracks "stable" (~1 week behind)
-brew install --cask claude-code@latest   # macOS, tracks latest release
-winget install Anthropic.ClaudeCode      # Windows
-```
-
-Also available via apt/dnf/apk on Linux, and `npm install -g @anthropic-ai/claude-code` (npm install is now considered
-legacy/deprecated in favor of the native installer).
-
-Then:
-
-```bash
-cd your-project
-claude
-```
-
-First run prompts login (or approves `ANTHROPIC_API_KEY` if set).
-
-**Git for Windows** is recommended on native Windows so Claude Code can use the Bash tool; without it, Claude Code falls
-back to the PowerShell tool. WSL doesn't need this.
-
-### System requirements
-
-- ~512 MB free memory just to *install*; running comfortably needs more (docs recommend ≥4 GB RAM for the machine in
-  general — low-memory VPS installs commonly get OOM-killed, see Problem list below).
-
----
-
-## 3. Real Problem: Installation & Login Issues
-
-This is the #1 source of early friction. Match your symptom:
-
-| Symptom                                                                | Cause                                                                                                        | Fix                                                                                                                                                                                                                                               |
-|------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `command not found: claude` after install                              | `~/.local/bin` (macOS/Linux) or `%USERPROFILE%\.local\bin` (Windows) not on PATH                             | Add to shell profile (`~/.zshrc`, `~/.bashrc`) and `source` it, or add to Windows User PATH via env var editor. Open a **new** terminal.                                                                                                          |
-| `syntax error near unexpected token '<'` or PowerShell parses HTML/CSS | The install URL returned an HTML error page instead of the script (region block, proxy, or transient outage) | Check `curl -sI https://downloads.claude.ai/claude-code-releases/latest` — 403 = region/proxy block, 5xx = transient. Try `brew install --cask claude-code` or `winget install Anthropic.ClaudeCode` as a fallback, or retry after a few minutes. |
-| `curl: (56) Failure writing output to destination`                     | Interrupted download during `curl \| bash`                                                                   | Same diagnostic as above; retry, or use Homebrew/WinGet.                                                                                                                                                                                          |
-| `'irm' is not recognized` / `&&` not valid / `-fsSL` param not found   | You ran the wrong platform's install command in the wrong shell (CMD vs PowerShell vs bash)                  | Match command to shell: PowerShell → `irm ...                                                                                                                                                                                                     | iex`; CMD → the `.cmd` one-liner; never mix. |
-| `running scripts is disabled on this system` (PSSecurityException)     | PowerShell execution policy blocking npm's `.ps1` shims                                                      | `Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser`, or just use the native PowerShell installer instead of npm.                                                                                                               |
-| Install `Killed` / exit 137 on a small Linux VPS                       | OOM killer — install needs ~512MB free                                                                       | Add swap: `fallocate -l 2G /swapfile && chmod 600 /swapfile && mkswap /swapfile && swapon /swapfile`, then retry.                                                                                                                                 |
-| Install hangs in Docker                                                | Installing as root from `/` makes the installer scan the whole filesystem                                    | Add `WORKDIR /tmp` before the install `RUN` line in your Dockerfile; also raise Docker Desktop's memory limit.                                                                                                                                    |
-| TLS/SSL errors, `unable to get local issuer certificate`               | Corporate proxy doing TLS inspection                                                                         | `curl --cacert /path/to/corporate-ca.pem -fsSL https://claude.ai/install.sh                                                                                                                                                                       | bash`; afterwards set `NODE_EXTRA_CA_CERTS=/path/to/ca.pem` so Claude Code's own API calls trust it. |
-| `Error: claude native binary not installed` after npm install          | `--ignore-scripts`/`--omit=optional` skipped downloading the platform-specific binary                        | Remove those flags and reinstall, or run `node node_modules/@anthropic-ai/claude-code/install.cjs` manually.                                                                                                                                      |
-| `Illegal instruction`                                                  | CPU lacks AVX (old/virtualized CPU) or wrong architecture binary                                             | Architecture mismatch → reinstall correct arch. Missing AVX → no workaround yet (pre-2013 CPUs / some hypervisors); check `grep -m1 -ow avx /proc/cpuinfo`.                                                                                       |
-| `dyld: cannot load` on macOS                                           | macOS version too old (<13.0)                                                                                | Update macOS; Homebrew won't fix this since it's the same binary.                                                                                                                                                                                 |
-| `Exec format error` on WSL1                                            | Known WSL1 loader regression                                                                                 | Convert to WSL2: `wsl --set-version <Distro> 2` (recommended), or wrap the binary call through `ld-linux` in `.bashrc`.                                                                                                                           |
-| **Login loop / 403 after login**                                       | Expired OAuth token, stale `ANTHROPIC_API_KEY` env var overriding subscription, or clock skew                | `/logout` then `/login`. Check `unset ANTHROPIC_API_KEY` if you have an old key lying around in your shell profile — it silently overrides subscription auth. Run `/status` to see which auth method is active.                                   |
-| OAuth login fails over SSH/WSL2/containers                             | Browser redirect can't reach the local callback server                                                       | Paste the login code shown after signing in, or set `BROWSER=/mnt/c/.../chrome.exe`, or use `claude auth login` which reads the code from stdin.                                                                                                  |
-| Keychain-related repeated logins (macOS)                               | Keychain locked/out of sync, so login falls back to plaintext file                                           | `claude doctor` flags this; unlock keychain (`security unlock-keychain`), resync its password if needed, then `/logout` + `/login` to move creds back into the encrypted store.                                                                   |
 
 General diagnostic tool: **`claude doctor`** — checks PATH, binary integrity, keychain, shell config, and more in one
 shot.
 
 ---
 
-## 4. CLAUDE.md and Memory (the most important customization mechanism)
+## 2. CLAUDE.md and Memory (the most important customization mechanism)
 
 Every session starts with a **fresh context window**. Two mechanisms carry knowledge across sessions:
 
 ### CLAUDE.md (you write it)
 
-A markdown file with persistent instructions, loaded at the start of every session as a **user message** (not baked into
+Markdown file with persistent instructions, loaded at the start of every session as a **user message** (not baked into
 the system prompt — so it's followed, not enforced).
 
 **Locations, in load order (broad → specific; later = read last = weighted more):**
-| Scope | Location | Shared with |
-|---|---|---|
-| Managed/org policy | `/Library/Application Support/ClaudeCode/CLAUDE.md` (mac), `/etc/claude-code/CLAUDE.md` (
-Linux/WSL), `C:\Program Files\ClaudeCode\CLAUDE.md` (Win) | Everyone on the machine, cannot be excluded |
-| User | `~/.claude/CLAUDE.md` | Just you, all projects |
-| Project | `./CLAUDE.md` or `./.claude/CLAUDE.md` | Team, via git |
-| Local | `./CLAUDE.local.md` | Just you, this project — gitignore it |
+
+| Scope                                               | Location                                    | Shared with                           |
+|-----------------------------------------------------|---------------------------------------------|---------------------------------------|
+| Managed/org policy Linux/WSL/C: (Program files Win) | Everyone on the machine, cannot be excluded |                                       |
+| User                                                | `~/.claude/CLAUDE.md`                       | Just you, all projects                |
+| Project                                             | `./CLAUDE.md` or `./.claude/CLAUDE.md`      | Team, via git                         |
+| Local                                               | `./CLAUDE.local.md`                         | Just you, this project — gitignore it |
 
 Run **`/init`** to auto-generate a starting CLAUDE.md by having Claude analyze the codebase (build commands,
 conventions, structure). It won't clobber an existing file — it proposes edits instead.

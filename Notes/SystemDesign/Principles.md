@@ -21,9 +21,14 @@
     - i.e. bean wiring in spring (Dependency injection is an impl of this design)
 
 ### 2. CUPID Principles
+
 Created as a counter to overly technical principles of SOLID which are rarely well applicable to enterprise code
-1. C – Composable: Plays well with others. Code should have a small surface area, reveal its intent clearly, and minimize dependencies so it can easily combine with other components.
-2. U – Unix philosophy: Does one thing well. Focuses on simple, consistent models with a clear single purpose. 
-3. P – Predictable: Does what you expect, consistently. The code should be deterministic, robust, runtime-observable, and free of surprising side effects.  
-4. I – Idiomatic: Feels natural. Follows standard language idioms and local team conventions to reduce cognitive load.  
-5. D – Domain-based: The code structure and naming reflect the problem domain. Uses ubiquitous domain language and aligns boundaries with real-world business concepts.  
+
+1. C – Composable: Plays well with others. Code should have a small surface area, reveal its intent clearly, and
+   minimize dependencies so it can easily combine with other components.
+2. U – Unix philosophy: Does one thing well. Focuses on simple, consistent models with a clear single purpose.
+3. P – Predictable: Does what you expect, consistently. The code should be deterministic, robust, runtime-observable,
+   and free of surprising side effects.
+4. I – Idiomatic: Feels natural. Follows standard language idioms and local team conventions to reduce cognitive load.
+5. D – Domain-based: The code structure and naming reflect the problem domain. Uses ubiquitous domain language and
+   aligns boundaries with real-world business concepts.  
