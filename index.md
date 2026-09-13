@@ -1,0 +1,61 @@
+# Dev Notes Index:
+
+- Database Management Systems:
+    - [DBMS Notes](Notes/DBMS/Content.md)
+    - [Implementations](Notes/DBMS/Impls.md) 
+    - [DBMS Todo](Notes/DBMS/Todo.md)
+- Computer Networks:
+    - [Networking Theory](Notes/Networks/Networking-notes.md)
+- System Design:
+    - [Principles](Notes/SystemDesign/Principles.md)
+    - [Communication Protocols](Notes/SystemDesign/CommunicationProtocols.md)
+    - [Design Patterns](Notes/SystemDesign/DesignPatterns.md)
+    - [Operating Systems](Notes/SystemDesign/OS.md)
+    - [Components](Notes/SystemDesign/Components.md)
+    - [System Designs](Notes/SystemDesign/Designs.md)
+    - [Interview Problems](Notes/SystemDesign/Problems.md)
+- Security:
+    - [Security Notes](Notes/Security/SecurityNotes.md)
+- Data Structures & Algorithms:)
+    - Theory & Topics:
+        - [DSA Theory Notes](Notes/DSA/Theory.md)
+        - [Interview Topics](Notes/DSA/InterviewTopics.md)
+        - [Dynamic Programming](Notes/DSA/DynamicProgramming.md)
+    - Problem Sets:)
+        - [GeeksForGeeks Problems](Notes/DSA/Problems/GFGProblems.md)
+        - [Important Problems](Notes/DSA/Problems/ImportantProblems.md)
+        - [LeetCode Problems](Notes/DSA/Problems/LeetCodeProblems.md)
+- Java & Spring Framework:
+    - Java:
+        - [Overview & Interview Prep](Notes/Java/Java_Overview.md)
+        - [Java Features](Notes/Java/Features.md)
+        - [Threading & Parallelization](Notes/Java/Parallelization.md)
+        - [Topic Breakdown](Notes/Java/JavaTopics.md)
+    - Spring Ecosystem:
+        - [Spring Basics](Notes/Spring/Spring.md)
+        - [Spring Boot](Notes/Spring/SpringBoot.md)
+        - [Spring Boot Starters](Notes/Spring/Starters.md)
+        - [Libraries](Notes/Spring/Libraries.md)
+        - [Interview Questions](Notes/Spring/InterviewQuestions.md)
+- Tools & Utilities:
+    - [Important Java Libraries](Notes/Tools/JavaImportantLibs.md)
+    - [Software List](Notes/Tools/Softwares.md)
+    - Tools:
+      - [Kafka](Notes/Tools/Kafka.md)
+      - [Netty](Notes/Tools/Netty.md)
+- AI:
+    - [Prompt Engineering](Notes/AI/PromptEngineering.md)
+    - [Claude Code](Notes/AI/ClaudeCode.md)
+- Miscellaneous:
+    - [From Banking to Big Tech](Notes/Misc/BigTechTopics.md)
+    - [Prompt Engineering](Notes/Misc/PromptEngineering.md)
+- Book Notes & Guides:
+    - [Designing Data-Intensive Applications](Notes/Books/DesigningDataIntensiveApplications.md)
+    - [System Design Interview Guide](Notes/Books/SystemDesignInterviewGuide.md)
+    - [Transactions](Notes/Books/Notes.md)
+- Revision & Tasks:
+    - Revision:
+        - [Java Revision](Notes/Revise/Java.md)
+        - [System Design](Notes/Revise/SystemDesign.md)
+    - Tasks:
+        - [Todo List](Notes/Todo.md)
