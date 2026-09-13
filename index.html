@@ -739,9 +739,15 @@ async function handleRoute() {
                     if (token.type === 'image' && token.href) {
                         token.href = resolveRelativePath(hashPath, token.href);
                     }
-                    // Rewrite internal anchor links to include current page path
-                    if (token.type === 'link' && token.href && token.href.startsWith('#')) {
-                        token.href = `#/${hashPath}${token.href}`;
+                    if (token.type === 'link' && token.href) {
+                        if (token.href.startsWith('#')) {
+                            // Same-page anchor links
+                            token.href = `#/${hashPath}${token.href}`;
+                        } else if (!/^(?:[a-z]+:|\/\/|\/)/i.test(token.href)) {
+                            // Relative links to other Markdown files
+                            const resolved = resolveRelativePath(hashPath, token.href);
+                            token.href = `#/${resolved}`;
+                        }
                     }
                 }
             });
