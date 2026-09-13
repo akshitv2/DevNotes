@@ -25,18 +25,22 @@ nav:
           - GeeksForGeeks Problems: Notes/DSA/Problems/GFGProblems.md
           - Important Problems: Notes/DSA/Problems/ImportantProblems.md
           - LeetCode Problems: Notes/DSA/Problems/LeetCodeProblems.md
+      - Competitive Programming:
+          - Number Theory: Notes/Organize/CompetitiveCoding/NumberTheory.md
+          - General CP: Notes/Organize/CompetitiveCoding/CompetitiveCoding.md
+          - Collections: Notes/Organize/CompetitiveCoding/Collections.md
+      - Miscellaneous DSA Topics: Notes/Organize/Topics/Topics.md
   - Java & Spring Framework:
-      - Java:
-          - Overview & Interview Prep: Notes/Java/Java_Overview.md
-          - Java Features: Notes/Java/Features.md
-          - Threading & Parallelization: Notes/Java/Parallelization.md
-          - Topic Breakdown: Notes/Java/JavaTopics.md
-      - Spring Ecosystem:
-          - Spring Basics: Notes/Spring/Spring.md
-          - Spring Boot: Notes/Spring/SpringBoot.md
-          - Spring Boot Starters: Notes/Spring/Starters.md
-          - Libraries: Notes/Spring/Libraries.md
-          - Interview Questions: Notes/Spring/InterviewQuestions.md
+      - Java Overview: Notes/Java/1_Java_Overview.md
+      - Java Features: Notes/Java/2_Features.md
+      - Threading & Parallelization: Notes/Java/3_Parallelization.md
+      - Java Topics: Notes/Java/JavaTopics.md
+  - Spring Ecosystem:
+      - Spring Basics: Notes/Spring/Spring.md
+      - Spring Boot: Notes/Spring/SpringBoot.md
+      - Spring Boot Starters: Notes/Spring/Starters.md
+      - Spring Libraries: Notes/Spring/Libraries.md
+      - Interview Questions: Notes/Spring/InterviewQuestions.md
   - Tools & Utilities:
       - Important Java Libraries: Notes/Tools/JavaImportantLibs.md
       - Software List: Notes/Tools/Softwares.md
