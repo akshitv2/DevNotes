@@ -7,18 +7,89 @@ title: Java Overview
 
 # Java Interview Preparation Notes
 
+## Table of Contents
+
+- [1. Java Basics & Fundamentals](#1-java-basics--fundamentals)
+    - [1.1 Java Platform Overview](#11-java-platform-overview)
+    - [1.2 Compilation & Execution Flow](#12-compilation--execution-flow)
+    - [1.3 Data Types](#13-data-types)
+    - [1.4 Variables & Literals](#14-variables--literals)
+    - [1.5 Operators & Control Flow](#15-operators--control-flow)
+- [2. Object-Oriented Programming (OOP)](#2-object-oriented-programming-oop)
+    - [2.1 Four Pillars](#21-four-pillars)
+    - [2.2 Abstract Class vs Interface](#22-abstract-class-vs-interface)
+    - [2.2.1 Inheritance](#221-inheritance)
+    - [2.3 Constructors](#23-constructors)
+    - [2.4 `this` vs `super`](#24-this-vs-super)
+    - [2.5 Access Modifiers](#25-access-modifiers)
+    - [2.6 `static` Keyword](#26-static-keyword)
+    - [2.7 `final` Keyword](#27-final-keyword)
+    - [2.8 Object Class Methods](#28-object-class-methods)
+    - [2.9 Object Cloning](#29-object-cloning)
+- [3. Strings in Java](#3-strings-in-java)
+    - [3.1 String Immutability](#31-string-immutability)
+    - [3.2 String Pool (String Intern Pool)](#32-string-pool-string-intern-pool)
+    - [3.3 String vs StringBuilder vs StringBuffer](#33-string-vs-stringbuilder-vs-stringbuffer)
+    - [3.4 Common String Methods](#34-common-string-methods)
+- [4. Exception Handling](#4-exception-handling)
+    - [4.1 Exception Hierarchy](#41-exception-hierarchy)
+    - [4.2 Checked vs Unchecked](#42-checked-vs-unchecked)
+    - [4.3 try-catch-finally](#43-try-catch-finally)
+    - [4.4 Custom Exceptions](#44-custom-exceptions)
+    - [4.5 Exception Handling Best Practices](#45-exception-handling-best-practices)
+- [5. Collections Framework](#5-collections-framework)
+    - [5.1 Hierarchy Overview](#51-hierarchy-overview)
+    - [5.2 List Implementations](#52-list-implementations)
+    - [5.3 Set Implementations](#53-set-implementations)
+    - [5.4 Map Implementations](#54-map-implementations)
+    - [5.5 Iterators](#55-iterators)
+    - [5.6 Comparable vs Comparator](#56-comparable-vs-comparator)
+    - [5.7 Queue/Deque/Stack](#57-queuedeuestack)
+    - [5.8 Collections Utility Class](#58-collections-utility-class)
+- [6. Generics](#6-generics)
+- [7. Multithreading & Concurrency](#73-synchronization)
+    - [7.3 Synchronization](#73-synchronization)
+    - [7.4 volatile Keyword](#74-volatile-keyword)
+    - [7.5 java.util.concurrent Package](#75-javautilconcurrent-package)
+    - [7.6 Thread Safety Approaches](#76-thread-safety-approaches)
+- [8. Java Memory Management & JVM Internals](#8-java-memory-management--jvm-internals)
+    - [8.1 JVM Memory Areas](#81-jvm-memory-areas)
+    - [8.2 Garbage Collection (GC)](#82-garbage-collection-gc)
+    - [8.3 Reference Types](#83-reference-types)
+- [9. Java 8+ Features (Very Commonly Asked)](#9-java-8-features-very-commonly-asked)
+    - [9.1 Lambda Expressions](#91-lambda-expressions)
+    - [9.2 Functional Interfaces](#92-functional-interfaces)
+    - [9.3 Streams API](#93-streams-api)
+    - [9.4 Optional](#94-optional)
+    - [9.5 Default & Static Methods in Interfaces](#95-default--static-methods-in-interfaces)
+    - [9.6 Method References](#96-method-references)
+    - [9.7 Date/Time API (java.time)](#97-datetime-api-javatime)
+    - [9.8 Later Java Version Highlights (Often Asked in "What's New" Rounds)](#98-later-java-version-highlights-often-asked-in-whats-new-rounds)
+- [10. Design Patterns (Commonly Asked in Java Interviews)](#10-design-patterns-commonly-asked-in-java-interviews)
+    - [10.1 Creational](#101-creational)
+    - [10.2 Structural](#102-structural)
+    - [10.3 Behavioral](#103-behavioral)
+- [11. I/O & Serialization](#11-io--serialization)
+    - [11.1 I/O Streams](#111-io-streams)
+    - [11.2 Serialization](#112-serialization)
+- [12. Miscellaneous but Frequently Asked Topics](#12-miscellaneous-but-frequently-asked-topics)
+- [Suggested Study Order](#suggested-study-order)
+- [History](#history)
+    - [Phases](#phases)
+    - [Features Added in Versions](#features-added-in-versions)
+
 ---
 
 ## 1. Java Basics & Fundamentals
 
 ### 1.1 Java Platform Overview
 
-- **JDK (Java Development Kit)**: Contains JRE + development tools (javac, javadoc, debugger). Can compile java code
-- **JRE (Java Runtime Environment)**: Contains JVM + core libraries needed to run Java apps. (All System, Object Classes
-  are in these libs which are hardcoded and required by java to run)
-- **JVM (Java Virtual Machine)**: Executes bytecode; provides platform independence ("Write Once, Run Anywhere").
-- **JIT (Just-In-Time Compiler)**: Part of JVM; compiles hot bytecode paths to native machine code at runtime for
-  performance.
+**JDK (Java Development Kit)** Contains JRE + development tools (javac, javadoc, debugger). Can compile java code  
+**JRE (Java Runtime Environment)**: Contains JVM + core libraries needed to run Java apps. (All System, Object Classes
+are in these libs which are hardcoded and required by java to run)  
+**JVM (Java Virtual Machine)**: Executes bytecode; provides platform independence ("Write Once, Run Anywhere").  
+**JIT (Just-In-Time Compiler)**: Part of JVM; compiles hot bytecode paths to native machine code at runtime for
+performance.
 
 ### Components of JVM:
 
@@ -57,10 +128,10 @@ title: Java Overview
 3. **Execution Engine**:  
    Central component of the JVM that communicates with the underlying OS and hardware to execute the bytecode.  
    Composed of:
-    - Interpreter: Reads and executes bytecode instructions one by one. Slow for repeated code.
-    - JIT (Just-In-Time) Compiler: Compiles frequently used bytecode (hotspots) into native machine code to improve
+    - **Interpreter:** Reads and executes bytecode instructions one by one. Slow for repeated code.
+    - **JIT (Just-In-Time) Compiler:** Compiles frequently used bytecode (hotspots) into native machine code to improve
       performance.
-    - Garbage Collector (GC): Automatically identifies and deletes unreferenced objects from the Heap to free up
+    - **Garbage Collector (GC):** Automatically identifies and deletes unreferenced objects from the Heap to free up
       memory.
 
 4. **Garbage Collector**:  
@@ -243,7 +314,7 @@ title: Java Overview
 
 - `String` objects are immutable — any modification creates a new object.
 - Reasons: security (used in class loading, network connections), thread-safety, hashcode caching (safe as HashMap
-  keys), String pool reuse.
+  keys), String pool keeps static strings which promotes reuse since multiple can refer the same safely.
 - Since java is pass by value important params cannot be modified between methods
 
 ### 3.2 String Pool (String Intern Pool)
@@ -340,7 +411,8 @@ Map (key-value, not a Collection): HashMap, LinkedHashMap, TreeMap, Hashtable, C
 
 - **HashMap**: array of buckets + linked list/red-black tree (treeified after 8 collisions in a bucket, Java 8+); allows
   one null key, multiple null values; not thread-safe.
-- **LinkedHashMap**: maintains insertion (or access) order; useful for LRU cache implementations.
+- **LinkedHashMap**: maintains insertion (or access) order; useful for LRU cache implementations. done by a hashtable +
+  a doubly linked list.
 - **TreeMap**: sorted by keys, implements `NavigableMap`, O(log n).
 - **Hashtable**: legacy, synchronized, no null keys/values.
 - **ConcurrentHashMap**: thread-safe, segment/bucket-level locking (Java 8+ uses CAS + synchronized blocks per bin, not
@@ -385,49 +457,63 @@ Map (key-value, not a Collection): HashMap, LinkedHashMap, TreeMap, Hashtable, C
 
 ## 6. Generics
 
-- Enables type-safety at compile time, eliminates need for explicit casting.
-- **Bounded types**: `<T extends Number>`.
-- **Wildcards**: `<?>` (unknown), `<? extends T>` (upper bound, read-only/producer), `<? super T>` (lower bound,
+Enables type-safety at compile time, eliminates need for explicit casting.
+
+* **Bounded types**: `<T extends Number>`.
+* **Wildcards**: `<?>` (unknown), `<? extends T>` (upper bound, read-only/producer), `<? super T>` (lower bound,
   write/consumer) — PECS principle ("Producer Extends, Consumer Super").
-- **Type erasure**: generic type info removed at runtime by compiler, replaced with bounds or Object — this is why you
+* **Type erasure**: generic type info removed at runtime by compiler, replaced with bounds or Object — this is why you
   can't do `new T()` or `instanceof T`.
-- Example:
-    - ```java
-  static <T extends Number> double square(T x) {
-  return x.doubleValue() * x.doubleValue();
-  }
-    ``` 
-        - This gives us a named type T
-    - List<? extends Number> list;
-        - mostly for assignment usually to a collection
-    -
+
+Example:
+
+```java
+static <T extends Number> double square(T x) {
+    return x.doubleValue() * x.doubleValue();
+}
+//Declaration for T comes before return type
+```
+
+```java
+double retZero(List<? extends Number> x) {
+    return 0;
+}
+
+<T extends Number> double retZero(List<T> x) {
+    return 0;
+}
+// these are functionally the same since type erasure removes List<...> -> List
+``` 
 
 > 🎯 Often Asked:
+> What is type erasure and its implications? Java actually converts `List<String> names = new ArrayList<>();` to
+`List names = new ArrayList();` in runtime<br>`String` is applied on the get `String name = (String) names.get(0);`<br>
+> Implication: `if (obj instanceof List<String>)` ❌ Incorrect <br>
+> PECS = Producer Extends(read), Consumer Super (write)(Mnemonic), If a collection produces values for you to read, use
+> extends.
 
-- What is type erasure and its implications
-    - Java actually converts
-        - `List<String> names = new ArrayList<>();` to `List names = new ArrayList();` in runtime
-        - `String` is applied on the get `String name = (String) names.get(0);`
-        - Implication: `if (obj instanceof List<String>)` ❌ Incorrect
-- PECS principle
-    - PECS = Producer Extends(read), Consumer Super (write)(Mnemonic)
-    - If a collection produces values for you to read, use extends.
-        - Java's generic types are invariant by default. This means List<Integer> is not a subtype of List<Number>, even
-          though Integer is a subtype of Number.
+Note: Java's generic types are invariant by default. This means List<Integer> is not a subtype of List<Number>, even
+though Integer is a subtype of Number.
 
 ### 7.3 Synchronization
 
-- `synchronized` keyword: method-level or block-level; uses intrinsic lock (monitor) per object.
-- `static synchronized` locks on the Class object, not instance.
+`synchronized` means only one thread at a time can execute a particular piece of code or access a particular
+object’s protected state. Can be method-level or block-level; uses intrinsic lock (monitor) per object.  
+`static synchronized` locks on the Class object, not instance.
+
 - Deadlock: two+ threads waiting on each other's locks forever. Avoid via consistent lock ordering, timeouts.
 
-> 🎯 Often Asked: Difference between synchronized method and block; how to avoid deadlock; difference between `wait()`/
-`sleep()` (wait releases lock, is called on object monitor; sleep doesn't release lock, called on Thread).
+> 🎯 Often Asked:
+
+1. Difference between synchronized method and block: Same thing but block gives more granular control
+2. how to avoid deadlock;
+3. difference between `wait()` and `sleep()` (wait releases lock, is called on object monitor; sleep doesn't release
+   lock, called on Thread).
 
 ### 7.4 volatile Keyword
 
-- Ensures visibility of changes across threads (reads/writes go directly to main memory, not thread-local cache).
-- Does NOT guarantee atomicity (e.g., `count++` on volatile int is still not thread-safe).
+Ensures visibility of changes across threads (reads/writes go directly to main memory, not thread-local cache).  
+Does NOT guarantee atomicity (e.g., `count++` on volatile int is still not thread-safe).
 
 ### 7.5 java.util.concurrent Package
 
@@ -453,67 +539,29 @@ Map (key-value, not a Collection): HashMap, LinkedHashMap, TreeMap, Hashtable, C
 
 ---
 
-## 8. Java Memory Management & JVM Internals
-
-### 8.1 JVM Memory Areas
-
-- **Heap**: objects live here; divided into Young Generation (Eden + Survivor S0/S1) and Old Generation (Tenured).
-- **Stack**: per-thread, stores method frames, local variables, partial results — `StackOverflowError` if exceeded.
-- **Method Area/Metaspace** (Java 8+, replaced PermGen): stores class metadata, static variables, constant pool.
-- **PC Register**: per-thread, holds address of current executing instruction.
-- **Native Method Stack**: for native (non-Java) method calls.
-
-### 8.2 Garbage Collection (GC)
-
-- Automatic memory management — reclaims objects with no reachable references.
-- **Generational hypothesis**: most objects die young → Young Gen collected frequently (Minor GC), Old Gen less often (
-  Major/Full GC).
-- **GC Algorithms**: Serial, Parallel, CMS (deprecated), **G1 (Garbage First)** — default since Java 9, **ZGC** and *
-  *Shenandoah** — low-latency collectors for large heaps.
-- Objects become eligible for GC when unreachable (no strong references) — `System.gc()` only *suggests* GC, doesn't
-  guarantee it.
-
-> 🎯 Often Asked: Explain the generational GC model; difference between minor and major GC; strong vs weak vs soft vs
-> phantom references; how memory leaks happen despite GC (e.g., static collections holding references, unclosed
-> resources,
-> listener leaks).
-
-### 8.3 Reference Types
-
-- **Strong**: normal reference, prevents GC.
-- **Soft**: cleared only when JVM needs memory (used in caches).
-- **Weak**: cleared on next GC cycle regardless of memory pressure (`WeakHashMap`).
-- **Phantom**: enqueued after finalization, used for cleanup actions before memory reclaim.
-
----
-
 ## 9. Java 8+ Features (Very Commonly Asked)
 
 ### 9.1 Lambda Expressions
 
-- Syntax: `(parameters) -> expression/block`.
-- Essentially a quick way to implement a functional interface
-- let you **pass behavior as a value**
+Syntax: `(parameters) -> expression/block`.  
+Essentially a quick way to implement a functional interface that lets you **pass behavior as a value**
 
 ### 9.2 Functional Interfaces
 
-- Interface with exactly one abstract method (SAM), annotated `@FunctionalInterface` (optional but recommended).
-- Built-in ones: `Function<T,R>`, `Predicate<T>`, `Consumer<T>`, `Supplier<T>`, `BiFunction<T,U,R>`, `UnaryOperator<T>`.
-
+Interface with exactly one abstract method (SAM), annotated `@FunctionalInterface` (optional but recommended).  
+Built-in ones: `Function<T,R>`, `Predicate<T>`, `Consumer<T>`, `Supplier<T>`, `BiFunction<T,U,R>`, `UnaryOperator<T>`.
 > 🎯 Often Asked: Write/explain a custom functional interface;
 
-- difference between `Function`, `Predicate`, `Consumer`,`Supplier`
-  4 Functional interfaces proiveded simply by Java
+| Interface        | Takes   | Returns          | Typical use              |                                                                       |
+|------------------|---------|------------------|--------------------------|-----------------------------------------------------------------------|
+| `Function<T, R>` | 1 input | 1 output         | Transform something      | `Function<String, String> toUpperCase = name -> name.toUpperCase();`  |
+| `Predicate<T>`   | 1 input | `boolean`        | Test something           | `Predicate<Integer> isEven = n -> n % 2 == 0;`                        |
+| `Consumer<T>`    | 1 input | Nothing (`void`) | Do something with it     | `Consumer<String> printName = name -> System.out.println(name);`      |
+| `Supplier<T>`    | Nothing | 1 output         | Provide/create something | `Supplier<Integer> randomNumber = () -> (int) (Math.random() * 100);` |
 
-| Interface        | Takes   | Returns          | Typical use              |
-|------------------|---------|------------------|--------------------------|
-| `Function<T, R>` | 1 input | 1 output         | Transform something      |
-| `Predicate<T>`   | 1 input | `boolean`        | Test something           |
-| `Consumer<T>`    | 1 input | Nothing (`void`) | Do something with it     |
-| `Supplier<T>`    | Nothing | 1 output         | Provide/create something |
+We need to call the function.apply for example to execute
 
-- Can a functional interface have default/static methods
-    - yes, only one abstract method restriction applies
+**Can a functional interface have default/static methods?** Yes as many as it wants, but only one abstract method
 
 ### 9.3 Streams API
 
@@ -524,14 +572,16 @@ Map (key-value, not a Collection): HashMap, LinkedHashMap, TreeMap, Hashtable, C
 - `Collectors`: `toList()`, `toMap()`, `groupingBy()`, `partitioningBy()`, `joining()`.
 - Parallel streams: `parallelStream()` — uses ForkJoinPool, useful for CPU-bound bulk operations on large data; not
   always faster (overhead for small datasets).
+- Follows Fluid Api
 
 > 🎯 Often Asked: Difference between intermediate and terminal operations; how `flatMap` differs from `map`; when NOT to
 > use parallel streams; write a stream pipeline to group/sort/aggregate data (very common coding round question).
 
 ### 9.4 Optional
 
-- Wrapper to avoid `NullPointerException`; `Optional.of()`, `Optional.ofNullable()`, `Optional.empty()`.
-- Methods: `isPresent()`, `orElse()`, `orElseGet()`, `orElseThrow()`, `map()`, `filter()`.
+- Wrapper to avoid `NullPointerException`
+- Optional<Something> t
+- Methods: `isPresent()`, `get`
 
 ### 9.5 Default & Static Methods in Interfaces
 
@@ -558,34 +608,6 @@ Map (key-value, not a Collection): HashMap, LinkedHashMap, TreeMap, Hashtable, C
 > 🎯 Often Asked: What are Records and how they differ from normal classes (implicit constructor, getters,
 > equals/hashCode/toString, immutable); what are sealed classes; what are virtual threads and why they matter for
 > scalability.
-
----
-
-## 10. Design Patterns (Commonly Asked in Java Interviews)
-
-### 10.1 Creational
-
-- **Singleton**: one instance only. Approaches: eager initialization, lazy initialization, double-checked locking with
-  `volatile`, enum-based singleton (safest against reflection/serialization attacks).
-- **Factory / Abstract Factory**: delegate object creation to a factory method/class.
-- **Builder**: step-by-step object construction, useful for objects with many optional parameters (e.g.,
-  `Lombok @Builder`, `StringBuilder`).
-
-### 10.2 Structural
-
-- **Adapter**: converts one interface into another expected by client.
-- **Decorator**: adds behavior dynamically without altering original class (e.g., `BufferedReader` wrapping
-  `FileReader`).
-- **Proxy**: placeholder/surrogate controlling access to another object (used heavily in Spring AOP).
-
-### 10.3 Behavioral
-
-- **Observer**: one-to-many dependency, subject notifies observers on state change (used in event listeners).
-- **Strategy**: encapsulate interchangeable algorithms, select at runtime (e.g., `Comparator` passed to `sort()`).
-- **Template Method**: define algorithm skeleton in base class, let subclasses override specific steps.
-
-> 🎯 Often Asked: Implement thread-safe Singleton; why enum singleton is considered best; real examples of these patterns
-> from Java standard library or Spring framework.
 
 ---
 
@@ -669,27 +691,145 @@ Map (key-value, not a Collection): HashMap, LinkedHashMap, TreeMap, Hashtable, C
 
 ## Features Added in Versions:
 
-1. Java 8 (2014) - Functional Update:
-    - Lambda Expressions
-    - Stream API
-    - Optional Class
-    - Default Methods
-2. Java 11 (2018) - Consolidation and Clean up:
-    - `var` for Lambda Parameters
-    - new HTTP Client (Non blocking API client)
-    - Removal of Java EE/CORBA
-3. Java 17 (2021) - Data Oriented:
-    - Records
-    - Sealed Classes
-    - Pattern Matching for `instanceof`
-    - Text Blocks using `"""`
-4. Java 21 (2023) - Performance & Concurrency:
-    - Virtual Threads
-    - Sequenced Collections
-    - Record Patterns
-    - Pattern Matching for `switch`
-5. Java 25 (2025) :
-    - Scoped Values: Alternative to ThreadLocal
-    - Structured Concurrency
-    - Flexible Constructor Bodies
-    - Module Import Declarations
+# Java Features
+
+## 1. Streams (Java 8)
+
+Functional framework for processing collections without modifying the underlying source.
+
+* **Execution Overhead:** Slower than or equal to manual `for` loops due to abstraction layers, object allocations,
+  boxing/unboxing, and JIT loop optimization limitations.
+* **Parallel Streams:** Provides multi-core execution out of the box, often outperforming manual iteration for heavy
+  workloads.
+
+| Operation Type   | Description                                           | Key Methods                                                          |
+|------------------|-------------------------------------------------------|----------------------------------------------------------------------|
+| **Intermediate** | Lazy evaluation; returns a new stream for chaining.   | `map()`, `flatMap()`, `filter()`, `distinct()`, `sorted()`, `peek()` |
+| **Terminal**     | Triggers execution; produces a result or side-effect. | `collect()`, `reduce()`, `forEach()`, `count()`, `findFirst()`       |
+
+---
+
+## 2. Records (Java 16)
+
+Classes designed to model immutable data carriers without boilerplate. Autogenerates `private final` fields, canonical
+constructor, getters (e.g., `id()`), `equals()`, `hashCode()`, and `toString()`.
+
+```java
+// Compact Canonical Constructor with Validation
+public record Employee(int id, String name) {
+    public Employee {
+        if (id < 0) throw new IllegalArgumentException("Invalid ID");
+    }
+}
+
+```
+
+---
+
+## 3. Sealed Classes (Java 17)
+
+Restricts which classes or interfaces can extend or implement them.
+
+* **Rules:** Permitted subclasses must directly extend the parent, reside in the same package (or module), and declare a
+  modifier: `final` (prevents further inheritance), `sealed` (further restricts subclasses), or `non-sealed` (opens
+  inheritance).
+* **Syntax:**
+
+```java
+public sealed class Shape permits Circle, Triangle {
+}
+
+public final class Circle extends Shape {
+}
+
+public non-sealed class Triangle extends Shape {
+}
+
+```
+
+---
+
+## 4. Java Modules / Project Jigsaw (Java 9)
+
+Replaces the flat classpath with a structured module path.
+
+* **Key Benefits:**
+* **Strong Encapsulation:** Explicitly exposes packages via `exports`; hides internal APIs.
+* **Reliable Configuration:** Fails at startup if dependencies are missing or duplicated, preventing lazy runtime
+  exceptions.
+
+
+* **Descriptor Example (`module-info.java`):**
+
+```java
+module com.mycompany.service {
+    requires java.sql;
+    exports com.mycompany.service.api;
+}
+
+```
+
+* **Compilation Command:**
+
+```bash
+javac -d mods/com.mycompany.service --module-source-path src $(find src -name "*.java")
+
+```
+
+---
+
+## 5. Virtual Threads / Project Loom (Java 21)
+
+Lightweight threads managed by the JVM rather than the OS. Allows applications to spawn millions of concurrent threads
+with low memory footprint, scaling high-throughput I/O blocking operations efficiently without async callback code.
+
+---
+
+## 6. Scoped Values (Java 21 / Preview)
+
+Enables safe, immutable data sharing both within a thread and across child threads (such as Virtual Threads) without the
+memory leak risks, overhead, and mutability issues associated with `ThreadLocal`.
+
+---
+
+## 7. Pattern Matching for `switch` (Java 21)
+
+Enhances `switch` statements and expressions to evaluate types directly, support pattern guards (`when`), and handle
+`null` safely.
+
+```java
+String result = switch (obj) {
+    case null -> "Null input";
+    case Integer i -> "Integer: " + i;
+    case String s when s.length() > 5 -> "Long string: " + s;
+    case String s -> "Short string: " + s;
+    default -> "Unknown type";
+};
+
+```
+
+---
+
+## 8. Sequenced Collections (Java 21)
+
+Introduces uniform interfaces (`SequencedCollection`, `SequencedSet`, `SequencedMap`) for collections with a defined
+encounter order, fixing inconsistent access methods across legacy collections.
+
+* **Unified API:** `addFirst()`, `addLast()`, `getFirst()`, `getLast()`, `removeFirst()`, `removeLast()`, and
+  `reversed()`.
+
+---
+
+## 9. Java Memory Barriers & Instruction Reordering
+
+Compilers and CPUs reorder instructions to maximize execution speed for single-threaded contexts. In multi-threaded
+contexts, unconstrained reordering leads to race conditions and stale reads.
+
+* **Compiler Barriers:** Prevent the Java compiler/JIT from reordering code across specific instruction boundaries.
+* **CPU Memory Barriers:** Instructions emitted to force hardware caches to flush/invalidate and preserve ordering.
+* **LoadLoad / StoreStore:** Prevent reordering of reads/writes relative to each other.
+* **LoadStore / StoreLoad:** Enforce strict execution boundaries (e.g., after volatile writes).
+
+
+* **Java Enforcement:** Handled via memory barriers inserted when using `volatile` fields, synchronized blocks, explicit
+  locks, or `java.lang.invoke.VarHandle` acquire/release fences.

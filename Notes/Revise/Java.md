@@ -10,12 +10,10 @@ title: Java
 * jdk , jre , jvm , jit
 * jvm $\rightarrow$ classloader $\rightarrow$ class file , runtime data $\rightarrow$ method , heap , stack
 * bootstrap loading & linking
-* exec $\rightarrow$ interpreter, jit , gc $\rightarrow$ g1, zgc
-
-
+* exec $\rightarrow$ interpreter, jit , gc $\rightarrow$ g1, zgc,Shenandoah
 * OOPS $\rightarrow$ 4 pillars $\rightarrow$ encap. , inheritance, polymorphism , abstraction
 * primitives & wrappers, autoboxing - unboxing .
-* final keyword , abstract class vs interface
+* final keyword, uses variable, method, class | abstract class vs interface
 * inheritance , constructor , this & super , access modifiers
 * static
 * exception , throwable , checked unchecked

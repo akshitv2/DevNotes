@@ -12,8 +12,8 @@ layout: default
 |               | handling partial failures and retries                                                            |
 |               | Replication Topologies                                                                           |
 |               | Zero downtime database migrations                                                                |
-|               | Indexes: Clustered vs non, Composite/Compound                                                                      |
-|               |  Query Execution Plans                                                                                                                  |
+|               | Indexes: Clustered vs non, Composite/Compound                                                    |
+|               | Query Execution Plans                                                                            |
 | Spring        | Dispatcher Servlet                                                                               |
 | System Design |                                                                                                  |
 |               | Server-to-Server Real-Time: gRPC vs. Webhooks vs. Message Queues                                 |
@@ -29,5 +29,8 @@ layout: default
 |               | blob storage                                                                                     |
 |               | Bloom filters                                                                                    |
 |               | distributed locking                                                                              |
+| AI            | MCP                                                                                              |
 | AI            | Cursor                                                                                           |
 | Misc          | AWS                                                                                              |
+| Misc          | CRON                                                                                             |
+

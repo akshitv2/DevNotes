@@ -35,70 +35,78 @@ Architectures and frameworks used for structured machine-to-machine communicatio
 
 ### RPC (Remote Procedure Call)
 
-* **Concept:** Allows a program to execute a procedure or function in a remote computer's address space as if it were a
-  local function call.
-* **Mechanism:** Uses client/server "stubs" to serialize and deserialize parameters into messages sent over a transport
-  layer (typically TCP).
+Allows a program to execute a procedure or function in a remote computer's address space as if it were a
+local function call using client/server "stubs" (basically proxies) to serialize and deserialize parameters into
+messages sent over a transport layer (typically TCP).
+
 * **Modern Implementations:** Frameworks like gRPC utilize Protocol Buffers (Protobuf) for high-efficiency binary
   serialization and support synchronous, asynchronous, or bidirectional streaming.
-* **Characteristics:**
-    * 🟢 Highly efficient, low latency, and highly readable since it behaves like native code without the overhead of
-      building custom interface routing.
-    * 🔴 Tight coupling makes services brittle to changes; require both client and server to upgrade simultaneously.
-    * 🔴 Unsuitable for cross-organization APIs because it requires exposing internal function signatures
-    * 🔴 Tries to mimic local function call which are predictable while rpc can fail due to any number of network issues
-    * 🔴 Passing memory pointers locally is trivial, but doing so over RPC requires serializing and sending large amounts
-      of heap data over the wire.
-    * *Note: Modern frameworks like gRPC explicitly design away from the "hidden network call" illusion by making
-      streams and network states clear.*
+
+**Characteristics:**
+
+* 🟢 Highly efficient, low latency, and highly readable since it behaves like native code without the overhead of
+  building custom interface routing.
+* 🔴 Tight coupling makes services brittle to changes; require both client and server to upgrade simultaneously.
+* 🔴 Unsuitable for cross-organization APIs because it requires exposing internal function signatures
+* 🔴 Tries to mimic local function call which are predictable while rpc can fail due to any number of network issues
+* 🔴 Passing memory pointers locally is trivial, but doing so over RPC requires serializing and sending large amounts
+  of heap data over the wire.
+* *Note: Modern frameworks like gRPC explicitly design away from the "hidden network call" illusion by making
+  streams and network states clear.*
+* Note: Protocol Buffers use a common schema/contract and then encode only values for high efficiency
 
 ### SOAP (Simple Object Access Protocol)
 
-* **Concept:** A highly disciplined, XML-based protocol strictly bound to formal contracts.
-* **Mechanism:** Transport-independent (can run over HTTP, SMTP, TCP, etc.) and relies on WSDL (Web Services Description
-  Language) to define strict interface contracts.
+Highly disciplined, XML-based protocol strictly bound to formal contracts; Transport-independent (can run over HTTP,
+SMTP, TCP, etc.) and relies on WSDL (Web Services Description Language) to define strict interface contracts.
+
 * **Structure:** Each message contains an explicit `Header` (for metadata/security context) and a `Body` (the data
-  payload).
-* **Characteristics:**
-    * 🟢 Highly structured with built-in message delivery guarantees and formal security standards.
-    * 🔴 Uses XML, making payloads large, verbose, and computationally expensive to parse.
-    * 🔴 Requires managing a complex, strict WSDL tooling ecosystem.
-    * 🔴 Extremely poor human readability compared to JSON.
+  payload).  
+  **Characteristics:**
+* 🟢 Highly structured with built-in message delivery guarantees and formal security standards.
+* 🔴 Uses XML, making payloads large, verbose, and computationally expensive to parse.
+* 🔴 Requires managing a complex, strict WSDL tooling ecosystem.
+* 🔴 Extremely poor human readability compared to JSON.
 
 ### REST (Representational State Transfer)
 
-* **Concept:** An architectural style (not a protocol) designed around network resources, typically built on top of
-  HTTP.
-    * *Note: HTTP $\neq$ REST. REST is a paradigm with strict architectural constraints. Raw HTTP calls can be stateful,
-      and protocols like SOAP or RPC frequently run over HTTP without adhering to REST principles.*
-* **Mechanism:** Utilizes standard HTTP methods for CRUD operations: `GET` (Retrieve), `POST` (Create), `PUT` (
-  Update/Replace), `PATCH` (Partial Update), and `DELETE`.
-* **Data Format:** Typically standardizes on JSON payloads.
-* **Core Architectural Constraints:**
-    1. **Statelessness:** Each request from a client must contain all the data necessary to understand and complete the
-       request. The server cannot retain any session context.
-    2. **Cacheability:** Responses must explicitly define themselves as cacheable or non-cacheable to optimize network
-       efficiency.
-    3. **Uniform Interface:** Resources are uniquely identified using URIs, representation is decoupled (e.g., JSON
-       bodies), and messages are self-describing via HTTP headers (e.g., `Content-Type`).
-* **Characteristics:**
-    * 🟢 Intuitive, widely adopted, and easy to implement.
-    * 🟢 Relies on human-readable formats and semantic HTTP verbs.
-    * 🟢 Strict statelessness allows for instant horizontal scaling.
-    * 🔴 Can lead to "over-fetching" or "under-fetching," forcing clients to make multiple sequential HTTP requests for
-      related resources that could be fetched in a single call via RPC or GraphQL.
+An architectural style (not a protocol) designed around network resources, typically built on top of HTTP.  
+Utilizes standard HTTP methods for CRUD operations: `GET` (Retrieve), `POST` (Create), `PUT` (Update/Replace), `PATCH` (
+Partial Update), and `DELETE`. Typically, uses standard on JSON payloads.
+**Note:** HTTP $\neq$ REST. REST is a paradigm with strict architectural constraints. Raw HTTP calls can be stateful,
+and protocols like SOAP or RPC frequently run over HTTP without adhering to REST principles.
+
+**Core Architectural Constraints:**
+
+1. **Statelessness:** Each request from a client must contain all the data necessary to understand and complete the
+   request. The server cannot retain any session context.
+2. **Cacheability:** Responses must explicitly define themselves as cacheable or non-cacheable to optimize network
+   efficiency.
+3. **Uniform Interface:** Resources are uniquely identified using URIs, representation is decoupled (e.g., JSON
+   bodies), and messages are self-describing via HTTP headers (e.g., `Content-Type`).
+
+**Characteristics:**
+
+* 🟢 Intuitive, widely adopted, and easy to implement.
+* 🟢 Relies on human-readable formats and semantic HTTP verbs.
+* 🟢 Strict statelessness allows for instant horizontal scaling.
+* 🔴 Can lead to "over-fetching" or "under-fetching," forcing clients to make multiple sequential HTTP requests for
+  related resources that could be fetched in a single call via RPC or GraphQL.
 
 ### GraphQL
 
-* **Concept:** A strongly typed query language for APIs paired with a server-side runtime engine for executing queries.
-* **Mechanism:** Exposes a single endpoint (typically via an HTTP `POST` request) and allows the client to request
-  exactly the data fields required, preventing over-fetching or under-fetching.
-* **Schema Definition Language (SDL):** A strictly typed schema defining data structures, object relationships,
-  operations, and data mutations.
-    * *Syntax Key: `!` indicates non-nullable, `[Type]` indicates a list of that type, and `ID` represents a unique
-      scalar identifier.*
-* **Example Schema:**
-    ```graphql
+A strongly typed query language for APIs paired with a server-side runtime engine for executing queries. It exposes a
+single endpoint (typically via an HTTP `POST` request) and allows the client to request exactly the data fields
+required, preventing over-fetching or under-fetching.  
+Uses **Schema Definition Language (SDL)** A strictly typed schema defining data structures, object relationships,
+operations, and data mutations.
+
+* *Syntax Key: `!` indicates non-nullable, `[Type]` indicates a list of that type, and `ID` represents a unique
+  scalar identifier.*
+
+**Example Schema:**
+
+```graphql
     type User {
       id: ID!
       username: String!
@@ -118,7 +126,8 @@ Architectures and frameworks used for structured machine-to-machine communicatio
     type Mutation {
       createUser(username: String!, email: String!): User!
     }
-    ```
+```
+
 * **Example Query & Response:**
     * **Client Query:**
         ```graphql
@@ -181,17 +190,15 @@ Asynchronous architecture models used to pass data between isolated backend syst
 
 ### Message Queues
 
-* **Concept:** Form of asynchronous service-to-service communication used to decouple producers from consumers.
-* **Point-to-Point Communication:** Designed for direct routing from one sender to a target receiver. If multiple
-  consumers exist, messages are distributed using load-balancing algorithms (e.g., round-robin).
-* **Acknowledgements (ACKs):** To guarantee at-least-once delivery, consumers must explicitly send an ACK back to the
-  queue upon successful processing; otherwise, the message is requeued.
-* **Persistence:** Messages are written to disk to ensure no data loss occurs if a broker service crashes mid-flight.
-* **Dead Letter Queues (DLQ):** Unprocessable messages (poison messages) that continuously fail delivery are redirected
-  to a DLQ to avoid blocking the main pipeline. Triggers include:
-    * Exceeding a defined `MaxDeliveryAttempts`.
-    * Breaching queue length bounds or timeouts.
-    * Data schema mismatch payloads.
+Form of asynchronous service-to-service communication that allows different applications/services to communicate
+asynchronously by sending messages through an intermediary called a queue. Used to decouple producers from consumers.  
+**Acknowledgements (ACKs):** To guarantee at-least-once delivery, consumers must explicitly send an ACK back to the
+queue upon successful processing; otherwise, the message is requested.
+**Persistence:** Messages are written to disk to ensure no data loss occurs if a broker service crashes mid-flight.  
+**Dead Letter Queues (DLQ):** Unprocessable messages (poison messages) that continuously fail delivery are redirected  
+to a DLQ to avoid blocking the main pipeline. Triggers include: Exceeding a defined `MaxDeliveryAttempts`, Breaching
+queue length bounds or timeouts, Data schema mismatch payloads.
+
 * **Legacy vs. Modern Architecture:**
     * *Legacy (Traditional Message Brokers):* Centered on the broker logic (e.g., IBM MQ, RabbitMQ). They rely on a
       destructive consumption model—once an ACK is received, the message is permanently deleted from the queue.
@@ -200,17 +207,19 @@ Asynchronous architecture models used to pass data between isolated backend syst
 
 ### Publisher-Subscriber (Pub/Sub)
 
-* **Concept:** An asynchronous, one-to-many broadcasting architecture pattern.
-* **Mechanism:** Producers write messages to an isolated channel called a **Topic** managed by a standalone broker
-  instance. Any number of isolated consumer systems can register as subscribers to that topic to receive identical
-  broadcasted payloads.
-* **Message Delivery Semantics:**
-    1. **At-Most-Once:** The broker fires the message and immediately forgets it. High throughput and minimal latency,
-       but susceptible to silent data loss.
-    2. **At-Least-Once:** The broker holds messages in a buffer until a receipt ACK is returned. Requires the downstream
-       subscriber to be completely **idempotent** to safely handle re-deliveries.
-    3. **Exactly-Once:** Achieved by combining at-least-once mechanics with unique message UUID de-duplication layers to
-       ensure data is processed perfectly exactly once.
+An asynchronous, one-to-many broadcasting architecture pattern.   
+Producers write messages to an isolated channel called a **Topic** managed by a standalone broker
+instance. Any number of isolated consumer systems can register as subscribers to that topic to receive identical
+broadcasted payloads.
+
+**Message Delivery Semantics:**
+
+1. **At-Most-Once:** The broker fires the message and immediately forgets it. High throughput and minimal latency,
+   but susceptible to silent data loss.
+2. **At-Least-Once:** The broker holds messages in a buffer until a receipt ACK is returned. Requires the downstream
+   subscriber to be completely **idempotent** to safely handle re-deliveries.
+3. **Exactly-Once:** Achieved by combining at-least-once mechanics with unique message UUID de-duplication layers to
+   ensure data is processed perfectly exactly once.
 
 ### Webhooks
 
@@ -222,6 +231,7 @@ Asynchronous architecture models used to pass data between isolated backend syst
        Server A's registered URL.
     4. **ACK:** Server A processes the payload and returns an immediate HTTP `2xx` success status. If a `5xx` error is
        received, Server B falls back to a retry strategy.
+* Essentially Server B is just making a call to server A using the url server A provided it.
 
 ---
 

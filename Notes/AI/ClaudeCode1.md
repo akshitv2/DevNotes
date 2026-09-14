@@ -5,29 +5,12 @@
 ## 1. What Claude Code Is
 
 Agentic coding tool that reads your codebase, edits files, runs shell commands, and integrates with dev tools (git,
-GitHub/GitLab, MCP servers, browsers). Provides following interfaces:
+GitHub/GitLab, MCP servers, browsers). Provides Terminal CLI, VS Code extension/JetBrains plugin/Cursor, Web and Desktop
+App.  
+It can explore codebases, fix bugs and execute git workflows like pr creation, schedule jobs etc.
 
-- **Terminal CLI** — the full-featured original, `claude` command
-- **VS Code extension/JetBrains plugin/Cursor**
-- **Desktop app** (macOS, Windows, Linux beta) — visual diffs, parallel sessions, scheduling
-- **Web** — claude.ai/code, run tasks with no local setup, works from mobile too
-- **Slack** (`@Claude` mentions), **GitHub Actions**, **GitLab CI/CD**, **Chrome extension** (browser automation)
-
-### Core capabilities
-
-- Explore/understand codebases, trace execution paths
-- Fix bugs from an error message or symptom description
-- Build features across multiple files
-- Git workflows: commit, branch, **create PRs** (`gh pr create`) directly
-- Connect external tools via **MCP** (Jira, Slack, databases, Google Drive, etc.)
-- Customize via **CLAUDE.md**, **auto memory**, **skills**, **hooks**
-- Run **subagents** in parallel; **agent teams**; the **Agent SDK** for fully custom agents
-- **Schedule** recurring work: Routines (cloud), Desktop scheduled tasks, `/loop`
-
----
-
-General diagnostic tool: **`claude doctor`** — checks PATH, binary integrity, keychain, shell config, and more in one
-shot.
+* Note: General diagnostic tool: **`claude doctor`** — checks PATH, integrity, keychain, shell config, and more in one
+  shot.
 
 ---
 
@@ -35,40 +18,41 @@ shot.
 
 Every session starts with a **fresh context window**. Two mechanisms carry knowledge across sessions:
 
-### CLAUDE.md (you write it)
+### **CLAUDE.md (you write it)**
 
 Markdown file with persistent instructions, loaded at the start of every session as a **user message** (not baked into
 the system prompt — so it's followed, not enforced).
 
-**Locations, in load order (broad → specific; later = read last = weighted more):**
+* NOTE: **Agents.md** is the open standard naming for setup files for a claude directory instead of each AI maintaining
+  its own CLAUDE.md for Claude Code, .cursorrules for Cursor, .windsurfrules for Windsurf etc. If claude doesn't find a
+  CLAUDE.md it uses this as fallback.
 
-| Scope                                               | Location                                    | Shared with                           |
-|-----------------------------------------------------|---------------------------------------------|---------------------------------------|
-| Managed/org policy Linux/WSL/C: (Program files Win) | Everyone on the machine, cannot be excluded |                                       |
-| User                                                | `~/.claude/CLAUDE.md`                       | Just you, all projects                |
-| Project                                             | `./CLAUDE.md` or `./.claude/CLAUDE.md`      | Team, via git                         |
-| Local                                               | `./CLAUDE.local.md`                         | Just you, this project — gitignore it |
+* Location and scope:
+
+| Scope             | Location                                    | Shared with                           |
+|-------------------|---------------------------------------------|---------------------------------------|
+| System Claude Dir | Everyone on the machine, cannot be excluded |                                       |
+| User              | `~/.claude/CLAUDE.md`                       | Just you, all projects                |
+| Project           | `./CLAUDE.md` or `./.claude/CLAUDE.md`      | Team, via git                         |
+| Local             | `./CLAUDE.local.md`                         | Just you, this project — gitignore it |
 
 More specific prompts (e.g. project ones) overwrite less specific ones (e.g. project level overwrite global ones)
 
-Run **`/init`** to auto-generate a starting CLAUDE.md by having Claude analyze the codebase (build commands,
-conventions, structure). It won't clobber an existing file — it proposes edits instead.
+* Note: **`/init`** auto generates CLAUDE.md by analyzing codebase in dir, if already exists, suggest edits
 
 **Writing effective CLAUDE.md:**
 
-- Keep it **under ~200 lines**; larger files burn context and reduce how reliably instructions are followed
-- Use headers/bullets, not dense prose
+- Keep **under ~200 lines** as large files burn context and lose reliability
+- Use headers/bullets, not dense text blocks
 - Be concrete and *verifiable*: "Use 2-space indentation" beats "format code properly"
 - Watch for contradictions across nested CLAUDE.md files — Claude may pick one arbitrarily
-- `@path/to/file` import syntax pulls in other files (max depth 4); wrap in backticks to mention a path *without*
-  importing it
 - If you already have `AGENTS.md` (shared with other coding agents), just add `@AGENTS.md` at the top of `CLAUDE.md`, or
   symlink `CLAUDE.md → AGENTS.md`
 - **`.claude/rules/*.md`** — split large CLAUDE.md into topic files; add YAML frontmatter `paths: ["src/api/**/*.ts"]`to
   make a rule load *only* when Claude touches matching files (saves context)
 - In big monorepos, use `claudeMdExcludes` to skip irrelevant ancestor CLAUDE.md files
 
-### Auto memory (Claude writes it, on its own)
+## Auto memory (Claude writes it, on its own)
 
 Claude automatically saves 4 kinds of notes to `~/.claude/projects/<project>/memory/`:
 
@@ -77,49 +61,11 @@ Claude automatically saves 4 kinds of notes to `~/.claude/projects/<project>/mem
 - `project` — ongoing work/decisions not derivable from code
 - `reference` — where to find external info (ticket tracker, dashboard, etc.)
 
-It skips anything derivable from the codebase or already in CLAUDE.md. Only the first 200 lines / 25KB of the`MEMORY.md`
-index load at session start; topic files load on demand. On by default; toggle with `/memory` or
-`autoMemoryEnabled: false` in settings.
-
-### Real Problem: "Claude isn't following my CLAUDE.md"
-
-1. Run `/context` → check **Memory files** actually loaded the file you edited
-2. Verify the file is in a location that's actually loaded for *this* session (see table above)
-3. Make instructions more specific/concrete
-4. Check for **conflicting instructions** across files
-5. If it's something that must happen *every time* deterministically (before every commit, after every edit) — **that's
-   not a CLAUDE.md job, it's a hook job.** CLAUDE.md is guidance; hooks are enforcement.
+Skips anything derivable from the codebase or already in CLAUDE.md and only the first 200 lines / 25KB of the`MEMORY.md`
+load at session start; topic files load on demand.  
+On by default; toggle with `/memory` or `autoMemoryEnabled: false` in settings.
 
 ---
-
-## 5. Everyday Workflows (prompt recipes)
-
-- **Codebase overview**: "give me an overview of this codebase" → then narrow: "explain the main architecture
-  patterns", "what are the key data models?"
-- **Find code**: "find the files that handle user authentication" → "trace the login process from front-end to database"
-- **Fix a bug**: paste the error / reproduction command → "suggest a few ways to fix X" → "update file.ts to add the
-  fix"
-- **Refactor**: "find deprecated API usage" → get suggestions → apply in **small, testable increments** → run tests
-- **Tests**: "find functions in X not covered by tests" → "add tests" → "add edge case tests" → "run the new tests and
-  fix failures"
-- **PRs**: just say "create a pr" — Claude stages, writes the message, and runs `gh pr create` / `glab mr create`. Find
-  that session later with `claude --from-pr 1234`.
-- **Docs**: "find functions without JSDoc in the auth module" → generate → review
-- **Images**: drag-drop, `Ctrl+V` paste, or give a path. Great for screenshots of errors, UI mockups → CSS, diagrams →
-  schema changes
-- **@-references**: `@src/utils/auth.js` includes a file's full content instantly; `@src/components` lists a directory;
-  `@github:repos/owner/repo/issues` pulls MCP resource data
-- **Resume work**: `claude --continue` (most recent session in this dir), `claude --resume` (picker), or `/resume`inside
-  a session
-- **Parallel work**: `claude --worktree feature-auth` in one terminal, a different worktree name in another — isolated
-  checkouts, no edit collisions. Monitor many from one screen with **agent view** (`claude agents` / background
-  sessions).
-- **Plan before editing**: `claude --permission-mode plan` or `Shift+Tab` to plan mode — Claude researches and proposes
-  without touching files until you approve
-- **Delegate research to a subagent**: "use a subagent to investigate how our auth system handles token refresh" — keeps
-  your main context clean since only the summary comes back
-- **Pipe into scripts**: `git log --oneline -20 | claude -p "summarize these commits"` — full Unix philosophy support,
-  use in CI/pre-commit hooks
 
 ### Scheduling recurring tasks — pick the right one
 
@@ -150,17 +96,12 @@ line is.
 
 Cycle modes with **`Shift+Tab`**. Start a session in a specific mode: `claude --permission-mode plan`.
 
-### Auto mode (the default you'll hit first)
-
-A separate **classifier model** (Sonnet 5 by default) reviews each risky action instead of you. It blocks things like:
-
-- `curl | bash`, sending secrets externally, production deploys/migrations, force pushes, mass cloud-storage deletion,
-  `git reset --hard`/`rm -rf` on uncommitted work, merging your own unreviewed PR, disabling CI checks, printing live
-  credentials, tunneling a local service to the public internet.
-
-It allows by default: local file ops in your working dir, installing deps from lockfiles, reading `.env` and sending its
-creds to the matching API, read-only HTTP, pushing to any branch of the current repo (including default branch), opening
-a PR that matches your request.
+* **Auto mode** uses A separate **classifier model** (Sonnet 5 by default) which reviews each risky action instead of
+  you. It blocks things like risky curls, sending secrets, force pushes etc. It allows by default local file ops in
+  your working dir, reading `.env` and sending its creds to the matching API, read-only HTTP, pushing to any branch of
+  the current repo (including default branch),
+  opening
+  a PR that matches your request.
 
 ### Protected & critical paths (apply in **every** mode except bypass)
 
@@ -172,8 +113,81 @@ a PR that matches your request.
 
 ---
 
+## 7. Tools
+
+Pre-defined functions that claude can use to interact with local file system and the world since LLM can't manipulate
+things by themselves.
+Built in tools: File ops, Search, Exec, Web/Fetch.  
+The local client sends a list of available tools to the cloud model to pick and choose one if it needs it.  
+Claude reads through the names, descriptions, and JSON schemas of all the tools you provided to determine if any of them
+fit the current conversation context.  
+Can be integrated by:
+
+1. **MCP Server** (in detail later): Claude Supports MCP, You provide it the args needed for it in your local
+   configuration
+2. **Custom Tools via the Anthropic API**: Define in python
+   <details>
+    <summary>Show code</summary>
+
+    ```python
+    import anthropic
+    
+    client = anthropic.Anthropic()
+    
+    # 1. Define the tool schema
+    custom_tools = [
+        {
+            "name": "get_weather",
+            "description": "Get current weather conditions for a specific city.",
+            "input_schema": {
+            "type": "object",
+                "properties": {
+                "location": {
+                "type": "string",
+            "description": "City and state, e.g. San Francisco, CA"
+        },
+        "unit": {
+             "type": "string",
+             "enum": ["celsius", "fahrenheit"]
+             }
+             },
+             "required": ["location"]
+             }
+        }
+    ]
+   # Skipping define actual api code
+    
+    # 2. Now call claude with your tool registered
+    response = client.messages.create(
+    model="claude-3-5-sonnet-20241022",
+    max_tokens=1024,
+    tools=custom_tools,
+    messages=[
+    {"role": "user", "content": "What's the weather like in Tokyo?"}
+    ]
+    )
+   ```
+   </details>
+3. Built in anthropic tools: You can use anthropics predefined built in tools as well
+    ```python
+   # Registering pre-defined client environment tools
+    response = client.beta.messages.create(
+    model="claude-3-5-sonnet-20241022",
+    max_tokens=1024,
+    tools=[
+            {"type": "bash_20250124", "name": "bash"},
+            {"type": "text_editor_20241022", "name": "str_replace_editor"}
+        ],
+        messages=[{"role": "user", "content": "Run tests using pytest"}]
+    )
+   ```
+
+---
+
 ## 7. Hooks — deterministic automation
 
+The claude itself iterates over the steps one by one (could be looping depending on use case) but prompts happen step by
+step and not at once thus hooks are deterministic.
 Hooks are shell commands (or HTTP/MCP/LLM calls) Claude Code runs automatically at fixed lifecycle points — **use these
 when you need something to *always* happen**, not just usually happen (that's what CLAUDE.md is for).
 
@@ -191,61 +205,40 @@ when you need something to *always* happen**, not just usually happen (that's wh
 | `PreCompact` / `PostCompact`     | Around context compaction                                                            |
 | `Notification`                   | Claude needs input/permission — great for desktop alerts                             |
 
-### How a hook communicates
+### Example of a hook (you define this in either your system claude config.json or project claude/config.json)
 
-Reads JSON on **stdin**, replies via **exit code** + stdout/stderr:
-
-- **Exit 0**: no objection (normal flow continues); for some events, stdout is injected as context
-- **Exit 2**: **block** the action; stderr becomes Claude's feedback
-- **Structured JSON on stdout** (exit 0): fine-grained control, e.g.
-  `{"hookSpecificOutput":{"hookEventName":"PreToolUse","permissionDecision":"deny","permissionDecisionReason":"..."}}`
+```json
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "command": "npm run lint"
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Bash",
+        "command": "./scripts/notify-log.sh"
+      },
+      {
+        "type": "prompt",
+        "prompt": "Inspect the modified file content provided in the arguments: $ARGUMENTS. For example: Count the total number of vowels in the text and return the result."
+      }
+    ]
+  }
+}
+```
 
 ### The 4 hooks everyone sets up first
 
 1. **Notification hook** — desktop alert when Claude needs input (`osascript`/`notify-send`/PowerShell MessageBox)
-2. **Auto-format after edits** — `PostToolUse` on `Edit|Write` →
+2. **Auto-format post edit** `PostToolUse` on `Edit|Write` →
    `jq -r '.tool_input.file_path' | xargs npx prettier --write`
 3. **Block edits to protected files** — `PreToolUse` on `Edit|Write`, script checks path against `.env`/
    `package-lock.json`/`.git/`, exits 2 to block
 4. **Re-inject context after compaction** — `SessionStart` with `matcher: "compact"` → echoes reminders back into
    context
-
-### Real Problem: "My hook's JSON output has no effect"
-
-Two usual causes:
-
-- **Something else writes to stdout first** — most commonly an unconditional `echo` in your shell profile (`.bashrc`/
-  `.zshrc`) that gets prepended, so the combined output no longer starts with `{` and Claude Code can't parse it as
-  JSON. Fix: wrap profile echoes in `if [[ $- == *i* ]]; then ... fi` (only run in interactive shells).
-- **A field at the wrong nesting level** — e.g. `permissionDecision` must be inside `hookSpecificOutput`, not top-level.
-  Misplaced fields are silently ignored (check with `claude --debug`, search for "Hook JSON output had unrecognized
-  keys").
-
-### Real Problem: "Hook error in output" / "command not found"
-
-- Script exited non-zero unexpectedly → test manually: `echo '{"tool_name":"Bash",...}' | ./my-hook.sh; echo $?`
-- "command not found" → use `"$CLAUDE_PROJECT_DIR"/.claude/hooks/script.sh` (absolute path), not a relative one
-- Script not executable → `chmod +x`
-- "jq: command not found" → install jq or rewrite in Python/Node
-
-### Real Problem: "Stop hook loop / Claude won't stop"
-
-Claude Code force-stops a `Stop` hook after **8 consecutive blocks with no progress**. If your hook needs more
-iterations, check the `stop_hook_active` field on the JSON input and exit 0 early to avoid infinite blocking, or raise
-`CLAUDE_CODE_STOP_HOOK_BLOCK_CAP`.
-
-### Real Problem: "Hooks aren't firing at all"
-
-- Check `/hooks` — confirms registration and matcher
-- Matchers are **case-sensitive** and exact (`Edit|Write`, not `edit|write`)
-- Verify you used the right event (`PreToolUse` fires *before*, `PostToolUse` *after*)
-- Settings file edits are usually picked up live, but if not, restart the session
-
-### Security note
-
-Only **exit-2 deny decisions in `PreToolUse`** are unconditionally enforced — they apply even in `bypassPermissions`
-mode, which is the mechanism for org-wide guardrails users can't bypass by switching modes. The reverse isn't true: a
-hook returning "allow" can't override a real `deny` rule from settings.
 
 ---
 
@@ -267,83 +260,6 @@ claude mcp add playwright -- npx -y @playwright/mcp@latest
 claude mcp list
 ```
 
-Status glyphs: `✔ Connected` / `! Needs authentication` / `✘ Failed to connect` / `⏸ Pending approval` /
-`⊘ Disabled for this project`.
-
-### Scopes (where the config lives)
-
-| Scope             | File                                         | Available to                            |
-|-------------------|----------------------------------------------|-----------------------------------------|
-| `local` (default) | `~/.claude.json`, under this project's entry | Just you, this project                  |
-| `project`         | `.mcp.json` in project root                  | Anyone who clones the repo (commit it!) |
-| `user`            | `~/.claude.json`, top-level `mcpServers`     | Just you, every project                 |
-
-`claude mcp add --scope project ...` → commit `.mcp.json` → teammates get a one-time approval prompt and then it just
-works.
-
-### Manual config example (`.mcp.json`)
-
-```json
-{
-  "mcpServers": {
-    "claude-code-docs": {
-      "type": "http",
-      "url": "https://code.claude.com/docs/mcp"
-    },
-    "playwright": {
-      "type": "stdio",
-      "command": "npx",
-      "args": [
-        "-y",
-        "@playwright/mcp@latest"
-      ]
-    }
-  }
-}
-```
-
-### OAuth-gated servers (Sentry, Linear, Notion, GitHub…)
-
-```bash
-claude mcp add --transport http sentry https://mcp.sentry.dev/mcp
-# then inside a session:
-/mcp   # select sentry → Authenticate → completes in browser
-```
-
-Static-token servers instead: `--header "Authorization: Bearer <token>"` at add time.
-
-### Real Problem: "/mcp shows No MCP servers configured"
-
-- You ran `claude mcp add` from a **different project** — local-scope servers are tied to the directory (repo root)where
-  you added them. Re-add from the right project, or use `--scope user`.
-- You edited the wrong file — only `~/.claude.json` and `<project>/.mcp.json` are read. Not `~/.claude/mcp.json` or
-  similar.
-- Malformed JSON entry — Claude Code silently skips it; `claude mcp list` shows the parse warning.
-
-### Real Problem: "Failed to connect" / "Connection error"
-
-1. Check `claude mcp get <name>` for the exact HTTP status/error text
-2. For HTTP servers: `curl -I <url>` — a `404`/`405` still confirms reachability (many MCP endpoints only answer POST);
-   `401`/`403` means you need to authenticate; no response = network/URL problem
-3. For stdio servers: run the exact command yourself in a terminal (e.g. `npx -y @playwright/mcp@latest`) to see the
-   real underlying error — usually missing Node.js, a missing browser, or a missing `--` separator in how you registered
-   it
-
-### Real Problem: "Connection timed out at startup"
-
-First run of an `npx`-based server can be slow while it downloads. Raise the default 30s timeout:
-`MCP_TIMEOUT=60000 claude`.
-
-### Real Problem: "Server connects but shows zero tools"
-
-Usually a missing required env var (API key). Pass it via `--env KEY=value` on `claude mcp add`, or the `env` field in
-`.mcp.json`. Check the server's own docs for what it needs.
-
-### Real Problem: "I edited .mcp.json but nothing changed"
-
-`.mcp.json` is read only at **session start** — restart the session. If servers still don't show, check`claude mcp list`
-for parse warnings. If you previously declined the approval prompt, reset it:`claude mcp reset-project-choices`.
-
 ### Cost note
 
 Each connected server's tool names and instructions load into **every session's context window**. Remove servers you're
@@ -356,6 +272,7 @@ not using.
 A subagent runs in its **own fresh context window** with its own system prompt, tool access, and model. Use one when a
 side task (log analysis, big codebase search, verbose test output) would flood your main context with things you don't
 need to keep around — only the subagent's final summary comes back.
+To create subagents create md files in `.claude/agents/` or `~/.claude/agents/`
 
 ### Built-in subagents (auto-used)
 
@@ -363,11 +280,11 @@ need to keep around — only the subagent's final summary comes back.
 - **Plan** — research agent used during plan mode
 - **general-purpose** — full toolset, for complex multi-step delegated work
 
-### Creating your own
+### Creating your own using AI
 
 Just ask Claude: *"Create a personal code-improver subagent in ~/.claude/agents/ that scans files for
 readability/performance issues, read-only, using Sonnet."* Claude writes a markdown file with YAML frontmatter:
-
+Example: 
 ```markdown
 ---
 name: code-reviewer
@@ -397,11 +314,6 @@ Combined subagent descriptions have a **15,000-token budget**; past that Claude 
 flooding Claude with overlapping options makes automatic routing less reliable — most teams settle on a handful of
 well-scoped agents, not a sprawling roster.
 
-### Real Problem: "Subagent work isn't being remembered between sessions"
-
-Add `memory: project` (or `user`/`local`) to the frontmatter — gives that subagent a persistent notes directory (
-separate from main-conversation auto memory) it reads/writes on its own.
-
 ### Real Problem: "Subagent can run destructive commands I didn't expect"
 
 Restrict with `tools:` (allowlist) or `disallowedTools:` (denylist) in frontmatter, and/or add a `PreToolUse` hook in
@@ -417,20 +329,6 @@ the subagent's own frontmatter to validate commands (e.g. a DB-read-only subagen
 | Multiple sessions that must talk to *each other* / coordinate                  | **Agent teams** (heavier, ~7x tokens in plan-heavy work)                                      |
 | A side task that needs your *whole* conversation history without re-explaining | **Fork** (`/subtask`) — inherits everything, only its own tool calls stay out of your context |
 
-### Chaining & parallel patterns
-
-```text
-Research the authentication, database, and API modules in parallel using separate subagents
-```
-
-```text
-Use the code-reviewer subagent to find performance issues, then use the optimizer subagent to fix them
-```
-
-Caution: running many subagents that each return **detailed** results can itself consume significant context — ask for
-terse summaries.
-
-
 ---
 
 # Part 3: Skills, Plugins, Settings, Sandboxing, Cost/Context Management
@@ -439,7 +337,7 @@ terse summaries.
 
 A **skill** is a `SKILL.md` file (YAML frontmatter + markdown instructions) that Claude loads **on demand**, not into
 every session's baseline context — the opposite tradeoff from CLAUDE.md. Custom slash commands (`.claude/commands/*.md`)
-have been merged into skills; a command file still works, but a skill folder additionally supports supporting files and
+have been merged into skills; a command file still works, but a skill folder additionally supports the supporting files and
 finer invocation control.
 
 **Rule of thumb:** if you keep pasting the same instructions/checklist into chat, or a CLAUDE.md section has grown into

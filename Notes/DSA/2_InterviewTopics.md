@@ -66,20 +66,10 @@ nav_order: 2
 
 The substrate for most problems. Know these cold:
 
-- **In-place reversal**, rotation (via reversal trick: reverse whole array, then reverse each half — O(n) time, O(1)
-  space).
+- **In-place reversal**
+- **Rotation** (via reversal trick: reverse whole array, then reverse each half — O(n) time, O(1)  space).
     * **Concept:** Rotating an array or string by $k$ elements can be done in-place without allocating a new array. The
       trick avoids shifting elements one by one, which would take $O(n \cdot k)$ time.
-    * **Mechanism:** To rotate an array right by $k$ positions:
-
-    1. Normalize $k$: $k = k \pmod n$ (handles cases where $k \ge n$).
-    2. Reverse the entire array.
-    3. Reverse the first $k$ elements.
-    4. Reverse the remaining $n - k$ elements.
-
-    * **Complexity:**
-        * **Time:** $O(n)$ — Each element is visited a constant number of times.
-        * **Space:** $O(1)$ — Modified completely in-place.
 - **Prefix sums**:
     * **Concept:** Used for fast range sum queries. Precomputes an array where `prefix[i]` stores the sum of elements
       from index `0` to `i`.

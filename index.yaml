@@ -18,9 +18,9 @@ nav:
       - Security Notes: Notes/Security/SecurityNotes.md
   - Data Structures & Algorithms:
       - Theory & Topics:
-          - DSA Theory Notes: Notes/DSA/Theory.md
-          - Interview Topics: Notes/DSA/InterviewTopics.md
-          - Dynamic Programming: Notes/DSA/DynamicProgramming.md
+          - DSA Theory Notes: Notes/DSA/1_Theory.md
+          - Interview Topics: Notes/DSA/2_InterviewTopics.md
+          - Dynamic Programming: Notes/DSA/3_DynamicProgramming.md
       - Problem Sets:
           - GeeksForGeeks Problems: Notes/DSA/Problems/GFGProblems.md
           - Important Problems: Notes/DSA/Problems/ImportantProblems.md
@@ -30,11 +30,12 @@ nav:
           - General CP: Notes/Organize/CompetitiveCoding/CompetitiveCoding.md
           - Collections: Notes/Organize/CompetitiveCoding/Collections.md
       - Miscellaneous DSA Topics: Notes/Organize/Topics/Topics.md
-  - Java & Spring Framework:
+  - Java:
       - Java Overview: Notes/Java/1_Java_Overview.md
       - Java Features: Notes/Java/2_Features.md
       - Threading & Parallelization: Notes/Java/3_Parallelization.md
       - Java Topics: Notes/Java/JavaTopics.md
+      - Interview Questions: Notes/Java/InterviewQuestions.md
   - Spring Ecosystem:
       - Spring Basics: Notes/Spring/Spring.md
       - Spring Boot: Notes/Spring/SpringBoot.md
