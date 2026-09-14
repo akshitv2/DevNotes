@@ -412,31 +412,6 @@
             #main-content {
                 margin-left: 0;
                 padding: 5rem 1.25rem 4rem;
-            }
-        }
-
-        /* Mobile Responsive Breakpoint */
-        @media (max-width: 768px) {
-            .mobile-header {
-                display: flex;
-            }
-
-            #sidebar {
-                transform: translateX(-100%);
-                top: 56px;
-            }
-
-            #sidebar.open {
-                transform: translateX(0);
-            }
-
-            #backdrop.open {
-                display: block;
-            }
-
-            #main-content {
-                margin-left: 0;
-                padding: 5rem 1.25rem 4rem;
                 width: 100%;
                 overflow-x: hidden;
             }
@@ -604,38 +579,45 @@
         }
     }
 
-    // 3. Build Navigation Tree recursively
-    function buildNavTree(navItems) {
+    // 3. Build Navigation Tree recursively (supports maps, nested objects, and arrays)
+    function buildNavTree(navData) {
         const ul = document.createElement('ul');
         ul.className = 'nav-list';
 
-        navItems.forEach(item => {
+        if (!navData) return ul;
+
+        function processNode(title, value) {
             const li = document.createElement('li');
             li.className = 'nav-item';
 
-            if (typeof item === 'string') {
-                const a = createNavLink(item, item);
-                li.appendChild(a);
-            } else if (typeof item === 'object') {
-                const title = Object.keys(item)[0];
-                const value = item[title];
-
-                if (typeof value === 'string') {
-                    const a = createNavLink(title, value);
-                    li.appendChild(a);
-                } else if (Array.isArray(value)) {
-                    const details = document.createElement('details');
-
-                    const summary = document.createElement('summary');
-                    summary.textContent = title;
-                    details.appendChild(summary);
-
-                    details.appendChild(buildNavTree(value));
-                    li.appendChild(details);
-                }
+            if (typeof value === 'string') {
+                li.appendChild(createNavLink(title, value));
+            } else if (typeof value === 'object' && value !== null) {
+                const details = document.createElement('details');
+                const summary = document.createElement('summary');
+                summary.textContent = title;
+                details.appendChild(summary);
+                details.appendChild(buildNavTree(value));
+                li.appendChild(details);
             }
-            ul.appendChild(li);
-        });
+            return li;
+        }
+
+        if (Array.isArray(navData)) {
+            navData.forEach(item => {
+                if (typeof item === 'string') {
+                    ul.appendChild(processNode(item, item));
+                } else if (typeof item === 'object' && item !== null) {
+                    Object.entries(item).forEach(([title, value]) => {
+                        ul.appendChild(processNode(title, value));
+                    });
+                }
+            });
+        } else if (typeof navData === 'object' && navData !== null) {
+            Object.entries(navData).forEach(([title, value]) => {
+                ul.appendChild(processNode(title, value));
+            });
+        }
 
         return ul;
     }
@@ -657,28 +639,40 @@
         html += `<p style="color: var(--text-muted);">Select a section below or use the sidebar to navigate the documentation.</p>`;
         html += `<div class="index-container">`;
 
-        function renderNavSection(items) {
+        function renderNavSection(navData) {
             let sectionHtml = `<ul class="index-list">`;
-            items.forEach(item => {
-                if (typeof item === 'string') {
-                    sectionHtml += `<li><a href="#/${item}">${item}</a></li>`;
-                } else if (typeof item === 'object') {
-                    const title = Object.keys(item)[0];
-                    const value = item[title];
 
-                    if (typeof value === 'string') {
-                        sectionHtml += `<li><a href="#/${value}">${title}</a></li>`;
-                    } else if (Array.isArray(value)) {
-                        sectionHtml += `
-                <li style="margin-top: 1rem;">
-                  <div class="index-section">
-                    <div class="index-section-title">${title}</div>
-                    ${renderNavSection(value)}
-                  </div>
-                </li>`;
-                    }
+            function renderNode(title, value) {
+                if (typeof value === 'string') {
+                    return `<li><a href="#/${value}">${title}</a></li>`;
+                } else if (typeof value === 'object' && value !== null) {
+                    return `
+                    <li style="margin-top: 1rem;">
+                      <div class="index-section">
+                        <div class="index-section-title">${title}</div>
+                        ${renderNavSection(value)}
+                      </div>
+                    </li>`;
                 }
-            });
+                return '';
+            }
+
+            if (Array.isArray(navData)) {
+                navData.forEach(item => {
+                    if (typeof item === 'string') {
+                        sectionHtml += renderNode(item, item);
+                    } else if (typeof item === 'object' && item !== null) {
+                        Object.entries(item).forEach(([title, value]) => {
+                            sectionHtml += renderNode(title, value);
+                        });
+                    }
+                });
+            } else if (typeof navData === 'object' && navData !== null) {
+                Object.entries(navData).forEach(([title, value]) => {
+                    sectionHtml += renderNode(title, value);
+                });
+            }
+
             sectionHtml += `</ul>`;
             return sectionHtml;
         }
@@ -693,101 +687,101 @@
     }
 
     // 5. Fetch and Render Markdown Content or Generated Home
-async function handleRoute() {
-    const rawHash = window.location.hash.replace(/^#\/?/, '');
+    async function handleRoute() {
+        const rawHash = window.location.hash.replace(/^#\/?/, '');
 
-    // Render home index generated from YAML if path is empty
-    if (!rawHash) {
-        closeMobileMenu();
-        renderGeneratedIndex();
-        window.scrollTo(0, 0);
-        return;
-    }
-
-    // Split route path from anchor link fragment
-    const [hashPath, anchorId] = rawHash.split('#');
-
-    // Update active links
-    document.querySelectorAll('#nav-tree a').forEach(a => {
-        if (a.dataset.path === hashPath) {
-            a.classList.add('active');
-            let parent = a.closest('details');
-            while (parent) {
-                parent.open = true;
-                parent = parent.parentElement.closest('details');
-            }
-        } else {
-            a.classList.remove('active');
+        // Render home index generated from YAML if path is empty
+        if (!rawHash) {
+            closeMobileMenu();
+            renderGeneratedIndex();
+            window.scrollTo(0, 0);
+            return;
         }
-    });
 
-    closeMobileMenu();
+        // Split route path from anchor link fragment
+        const [hashPath, anchorId] = rawHash.split('#');
 
-    const contentEl = document.getElementById('content');
+        // Update active links
+        document.querySelectorAll('#nav-tree a').forEach(a => {
+            if (a.dataset.path === hashPath) {
+                a.classList.add('active');
+                let parent = a.closest('details');
+                while (parent) {
+                    parent.open = true;
+                    parent = parent.parentElement.closest('details');
+                }
+            } else {
+                a.classList.remove('active');
+            }
+        });
 
-    // Fetch and render markdown if navigating to a new page
-    if (contentEl.dataset.currentPath !== hashPath) {
-        try {
-            const res = await fetch(hashPath);
-            if (!res.ok) throw new Error(`File not found: ${hashPath}`);
-            let markdown = await res.text();
+        closeMobileMenu();
 
-            markdown = markdown.replace(/^---\r?\n[\s\S]*?\r?\n---\r?\n?/, '');
+        const contentEl = document.getElementById('content');
 
-            contentEl.innerHTML = marked.parse(markdown, {
-                walkTokens(token) {
-                    if (token.type === 'image' && token.href) {
-                        token.href = resolveRelativePath(hashPath, token.href);
-                    }
-                    if (token.type === 'link' && token.href) {
-                        if (token.href.startsWith('#')) {
-                            // Same-page anchor links
-                            token.href = `#/${hashPath}${token.href}`;
-                        } else if (!/^(?:[a-z]+:|\/\/|\/)/i.test(token.href)) {
-                            // Relative links to other Markdown files
-                            const resolved = resolveRelativePath(hashPath, token.href);
-                            token.href = `#/${resolved}`;
+        // Fetch and render markdown if navigating to a new page
+        if (contentEl.dataset.currentPath !== hashPath) {
+            try {
+                const res = await fetch(hashPath);
+                if (!res.ok) throw new Error(`File not found: ${hashPath}`);
+                let markdown = await res.text();
+
+                markdown = markdown.replace(/^---\r?\n[\s\S]*?\r?\n---\r?\n?/, '');
+
+                contentEl.innerHTML = marked.parse(markdown, {
+                    walkTokens(token) {
+                        if (token.type === 'image' && token.href) {
+                            token.href = resolveRelativePath(hashPath, token.href);
+                        }
+                        if (token.type === 'link' && token.href) {
+                            if (token.href.startsWith('#')) {
+                                // Same-page anchor links
+                                token.href = `#/${hashPath}${token.href}`;
+                            } else if (!/^(?:[a-z]+:|\/\/|\/)/i.test(token.href)) {
+                                // Relative links to other Markdown files
+                                const resolved = resolveRelativePath(hashPath, token.href);
+                                token.href = `#/${resolved}`;
+                            }
                         }
                     }
-                }
-            });
+                });
 
-            // Auto-generate IDs on headings for anchor links
-            contentEl.querySelectorAll('h1, h2, h3, h4, h5, h6').forEach(heading => {
-                heading.id = heading.textContent
-                    .toLowerCase()
-                    .replace(/[^\w\s-]/g, '')
-                    .trim()
-                    .replace(/\s+/g, '-');
-            });
+                // Auto-generate IDs on headings for anchor links
+                contentEl.querySelectorAll('h1, h2, h3, h4, h5, h6').forEach(heading => {
+                    heading.id = heading.textContent
+                        .toLowerCase()
+                        .replace(/[^\w\s-]/g, '')
+                        .trim()
+                        .replace(/\s+/g, '-');
+                });
 
-            // Highlight code blocks
-            contentEl.querySelectorAll('pre code').forEach((block) => {
-                hljs.highlightElement(block);
-            });
+                // Highlight code blocks
+                contentEl.querySelectorAll('pre code').forEach((block) => {
+                    hljs.highlightElement(block);
+                });
 
-            contentEl.dataset.currentPath = hashPath;
-        } catch (err) {
-            document.getElementById('content').innerHTML = `
-          <h1>404 - Not Found</h1>
-          <p>Unable to load document at <code>${hashPath}</code>.</p>
-        `;
-            delete contentEl.dataset.currentPath;
-            return;
+                contentEl.dataset.currentPath = hashPath;
+            } catch (err) {
+                document.getElementById('content').innerHTML = `
+              <h1>404 - Not Found</h1>
+              <p>Unable to load document at <code>${hashPath}</code>.</p>
+            `;
+                delete contentEl.dataset.currentPath;
+                return;
+            }
         }
-    }
 
-    // Scroll to internal anchor or top of page
-    if (anchorId) {
-        const targetElement = document.getElementById(anchorId);
-        if (targetElement) {
-            targetElement.scrollIntoView({ behavior: 'smooth' });
-            return;
+        // Scroll to internal anchor or top of page
+        if (anchorId) {
+            const targetElement = document.getElementById(anchorId);
+            if (targetElement) {
+                targetElement.scrollIntoView({ behavior: 'smooth' });
+                return;
+            }
         }
-    }
 
-    window.scrollTo(0, 0);
-}
+        window.scrollTo(0, 0);
+    }
 
     // 6. Mobile Drawer Interactions
     const menuToggle = document.getElementById('menu-toggle');
