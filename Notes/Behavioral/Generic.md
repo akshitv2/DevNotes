@@ -278,6 +278,54 @@ technical debt deliberately.**
 
 ---
 
+## 13. Career Trajectory / "Where Do You See Yourself in 5 Years"
+
+**Q: Where do you see yourself in 5 years?**
+
+*What the interviewer is really asking:* Is this role a genuine step on your path or a placeholder? Will you stay long
+enough to be worth investing in? Do you actually want to lead, or are you drifting toward it because it's the "next
+step"?
+
+**Ideal answer framework:**
+
+- Avoid two failure modes: being too vague ("I just want to keep growing and see where it goes" — sounds like you
+  haven't thought about it) and being too rigid ("I want your job in 3 years" — sounds like you're optimizing for title
+  over impact, and may worry the interviewer about competition or short tenure).
+- Anchor the answer in the *kind* of impact and skills you want, not just a title. E.g., "In 5 years I'd like to be
+  leading a larger or more complex technical area, having grown a couple of engineers into senior or lead roles
+  themselves, and still being credible technically — not purely a manager of managers."
+- Connect it back to *why this role specifically* helps you get there — shows this isn't a generic answer copy-pasted
+  across interviews.
+- Be honest about the fork in the road: many engineers use a first lead role to discover whether they want to go deeper
+  into management or back toward a principal/staff IC track. It's fine — even good — to say you're using this role to
+  learn which direction fits you, as long as you're clear you're committed to doing the lead job well regardless of
+  which way you lean afterward.
+- Avoid naming a specific title at a specific company unless asked directly; keep the focus on scope of impact and
+  skills.
+
+**Q: What does success look like for you a year from now in this role?**
+
+**Ideal answer framework:**
+
+- Shorter horizon, so be more concrete than the 5-year answer: e.g., the team is shipping reliably, 1–2 people you
+  mentored have grown visibly, technical decisions are documented and trusted, and you've built credibility with peer
+  teams and your manager.
+- Mention a learning goal for yourself too (e.g., getting better at delegation or at influencing without authority) —
+  shows self-awareness rather than implying you already have it all figured out.
+
+**Q: How do you see the balance between hands-on coding and leadership changing for you over time?**
+
+**Ideal answer framework:**
+
+- Acknowledge the natural trajectory: coding time typically decreases as team size and scope grow, and that's fine as
+  long as you stay technically sharp enough to make good calls, review critical designs, and keep the team's trust.
+- Give a concrete personal plan for staying technical (e.g., still reviewing key PRs, taking on a bounded technical
+  project periodically, staying close to architecture decisions) rather than a vague "I'll always code a little."
+- Signal you won't cling to code out of comfort at the expense of the team's needs — this ties back to the IC-to-lead
+  transition theme earlier in this guide.
+
+---
+
 ## Quick Prep Checklist
 
 - Have 5–6 distinct stories ready; map each to multiple questions above (most stories can answer 2–3 questions with a

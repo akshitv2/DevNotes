@@ -38,7 +38,6 @@ nav:
   Spring Ecosystem:
     Spring Basics: Notes/Spring/Spring.md
     Spring Boot: Notes/Spring/SpringBoot.md
-    Spring Boot Starters: Notes/Spring/Starters.md
     Spring Libraries: Notes/Spring/Libraries.md
     Interview Questions: Notes/Spring/InterviewQuestions.md
   Tools & Utilities:
