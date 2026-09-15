@@ -86,6 +86,7 @@ Lightweight JVM-managed threads designed to replace 1:1 OS platform threads duri
 * **Mechanism:** When a virtual thread blocks on I/O, the JVM unmounts it from the underlying platform thread to execute
   other work.
 * **Configuration Flag:** `-Djdk.virtualThreadScheduler.parallelism=N` sets available platform threads.
+* Note: A traditional ThreadPool manages a limited number of expensive OS threads. Virtual threads allow you to create millions of cheap threads and let the JVM efficiently schedule them onto a smaller number of OS threads.
 
 ```java
 // Traditional (Platform Threads)

@@ -8,7 +8,7 @@
     <!-- Google Fonts for Themes -->
     <link href="https://fonts.googleapis.com" rel="preconnect">
     <link crossorigin href="https://fonts.gstatic.com" rel="preconnect">
-    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Inter:wght@400;500;600;700&family=Nunito:wght@400;600;700&family=Share+Tech+Mono&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Architects+Daughter&family=Caveat:wght@400;600;700&family=Fredoka:wght@400;600;700&family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,400..700;1,400..700&family=Nunito:wght@400;600;700&family=Open+Sans:ital,wght@0,400..700;1,400..700&family=Plus+Jakarta+Sans:wght@400;600;700&family=Share+Tech+Mono&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet">
 
     <!-- KaTeX CSS -->
     <link href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css" rel="stylesheet">
@@ -25,13 +25,13 @@
     <script>
         // Apply theme immediately to prevent Flash of Unstyled Content
         const urlParams = new URLSearchParams(window.location.search);
-        const validThemes = ['medium', 'whimsical', 'diary', 'techno'];
+        const validThemes = ['medium', 'whimsical', 'diary', 'techno', 'greenery', 'school', 'spring'];
         let currentTheme = urlParams.get('theme');
         if (!validThemes.includes(currentTheme)) currentTheme = 'medium';
         document.documentElement.classList.add(`theme-${currentTheme}`);
 
         // Adjust syntax highlighting for dark themes
-        if (currentTheme === 'techno') {
+        if (currentTheme === 'techno' || currentTheme === 'spring') {
             document.getElementById('hljs-theme').href = "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css";
         }
     </script>
@@ -49,14 +49,10 @@
             --text-main: #242424;
             --text-muted: #6b6b6b;
             --border-color: #e6e6e6;
-            --link-color: #1a8917;
+            --link-color: #242424;
             --code-bg: #f6f8fa;
             --bg-image: none;
         }
-        :root, .theme-medium {
-    /* ... */
-    --link-color: #242424; /* Changed from #1a8917 to match --text-main */
-}
 
         /* Theme: Whimsical */
         .theme-whimsical {
@@ -103,6 +99,185 @@
             --bg-image: none;
         }
 
+        /* Theme: Greenery */
+        .theme-greenery {
+            --font-serif: 'Lora', Georgia, serif;
+            --font-sans: 'Plus Jakarta Sans', sans-serif;
+            --font-mono: ui-monospace, monospace;
+            --bg-color: #f4f7f3;
+            --sidebar-bg: #e2ebd9;
+            --text-main: #1b3b22;
+            --text-muted: #4d6a52;
+            --border-color: #c1d3be;
+            --link-color: #2d7a42;
+            --code-bg: #e8f0e6;
+            --bg-image: url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M35 15 C20 30 10 25 10 40 C10 52 28 58 35 65 C42 58 60 52 60 40 C60 25 50 30 35 15 Z' fill='%232d7a42' fill-opacity='0.035'/%3E%3Cpath d='M35 25 L35 55' stroke='%232d7a42' stroke-width='1.5' stroke-opacity='0.05' stroke-linecap='round'/%3E%3C/svg%3E");
+        }
+
+        /* Theme: Children's School Wall */
+        .theme-school {
+            --font-serif: 'Architects Daughter', cursive;
+            --font-sans: 'Fredoka', cursive, sans-serif;
+            --font-mono: ui-monospace, monospace;
+            --bg-color: #e0f7fa;
+            --sidebar-bg: #fffde7;
+            --text-main: #2c3e50;
+            --text-muted: #5c6bc0;
+            --border-color: #ff8a65;
+            --link-color: #d81b60;
+            --code-bg: #ffffff;
+            --bg-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='120' viewBox='0 0 240 120'%3E%3Cg fill='%23ffffff' fill-opacity='0.6'%3E%3Cpath d='M20,50 Q30,30 50,30 Q65,15 85,30 Q105,20 115,40 Q130,40 130,55 Q130,70 110,70 L20,70 Q0,70 0,55 Q0,40 20,50 Z'/%3E%3Cpath d='M150,90 Q160,75 175,75 Q185,65 200,75 Q215,68 222,80 Q235,80 235,93 Q235,105 220,105 L150,105 Q135,105 135,93 Q135,80 150,90 Z'/%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        @keyframes floatClouds {
+            from { background-position: 0 0; }
+            to { background-position: 1000px 0; }
+        }
+
+        .theme-school body {
+            font-size: 21px;
+            animation: floatClouds 80s linear infinite;
+        }
+
+        .theme-school #sidebar {
+            border-right: 4px dashed #ffb74d;
+            box-shadow: 4px 0 0 rgba(255, 138, 101, 0.2);
+        }
+
+        .theme-school .site-title::before {
+            content: '✏️';
+            margin-right: 0.4rem;
+        }
+
+        .theme-school #content h1,
+        .theme-school #content h2,
+        .theme-school #content h3 {
+            color: #e53935;
+            text-shadow: 2px 2px 0px #ffe082;
+            letter-spacing: 0.02em;
+        }
+
+        .theme-school .index-section {
+            border: 3px dashed #4fc3f7;
+            border-radius: 16px;
+            box-shadow: 5px 5px 0px #fff59d;
+        }
+
+        .theme-school #content blockquote {
+            border-left: 6px solid #ab47bc;
+            background: #f3e5f5;
+            border-radius: 12px;
+            box-shadow: 3px 3px 0px #d1c4e9;
+        }
+
+        .theme-school table {
+            border: 3px solid #ff7043;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .theme-school table th {
+            background-color: #ffe082;
+            color: #d81b60;
+        }
+
+        /* Theme: Spring Framework Documentation */
+        .theme-spring {
+            --font-serif: 'Open Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            --font-sans: 'Open Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace;
+            --bg-color: #ffffff;
+            --sidebar-bg: #f8f9fa;
+            --text-main: #212529;
+            --text-muted: #6c757d;
+            --border-color: #e9ecef;
+            --link-color: #5fb832;
+            --code-bg: #f1f3f5;
+            --bg-image: none;
+        }
+
+        .theme-spring body {
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        .theme-spring #sidebar {
+            border-right: 1px solid #e1e4e8;
+        }
+
+        .theme-spring .site-title {
+            font-weight: 700;
+            color: #162d3d;
+            border-bottom: 2px solid #5fb832;
+        }
+
+        .theme-spring .site-title::before {
+            content: '';
+            display: inline-block;
+            width: 22px;
+            height: 22px;
+            background-color: #5fb832;
+            mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M17 8C8 10 5.83 16.17 0.66 21.34L2.07 22.75C7.24 17.58 13.49 13.83 17 3C14 6 9 8 5 8V6C10 6 14 4 18 1C18 4 20 6 23 6V8C20 8 19 9 17 8Z'/%3E%3C/svg%3E") no-repeat center / contain;
+            -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M17 8C8 10 5.83 16.17 0.66 21.34L2.07 22.75C7.24 17.58 13.49 13.83 17 3C14 6 9 8 5 8V6C10 6 14 4 18 1C18 4 20 6 23 6V8C20 8 19 9 17 8Z'/%3E%3C/svg%3E") no-repeat center / contain;
+        }
+
+        .theme-spring .nav-item a.active {
+            color: #5fb832;
+            font-weight: 600;
+            background-color: #eef9e8;
+            border-left: 3px solid #5fb832;
+            border-radius: 0 4px 4px 0;
+        }
+
+        .theme-spring #content h1,
+        .theme-spring #content h2,
+        .theme-spring #content h3 {
+            color: #162d3d;
+            font-weight: 600;
+        }
+
+        .theme-spring #content h1 {
+            border-bottom: 1px solid #e9ecef;
+            padding-bottom: 0.5rem;
+        }
+
+        .theme-spring #content blockquote {
+            border-left: 4px solid #5fb832;
+            background-color: #f8f9fa;
+            padding: 1rem;
+            border-radius: 0 4px 4px 0;
+            color: #495057;
+        }
+
+        .theme-spring #content code {
+            color: #212529;
+            background-color: #f1f3f5;
+            border: 1px solid #e9ecef;
+        }
+
+        .theme-spring #content pre {
+            background-color: #1e2227;
+            border: 1px solid #2d3238;
+            border-radius: 6px;
+        }
+
+        .theme-spring #content pre code {
+            color: #abb2bf;
+            background-color: transparent;
+            border: none;
+        }
+
+        .theme-spring table {
+            border: 1px solid #dee2e6;
+            width: 100%;
+        }
+
+        .theme-spring table th {
+            background-color: #f1f3f5;
+            color: #162d3d;
+            border-bottom: 2px solid #dee2e6;
+        }
+
         * {
             box-sizing: border-box;
             margin: 0;
@@ -122,7 +297,7 @@
 
         .theme-diary body {
             font-size: 24px;
-            line-height: 32px; /* aligns with background repeating gradient */
+            line-height: 32px;
         }
 
         /* Mobile Header */
@@ -206,6 +381,20 @@
             padding-bottom: 1rem;
             border-bottom: 1px solid var(--border-color);
             color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Botanical Vector Accent for Greenery Theme */
+        .theme-greenery .site-title::before {
+            content: '';
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            background-color: var(--link-color);
+            mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M17 8C8 10 5.83 16.17 0.66 21.34L2.07 22.75C7.24 17.58 13.49 13.83 17 3C14 6 9 8 5 8V6C10 6 14 4 18 1C18 4 20 6 23 6V8C20 8 19 9 17 8Z'/%3E%3C/svg%3E") no-repeat center / contain;
+            -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M17 8C8 10 5.83 16.17 0.66 21.34L2.07 22.75C7.24 17.58 13.49 13.83 17 3C14 6 9 8 5 8V6C10 6 14 4 18 1C18 4 20 6 23 6V8C20 8 19 9 17 8Z'/%3E%3C/svg%3E") no-repeat center / contain;
         }
 
         .nav-list {
@@ -693,7 +882,6 @@
         const a = document.createElement('a');
         a.textContent = title;
 
-        // Preserve theme query parameter when navigating
         const currentSearch = window.location.search;
         a.href = `${currentSearch}#/${path}`;
         a.dataset.path = path;
