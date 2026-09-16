@@ -43,16 +43,14 @@ nav:
   Tools & Utilities:
     Important Java Libraries: Notes/Tools/JavaImportantLibs.md
     Software List: Notes/Tools/Softwares.md
-    Tools:
-      Kafka: Notes/Tools/Kafka.md
-      Netty: Notes/Tools/Netty.md
+    Kafka: Notes/Tools/Kafka.md
+    Netty: Notes/Tools/Netty.md
   AI:
     Prompt Engineering: Notes/AI/PromptEngineering.md
     Claude Code: Notes/AI/ClaudeCode.md
     AI General: Notes/AI/AI_Interview_Notes.md
   Miscellaneous:
     From Banking to Big Tech: Notes/Misc/BigTechTopics.md
-    Prompt Engineering: Notes/Misc/PromptEngineering.md
   Book Notes & Guides:
     Designing Data-Intensive Applications: Notes/Books/DesigningDataIntensiveApplications.md
     System Design Interview Guide: Notes/Books/SystemDesignInterviewGuide.md
@@ -67,3 +65,4 @@ nav:
       System Design: Notes/Revise/SystemDesign.md
     Tasks:
       Todo List: Notes/Todo.md
+  Delete: Flashcards/AI/AI.md
