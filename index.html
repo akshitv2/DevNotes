@@ -31,7 +31,7 @@
         document.documentElement.classList.add(`theme-${currentTheme}`);
 
         // Adjust syntax highlighting for dark themes
-        if (currentTheme === 'techno' || currentTheme === 'spring') {
+        if (currentTheme === 'techno') {
             document.getElementById('hljs-theme').href = "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css";
         }
     </script>
@@ -192,7 +192,7 @@
             --text-muted: #6c757d;
             --border-color: #e9ecef;
             --link-color: #5fb832;
-            --code-bg: #f1f3f5;
+            --code-bg: #f8f9fa;
             --bg-image: none;
         }
 
@@ -256,13 +256,13 @@
         }
 
         .theme-spring #content pre {
-            background-color: #1e2227;
-            border: 1px solid #2d3238;
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
             border-radius: 6px;
         }
 
         .theme-spring #content pre code {
-            color: #abb2bf;
+            color: #212529;
             background-color: transparent;
             border: none;
         }
@@ -786,6 +786,35 @@
     marked.use({extensions: [katexExtension]});
 
     let siteConfig = null;
+    let scrollSpyObserver = null;
+
+    function setupScrollSpy(hashPath) {
+        if (scrollSpyObserver) scrollSpyObserver.disconnect();
+
+        const headings = document.querySelectorAll('#content h1, #content h2, #content h3, #content h4, #content h5, #content h6');
+        if (!headings.length) return;
+
+        scrollSpyObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const id = entry.target.id;
+                    if (!id) return;
+
+                    const currentSearch = window.location.search;
+                    const newHash = `#/${hashPath}#${id}`;
+
+                    if (window.location.hash !== newHash) {
+                        history.replaceState(null, '', `${window.location.pathname}${currentSearch}${newHash}`);
+                    }
+                }
+            });
+        }, {
+            rootMargin: '0px 0px -80% 0px',
+            threshold: 0.1
+        });
+
+        headings.forEach(heading => scrollSpyObserver.observe(heading));
+    }
 
     function resolveRelativePath(basePath, relativePath) {
         if (!relativePath || /^(?:[a-z]+:|\/\/|\/)/i.test(relativePath)) {
@@ -889,6 +918,7 @@
     }
 
     function renderGeneratedIndex() {
+        if (scrollSpyObserver) scrollSpyObserver.disconnect();
         if (!siteConfig || !siteConfig.nav) return;
 
         const contentEl = document.getElementById('content');
@@ -1007,6 +1037,8 @@
                 contentEl.querySelectorAll('pre code').forEach((block) => {
                     hljs.highlightElement(block);
                 });
+
+                setupScrollSpy(hashPath);
 
                 contentEl.dataset.currentPath = hashPath;
             } catch (err) {
