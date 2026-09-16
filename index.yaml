@@ -59,6 +59,10 @@ nav:
     Component Ownership: Notes/Behavioral/ComponentOwnership.md
     Generic: Notes/Behavioral/Generic.md
     Tech Leadership: Notes/Behavioral/TechLeadership.md
+    Company Values:
+      Citi Bank: Notes/Behavioral/Company Specific/Citi Bank.md
+      Barclays: Notes/Behavioral/Company Specific/Barclays.md
+      Morgan Stanley: Notes/Behavioral/Company Specific/MorganStanley.md
   Revision & Tasks:
     Revision:
       Java Revision: Notes/Revise/Java.md
